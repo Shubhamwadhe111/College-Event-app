@@ -27,7 +27,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}) {
   }
 }
 
-// User API
+// User API (Students)
 export const userAPI = {
   register: async (userData: {
     name: string;
@@ -35,6 +35,7 @@ export const userAPI = {
     password: string;
     phone: string;
     college: string;
+    year?: string;
   }) => {
     return apiCall('/users/register', {
       method: 'POST',
@@ -44,6 +45,30 @@ export const userAPI = {
 
   login: async (credentials: { email: string; password: string }) => {
     return apiCall('/users/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
+  },
+};
+
+// Organizer API
+export const organizerAPI = {
+  register: async (organizerData: {
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+    department: string;
+    designation: string;
+  }) => {
+    return apiCall('/organizers/register', {
+      method: 'POST',
+      body: JSON.stringify(organizerData),
+    });
+  },
+
+  login: async (credentials: { email: string; password: string }) => {
+    return apiCall('/organizers/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -60,7 +85,18 @@ export const eventAPI = {
     return apiCall(`/events/${id}`);
   },
 
-  create: async (eventData: any) => {
+  create: async (eventData: {
+    event_name: string;
+    description: string;
+    event_type: string;
+    start_date: string;
+    end_date: string;
+    time: string;
+    venue: string;
+    registration_fee?: number;
+    max_participants?: number;
+    organizer_id: number;
+  }) => {
     return apiCall('/events', {
       method: 'POST',
       body: JSON.stringify(eventData),
@@ -84,6 +120,20 @@ export const registrationAPI = {
 
 // Admin API
 export const adminAPI = {
+  register: async (adminData: {
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+    department: string;
+    secretCode: string;
+  }) => {
+    return apiCall('/admin/register', {
+      method: 'POST',
+      body: JSON.stringify(adminData),
+    });
+  },
+
   login: async (credentials: { email: string; password: string }) => {
     return apiCall('/admin/login', {
       method: 'POST',
@@ -91,11 +141,29 @@ export const adminAPI = {
     });
   },
 
-  getUsers: async () => {
-    return apiCall('/admin/users');
-  },
-
   getStats: async () => {
     return apiCall('/admin/stats');
+  },
+
+  getPendingOrganizers: async () => {
+    return apiCall('/admin/pending-organizers');
+  },
+
+  approveOrganizer: async (organizerId: number, action: 'approve' | 'reject', adminId: number, remarks?: string) => {
+    return apiCall(`/admin/organizers/${organizerId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ action, admin_id: adminId, remarks }),
+    });
+  },
+
+  getPendingEvents: async () => {
+    return apiCall('/admin/pending-events');
+  },
+
+  approveEvent: async (eventId: number, action: 'approve' | 'reject', adminId: number, remarks?: string) => {
+    return apiCall(`/admin/events/${eventId}/approve`, {
+      method: 'POST',
+      body: JSON.stringify({ action, admin_id: adminId, remarks }),
+    });
   },
 };

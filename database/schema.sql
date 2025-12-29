@@ -583,24 +583,11 @@ GROUP BY e.event_id;
 -- SAMPLE DATA FOR TESTING
 -- ============================================================================
 
--- Insert sample admin
-INSERT INTO Admins (name, email, phone, password, role) VALUES
-('Super Admin', 'admin@college.edu', '9876543210', '$2b$10$hashedpassword', 'super_admin'),
-('Event Manager', 'manager@college.edu', '9876543211', '$2b$10$hashedpassword', 'event_manager');
-
--- Insert sample students
-INSERT INTO Students (full_name, email, phone, department, year, password) VALUES
-('John Doe', 'john@student.edu', '9876543220', 'Computer Science', '3', '$2b$10$hashedpassword'),
-('Jane Smith', 'jane@student.edu', '9876543221', 'Electronics', '2', '$2b$10$hashedpassword'),
-('Mike Johnson', 'mike@student.edu', '9876543222', 'Mechanical', '4', '$2b$10$hashedpassword');
-
--- Insert sample organizers (one pending, one approved)
-INSERT INTO Organizers (full_name, email, phone, department, designation, password, account_status, is_active, approved_by_admin, approval_date) VALUES
-('Dr. Sarah Wilson', 'sarah@college.edu', '9876543230', 'Computer Science', 'Professor', '$2b$10$hashedpassword', 'approved', TRUE, 1, CURRENT_TIMESTAMP),
-('Prof. David Brown', 'david@college.edu', '9876543231', 'Electronics', 'Assistant Professor', '$2b$10$hashedpassword', 'pending', FALSE, NULL, NULL);
+-- Note: No sample data included in production schema
+-- Use clean_setup.sql to initialize with essential admin accounts only
 
 -- ============================================================================
--- STORED PROCEDURES FOR COMMON OPERATIONS
+-- END OF SCHEMA
 -- ============================================================================
 
 -- Procedure: Approve Organizer

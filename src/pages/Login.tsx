@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Mail, Lock } from 'lucide-react';
+import { ArrowRight, Mail, Lock, User } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userType, setUserType] = useState<'student' | 'organizer' | 'admin'>('student');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -19,9 +20,16 @@ const Login: React.FC = () => {
       return;
     }
 
-    const result = await login(email, password);
+    const result = await login(email, password, userType);
     if (result.success) {
-      navigate('/dashboard');
+      // Redirect based on user type
+      if (userType === 'admin') {
+        navigate('/admin-panel');
+      } else if (userType === 'organizer') {
+        navigate('/dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       setError(result.message);
     }
@@ -93,6 +101,45 @@ const Login: React.FC = () => {
                 {error}
               </div>
             )}
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Login As
+              </label>
+              <div style={{ position: 'relative' }}>
+                <select
+                  value={userType}
+                  onChange={(e) => setUserType(e.target.value as 'student' | 'organizer' | 'admin')}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <option value="student" style={{ background: '#333', color: 'white' }}>Student</option>
+                  <option value="organizer" style={{ background: '#333', color: 'white' }}>Organizer</option>
+                  <option value="admin" style={{ background: '#333', color: 'white' }}>Admin</option>
+                </select>
+                <User size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
+              </div>
+            </div>
 
             <div className="form-group" style={{ marginBottom: '1.5rem' }}>
               <label style={{

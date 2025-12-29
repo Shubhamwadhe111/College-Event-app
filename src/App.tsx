@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { EventProvider } from './contexts/EventContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import Layout from './components/Layout/Layout';
+import BackgroundManager from './components/BackgroundManager';
 import SimpleHome from './pages/SimpleHome';
 import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
@@ -24,6 +25,7 @@ function App() {
       <NotificationProvider>
         <EventProvider>
           <Router>
+            <BackgroundManager />
             <Layout>
               <Routes>
               <Route path="/" element={<SimpleHome />} />
@@ -56,6 +58,11 @@ function App() {
               <Route path="/super-admin" element={
                 <ProtectedRoute requiredRole="superadmin">
                   <SuperAdminPanel />
+                </ProtectedRoute>
+              } />
+              <Route path="/nexusadmin" element={
+                <ProtectedRoute requiredRole="admin">
+                  <AdminPanel />
                 </ProtectedRoute>
               } />
               </Routes>

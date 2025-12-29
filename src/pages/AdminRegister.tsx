@@ -17,7 +17,7 @@ const AdminRegister: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const { register, login, isLoading } = useAuth();
+  const { registerAdmin, login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   // Secret code for admin registration
@@ -57,12 +57,21 @@ const AdminRegister: React.FC = () => {
       return;
     }
 
-    const { confirmPassword, secretCode, ...userData } = formData;
-    const result = await register(userData);
+    // Prepare admin data
+    const adminData = {
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      phone: formData.studentId, // Using studentId as phone
+      department: formData.department || 'Administration',
+      secretCode: formData.secretCode
+    };
+
+    const result = await registerAdmin(adminData);
     
     if (result.success) {
-      // Auto-login after successful registration
-      const loginResult = await login(userData.email, userData.password);
+      // Auto-login after successful registration with admin type
+      const loginResult = await login(adminData.email, adminData.password, 'admin');
       
       if (loginResult.success) {
         setSuccess('Admin account created! Redirecting to admin panel...');
@@ -70,7 +79,7 @@ const AdminRegister: React.FC = () => {
           navigate('/admin-panel');
         }, 1500);
       } else {
-        setSuccess('Registration successful! Please login.');
+        setSuccess('Registration successful! Please login as admin.');
         setTimeout(() => {
           navigate('/login');
         }, 2000);

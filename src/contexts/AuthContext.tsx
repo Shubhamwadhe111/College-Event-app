@@ -1,10 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
+import { userAPI, organizerAPI, adminAPI } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; message: string }>;
+  login: (email: string, password: string, userType?: 'student' | 'organizer' | 'admin') => Promise<{ success: boolean; message: string }>;
   register: (userData: Omit<User, 'id' | 'registeredEvents' | 'createdAt'> & { password: string }) => Promise<{ success: boolean; message: string }>;
+  registerOrganizer: (organizerData: { name: string; email: string; password: string; phone: string; department: string; designation: string }) => Promise<{ success: boolean; message: string }>;
+  registerAdmin: (adminData: { name: string; email: string; password: string; phone: string; department: string; secretCode: string }) => Promise<{ success: boolean; message: string }>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   isLoading: boolean;
@@ -29,12 +32,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize empty users array if not exists
-    const storedUsers = localStorage.getItem('users');
-    if (!storedUsers) {
-      localStorage.setItem('users', JSON.stringify([]));
-    }
-
     // Check for existing session
     const storedUser = localStorage.getItem('currentUser');
     if (storedUser) {
@@ -47,52 +44,44 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; message: string }> => {
+  const login = async (email: string, password: string, userType: 'student' | 'organizer' | 'admin' = 'student'): Promise<{ success: boolean; message: string }> => {
     setIsLoading(true);
     
     try {
-      // Get users and passwords from localStorage
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const passwords = JSON.parse(localStorage.getItem('passwords') || '{}');
+      let response;
       
-      // Find user by email
-      const foundUser = users.find((u: User) => u.email === email);
-      
-      if (!foundUser) {
-        setIsLoading(false);
-        return { success: false, message: 'Invalid email or password' };
+      // Try different login endpoints based on user type
+      if (userType === 'admin') {
+        response = await adminAPI.login({ email, password });
+      } else if (userType === 'organizer') {
+        response = await organizerAPI.login({ email, password });
+      } else {
+        response = await userAPI.login({ email, password });
       }
       
-      // Check password
-      if (passwords[email] !== password) {
-        setIsLoading(false);
-        return { success: false, message: 'Invalid email or password' };
-      }
+      // Transform API response to User interface
+      const userData: User = {
+        id: response.user.id.toString(),
+        name: response.user.name,
+        email: response.user.email,
+        studentId: response.user.student_id || '',
+        role: response.user.role,
+        college: response.user.department || '',
+        department: response.user.department || '',
+        year: response.user.year || '',
+        registeredEvents: [],
+        createdAt: new Date().toISOString(),
+        isApproved: true,
+        approvalStatus: 'approved'
+      };
       
-      // Check if organizer is approved
-      if (foundUser.role === 'organizer' && !foundUser.isApproved) {
-        setIsLoading(false);
-        return { 
-          success: false, 
-          message: 'Your organizer account is pending admin approval. Please wait for approval before logging in.' 
-        };
-      }
-      
-      // Check if organizer was rejected
-      if (foundUser.role === 'organizer' && foundUser.approvalStatus === 'rejected') {
-        setIsLoading(false);
-        return { 
-          success: false, 
-          message: 'Your organizer account was rejected by admin. Please contact support for more information.' 
-        };
-      }
-      
-      setUser(foundUser);
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
+      setUser(userData);
+      localStorage.setItem('currentUser', JSON.stringify(userData));
       setIsLoading(false);
-      return { success: true, message: 'Login successful!' };
+      return { success: true, message: response.message || 'Login successful!' };
     } catch (error: any) {
       setIsLoading(false);
+      console.error('Login error:', error);
       return { success: false, message: error.message || 'Login failed' };
     }
   };
@@ -101,46 +90,65 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Get existing users
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      
-      // Check if email already exists
-      if (users.some((u: User) => u.email === userData.email)) {
-        setIsLoading(false);
-        return { success: false, message: 'Email already registered' };
-      }
-      
-      // Create new user
-      const newUser: User = {
-        id: Date.now().toString(),
+      const response = await userAPI.register({
         name: userData.name,
         email: userData.email,
-        studentId: userData.studentId,
-        role: userData.role,
-        college: userData.college || '',
-        department: userData.department || '',
-        year: userData.year || '',
-        registeredEvents: [],
-        createdAt: new Date().toISOString(),
-        // Organizers need approval, students are auto-approved
-        isApproved: userData.role === 'student',
-        approvalStatus: userData.role === 'student' ? 'approved' : 'pending'
-      };
-      
-      // Store password separately (in real app, this would be hashed on backend)
-      const passwords = JSON.parse(localStorage.getItem('passwords') || '{}');
-      passwords[userData.email] = userData.password;
-      localStorage.setItem('passwords', JSON.stringify(passwords));
-      
-      // Add user to users array
-      users.push(newUser);
-      localStorage.setItem('users', JSON.stringify(users));
+        password: userData.password,
+        phone: userData.studentId || '', // Using studentId as phone for now
+        college: userData.college || userData.department || '',
+        year: userData.year || '1'
+      });
       
       setIsLoading(false);
-      return { success: true, message: 'Registration successful!' };
+      return { success: true, message: response.message || 'Registration successful!' };
     } catch (error: any) {
       setIsLoading(false);
+      console.error('Registration error:', error);
       return { success: false, message: error.message || 'Registration failed' };
+    }
+  };
+
+  const registerOrganizer = async (organizerData: { 
+    name: string; 
+    email: string; 
+    password: string; 
+    phone: string; 
+    department: string; 
+    designation: string 
+  }): Promise<{ success: boolean; message: string }> => {
+    setIsLoading(true);
+    
+    try {
+      const response = await organizerAPI.register(organizerData);
+      
+      setIsLoading(false);
+      return { success: true, message: response.message || 'Organizer registration submitted for approval!' };
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error('Organizer registration error:', error);
+      return { success: false, message: error.message || 'Organizer registration failed' };
+    }
+  };
+
+  const registerAdmin = async (adminData: { 
+    name: string; 
+    email: string; 
+    password: string; 
+    phone: string; 
+    department: string; 
+    secretCode: string 
+  }): Promise<{ success: boolean; message: string }> => {
+    setIsLoading(true);
+    
+    try {
+      const response = await adminAPI.register(adminData);
+      
+      setIsLoading(false);
+      return { success: true, message: response.message || 'Admin account created successfully!' };
+    } catch (error: any) {
+      setIsLoading(false);
+      console.error('Admin registration error:', error);
+      return { success: false, message: error.message || 'Admin registration failed' };
     }
   };
 
@@ -154,14 +162,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const updatedUser = { ...user, ...userData };
       setUser(updatedUser);
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      
-      // Update in users array
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const userIndex = users.findIndex((u: any) => u.id === user.id);
-      if (userIndex !== -1) {
-        users[userIndex] = { ...users[userIndex], ...userData };
-        localStorage.setItem('users', JSON.stringify(users));
-      }
     }
   };
 
@@ -169,6 +169,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     login,
     register,
+    registerOrganizer,
+    registerAdmin,
     logout,
     updateUser,
     isLoading,
