@@ -1,7 +1,7 @@
 {
   "name": "event-management-app",
   "version": "0.1.0",
-  "homepage": "https://Shubhamwadhe111.github.io/College-Event-app",
+  "homepage": "https://nexusadmin.yourcollege.edu",
   "private": true,
   "dependencies": {
     "@types/node": "^16.18.126",
