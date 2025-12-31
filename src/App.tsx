@@ -10,6 +10,7 @@ import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import CreateEvent from './pages/CreateEvent';
 import Profile from './pages/Profile';
 import Gallery from './pages/Gallery';
@@ -34,6 +35,7 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
               <Route path="/create-event" element={
                 <ProtectedRoute requiredRole="organizer">
                   <CreateEvent />

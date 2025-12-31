@@ -107,6 +107,9 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <>
+              <Link to="/register" className="btn btn-primary" style={{ marginRight: '0.5rem' }}>
+                Sign Up
+              </Link>
               <Link to="/login" className="btn btn-secondary">
                 Login
               </Link>

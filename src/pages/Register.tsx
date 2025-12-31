@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, User, Mail, IdCard, Lock, GraduationCap } from 'lucide-react';
+import { ArrowRight, Mail, Lock, User, Phone, School } from 'lucide-react';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    studentId: '',
     password: '',
     confirmPassword: '',
-    role: 'student' as 'student' | 'organizer',
+    phone: '',
     college: '',
-    department: '',
-    year: ''
+    userType: 'student' as 'student' | 'organizer'
   });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
   const { register, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -30,10 +27,9 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     // Validation
-    if (!formData.name || !formData.email || !formData.studentId || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all required fields');
       return;
     }
@@ -48,18 +44,17 @@ const Register: React.FC = () => {
       return;
     }
 
-    const { confirmPassword, ...userData } = formData;
-    const result = await register(userData);
-    
+    const result = await register({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+      studentId: formData.phone, // Using phone as studentId for now
+      college: formData.college,
+      role: formData.userType
+    });
+
     if (result.success) {
-      if (formData.role === 'organizer') {
-        setSuccess('Registration successful! Your account is pending admin approval. You will be notified once approved.');
-      } else {
-        setSuccess(result.message + ' Please login to continue.');
-      }
-      setTimeout(() => {
-        navigate('/login');
-      }, 3000);
+      navigate('/dashboard');
     } else {
       setError(result.message);
     }
@@ -69,9 +64,12 @@ const Register: React.FC = () => {
     <div style={{
       minHeight: '100vh',
       background: '#000000',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: '2rem 0'
     }}>
-      <div className="container" style={{ maxWidth: '600px' }}>
+      <div className="container" style={{ maxWidth: '500px' }}>
         <div style={{
           background: 'rgba(255,255,255,0.1)',
           backdropFilter: 'blur(20px)',
@@ -103,13 +101,13 @@ const Register: React.FC = () => {
               color: 'white',
               marginBottom: '0.5rem'
             }}>
-              Create Account
+              Join Nexus
             </h2>
             <p style={{
               color: 'rgba(255,255,255,0.8)',
               fontSize: '1.1rem'
             }}>
-              Join our college event community
+              Create your college event account
             </p>
           </div>
 
@@ -129,258 +127,23 @@ const Register: React.FC = () => {
               </div>
             )}
 
-            {success && (
-              <div style={{
-                background: 'rgba(0,255,0,0.1)',
-                border: '1px solid rgba(0,255,0,0.3)',
-                color: '#4ade80',
-                padding: '1rem',
-                borderRadius: '10px',
-                marginBottom: '1.5rem',
-                textAlign: 'center'
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
               }}>
-                {success}
-              </div>
-            )}
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Full Name *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    placeholder="Enter your full name"
-                    required
-                  />
-                  <User size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Email Address *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    placeholder="Enter your email"
-                    required
-                  />
-                  <Mail size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Student/Staff ID *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="text"
-                    name="studentId"
-                    value={formData.studentId}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    placeholder="Enter your ID"
-                    required
-                  />
-                  <IdCard size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Role *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <select
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    required
-                  >
-                    <option value="student" style={{ background: '#667eea', color: 'white' }}>Student</option>
-                    <option value="organizer" style={{ background: '#667eea', color: 'white' }}>Event Organizer</option>
-                  </select>
-                  <GraduationCap size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  College/University
-                </label>
-                <input
-                  type="text"
-                  name="college"
-                  value={formData.college}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '1rem',
-                    borderRadius: '50px',
-                    border: '2px solid rgba(255,255,255,0.2)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'white',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                  placeholder="Enter college name"
-                />
-              </div>
-
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Department
-                </label>
-                <input
-                  type="text"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '1rem',
-                    borderRadius: '50px',
-                    border: '2px solid rgba(255,255,255,0.2)',
-                    background: 'rgba(255,255,255,0.1)',
-                    color: 'white',
-                    fontSize: '1rem',
-                    outline: 'none',
-                    transition: 'all 0.3s ease'
-                  }}
-                  placeholder="e.g., Computer Science"
-                />
-              </div>
-            </div>
-
-            {formData.role === 'student' && (
-              <div style={{ marginBottom: '1.5rem' }}>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Year of Study
-                </label>
+                Account Type
+              </label>
+              <div style={{ position: 'relative' }}>
                 <select
-                  name="year"
-                  value={formData.year}
+                  name="userType"
+                  value={formData.userType}
                   onChange={handleChange}
                   style={{
                     width: '100%',
-                    padding: '1rem',
+                    padding: '1rem 1rem 1rem 3rem',
                     borderRadius: '50px',
                     border: '2px solid rgba(255,255,255,0.2)',
                     background: 'rgba(255,255,255,0.1)',
@@ -390,94 +153,248 @@ const Register: React.FC = () => {
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  <option value="" style={{ background: '#667eea', color: 'white' }}>Select Year</option>
-                  <option value="1st Year" style={{ background: '#667eea', color: 'white' }}>1st Year</option>
-                  <option value="2nd Year" style={{ background: '#667eea', color: 'white' }}>2nd Year</option>
-                  <option value="3rd Year" style={{ background: '#667eea', color: 'white' }}>3rd Year</option>
-                  <option value="4th Year" style={{ background: '#667eea', color: 'white' }}>4th Year</option>
-                  <option value="Graduate" style={{ background: '#667eea', color: 'white' }}>Graduate</option>
-                  <option value="PhD" style={{ background: '#667eea', color: 'white' }}>PhD</option>
+                  <option value="student" style={{ background: '#333', color: 'white' }}>Student</option>
+                  <option value="organizer" style={{ background: '#333', color: 'white' }}>Event Organizer</option>
                 </select>
+                <User size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
               </div>
-            )}
+            </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Password *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    placeholder="Create password"
-                    required
-                  />
-                  <Lock size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Full Name *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Enter your full name"
+                  required
+                />
+                <User size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
               </div>
+            </div>
 
-              <div>
-                <label style={{
-                  color: 'white',
-                  fontWeight: 600,
-                  marginBottom: '0.5rem',
-                  display: 'block'
-                }}>
-                  Confirm Password *
-                </label>
-                <div style={{ position: 'relative' }}>
-                  <input
-                    type="password"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    style={{
-                      width: '100%',
-                      padding: '1rem 1rem 1rem 3rem',
-                      borderRadius: '50px',
-                      border: '2px solid rgba(255,255,255,0.2)',
-                      background: 'rgba(255,255,255,0.1)',
-                      color: 'white',
-                      fontSize: '1rem',
-                      outline: 'none',
-                      transition: 'all 0.3s ease'
-                    }}
-                    placeholder="Confirm password"
-                    required
-                  />
-                  <Lock size={20} style={{
-                    position: 'absolute',
-                    left: '1rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: 'rgba(255,255,255,0.7)'
-                  }} />
-                </div>
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Email Address *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Enter your email"
+                  required
+                />
+                <Mail size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Student ID / Phone Number
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Enter your student ID or phone number"
+                />
+                <Phone size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                College/Institution
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="text"
+                  name="college"
+                  value={formData.college}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Enter your college name"
+                />
+                <School size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Password *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Create a password"
+                  required
+                />
+                <Lock size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
+              </div>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: '2rem' }}>
+              <label style={{
+                color: 'white',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block'
+              }}>
+                Confirm Password *
+              </label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '1rem 1rem 1rem 3rem',
+                    borderRadius: '50px',
+                    border: '2px solid rgba(255,255,255,0.2)',
+                    background: 'rgba(255,255,255,0.1)',
+                    color: 'white',
+                    fontSize: '1rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease'
+                  }}
+                  placeholder="Confirm your password"
+                  required
+                />
+                <Lock size={20} style={{
+                  position: 'absolute',
+                  left: '1rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  color: 'rgba(255,255,255,0.7)'
+                }} />
               </div>
             </div>
 
@@ -525,12 +442,15 @@ const Register: React.FC = () => {
             <div className="text-center">
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1rem' }}>
                 Already have an account?{' '}
-                <Link to="/login" style={{
-                  color: '#ff6b6b',
-                  textDecoration: 'none',
-                  fontWeight: 600
-                }}>
-                  Sign in here
+                <Link 
+                  to="/login" 
+                  style={{ 
+                    color: '#ff6b6b', 
+                    textDecoration: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  Sign In
                 </Link>
               </p>
             </div>

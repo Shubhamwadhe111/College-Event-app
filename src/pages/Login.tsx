@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, Mail, Lock, User } from 'lucide-react';
 
@@ -260,6 +260,19 @@ const Login: React.FC = () => {
 
             <div className="text-center">
               <p style={{ color: 'rgba(255,255,255,0.8)', marginBottom: '1rem' }}>
+                Don't have an account?{' '}
+                <Link 
+                  to="/register" 
+                  style={{ 
+                    color: '#ff6b6b', 
+                    textDecoration: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>
                 Welcome to College Events Platform
               </p>
             </div>
