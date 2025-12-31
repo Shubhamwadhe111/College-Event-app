@@ -1,7 +1,7 @@
 {
   "name": "nexus-event-management",
   "version": "1.0.0",
-  "homepage": "https://yourusername.github.io/nexus-events",
+  "homepage": "https://shubhamwadhe111.github.io/College-Event-app",
   "private": true,
   "dependencies": {
     "@types/node": "^16.18.126",
