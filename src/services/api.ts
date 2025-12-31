@@ -1,8 +1,23 @@
-const API_BASE_URL = 'http://localhost:5001/api';
+// Determine API base URL based on environment
+const getApiBaseUrl = () => {
+  // In production (GitHub Pages), use your deployed backend URL
+  if (process.env.NODE_ENV === 'production') {
+    // Replace this with your actual deployed backend URL
+    return 'https://your-backend-url.railway.app/api'; // Update this!
+  }
+  return 'http://localhost:5001/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 // Helper function for API calls
 async function apiCall(endpoint: string, options: RequestInit = {}) {
   try {
+    // If no API_BASE_URL (production without deployed backend), throw error to trigger mock
+    if (!API_BASE_URL) {
+      throw new Error('Backend not deployed');
+    }
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers: {
@@ -20,7 +35,7 @@ async function apiCall(endpoint: string, options: RequestInit = {}) {
     return data;
   } catch (error: any) {
     // Check if it's a network error
-    if (error.message === 'Failed to fetch') {
+    if (error.message === 'Failed to fetch' || error.message === 'Backend not deployed') {
       throw new Error('Cannot connect to server. Make sure the backend is running.');
     }
     throw error;

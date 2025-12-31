@@ -100,14 +100,25 @@ export const mockAPI = {
   shouldUseMock: async () => {
     try {
       // Try to ping the real API
-      const response = await fetch('http://localhost:5001/api/health', {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+      
+      const response = await fetch('http://localhost:5001/api/admin/stats', {
         method: 'GET',
-        timeout: 2000
-      } as any);
-      return !response.ok;
-    } catch (error) {
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      clearTimeout(timeoutId);
+      
+      // If we get any response (even error), the server is running
+      return false; // Use real API
+    } catch (error: any) {
+      console.log('Backend not available, using mock API:', error.message);
       // If we can't reach the real API, use mock
-      return true;
+      return true; // Use mock API
     }
   }
 };
