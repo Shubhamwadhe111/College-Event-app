@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Bell, X, Check, CheckCheck, Trash2 } from 'lucide-react';
+import { Bell, X, CheckCheck, Trash2 } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationContext';
 import { useAuth } from '../contexts/AuthContext';
 

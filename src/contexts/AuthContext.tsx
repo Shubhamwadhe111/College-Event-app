@@ -59,20 +59,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         response = await userAPI.login({ email, password });
       }
       
-      // Transform API response to User interface
+      // The backend now returns a user object that is mostly compatible with the frontend User type.
       const userData: User = {
+        ...response.user,
         id: response.user.id.toString(),
-        name: response.user.name,
-        email: response.user.email,
-        studentId: response.user.student_id || '',
-        role: response.user.role,
-        college: response.user.department || '',
-        department: response.user.department || '',
-        year: response.user.year || '',
-        registeredEvents: [],
-        createdAt: new Date().toISOString(),
-        isApproved: true,
-        approvalStatus: 'approved'
+        registeredEvents: [], // This should be fetched separately.
+        createdAt: response.user.created_at || new Date().toISOString(), // Use backend value if available.
       };
       
       setUser(userData);
@@ -94,8 +86,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         name: userData.name,
         email: userData.email,
         password: userData.password,
-        phone: userData.studentId || '', // Using studentId as phone for now
-        college: userData.college || userData.department || '',
+        studentId: userData.studentId,
+        college: userData.college || '',
         year: userData.year || '1'
       });
       

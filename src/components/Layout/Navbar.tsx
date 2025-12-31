@@ -76,26 +76,6 @@ const Navbar: React.FC = () => {
                   </Link>
                 </li>
               )}
-              {user.role === 'admin' && (
-                <li>
-                  <Link 
-                    to="/admin-panel" 
-                    className={isActive('/admin-panel') ? 'active' : ''}
-                  >
-                    Admin Panel
-                  </Link>
-                </li>
-              )}
-              {user.role === 'superadmin' && (
-                <li>
-                  <Link 
-                    to="/super-admin" 
-                    className={isActive('/super-admin') ? 'active' : ''}
-                  >
-                    Super Admin
-                  </Link>
-                </li>
-              )}
               <li>
                 <Link 
                   to="/profile" 
@@ -129,9 +109,6 @@ const Navbar: React.FC = () => {
             <>
               <Link to="/login" className="btn btn-secondary">
                 Login
-              </Link>
-              <Link to="/register" className="btn btn-primary">
-                Sign Up
               </Link>
             </>
           )}

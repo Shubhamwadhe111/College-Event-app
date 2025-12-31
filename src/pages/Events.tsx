@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEvents } from '../contexts/EventContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, Search, Filter, MapPin, Users, Clock, Eye } from 'lucide-react';
+import { Calendar, Search, Filter, MapPin, Users, Eye } from 'lucide-react';
 
 const Events: React.FC = () => {
   const { events } = useEvents();

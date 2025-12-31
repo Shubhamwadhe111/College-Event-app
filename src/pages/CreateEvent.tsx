@@ -155,8 +155,8 @@ const CreateEvent: React.FC = () => {
       return;
     }
 
-    if (formData.isPaid && (!formData.price || parseFloat(formData.price) < 0)) {
-      setError('Please enter a valid price for paid events');
+    if (formData.isPaid && (isNaN(parseFloat(formData.price)) || parseFloat(formData.price) <= 0)) {
+      setError('Price must be a number greater than 0 for paid events');
       return;
     }
 

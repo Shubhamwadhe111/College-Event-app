@@ -23,7 +23,7 @@ const EventDetails: React.FC = () => {
   const userRegistrations = user ? getUserRegistrations(user.id) : [];
   const isRegistered = userRegistrations.some(reg => reg.eventId === event.id);
   const isEventFull = event.registered >= event.capacity;
-  const registrationProgress = (event.registered / event.capacity) * 100;
+  const registrationProgress = event.capacity > 0 ? (event.registered / event.capacity) * 100 : 0;
 
   const handleRegistration = async () => {
     if (!user) {

@@ -1,14 +1,13 @@
 {
-  "name": "event-management-app",
-  "version": "0.1.0",
-  "homepage": "https://nexusadmin.yourcollege.edu",
+  "name": "nexus-event-management",
+  "version": "1.0.0",
+  "homepage": "https://yourusername.github.io/nexus-events",
   "private": true,
   "dependencies": {
     "@types/node": "^16.18.126",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.1",
-    "@types/react-router-dom": "^5.3.3",
-    "firebase": "^12.5.0",
+    "firebase": "^10.12.2",
     "framer-motion": "^12.23.23",
     "jspdf": "^3.0.3",
     "jspdf-autotable": "^5.0.2",
@@ -25,6 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
   },
   "eslintConfig": {

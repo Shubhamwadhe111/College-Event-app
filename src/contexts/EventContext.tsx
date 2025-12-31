@@ -35,38 +35,15 @@ interface EventProviderProps {
 
 export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [registrations, setRegistrations] = useState<Registration[]>([]);
+  const [registrations] = useState<Registration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch events from API
   const refreshEvents = async () => {
     try {
       setIsLoading(true);
-      const response = await eventAPI.getAll();
-      
-      // Transform API response to match Event interface
-      const transformedEvents: Event[] = response.map((apiEvent: any) => ({
-        id: apiEvent.event_id.toString(),
-        title: apiEvent.event_name,
-        description: apiEvent.description || '',
-        date: apiEvent.start_date,
-        time: apiEvent.time,
-        location: apiEvent.venue,
-        organizer: apiEvent.organizer_name,
-        organizerId: apiEvent.organizer_id?.toString() || '',
-        category: apiEvent.event_type,
-        capacity: apiEvent.max_participants || 100,
-        registered: apiEvent.registered_count || 0,
-        price: apiEvent.registration_fee || 0,
-        isPaid: (apiEvent.registration_fee || 0) > 0,
-        status: apiEvent.status || 'upcoming',
-        tags: [apiEvent.event_type],
-        imageUrl: '/api/placeholder/400/300',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }));
-      
-      setEvents(transformedEvents);
+      const apiEvents = await eventAPI.getAll();
+      setEvents(apiEvents);
     } catch (error) {
       console.error('Failed to fetch events:', error);
       // Fallback to empty array if API fails
@@ -84,18 +61,25 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       
-      // Transform to API format
       const apiEventData = {
-        event_name: eventData.title,
+        eventName: eventData.title,
+        shortDescription: eventData.shortDescription,
         description: eventData.description,
-        event_type: eventData.category,
-        start_date: eventData.date,
-        end_date: eventData.date, // Same as start date for single-day events
+        eventType: eventData.category,
+        startDate: eventData.date,
+        endDate: eventData.endDate || eventData.date,
         time: eventData.time,
-        venue: eventData.location,
-        registration_fee: eventData.price || 0,
-        max_participants: eventData.capacity,
-        organizer_id: parseInt(eventData.organizerId)
+        venue: eventData.venue,
+        registrationFee: eventData.price,
+        maxParticipants: eventData.capacity,
+        organizerId: parseInt(eventData.organizerId),
+        images: eventData.images,
+        tags: eventData.tags,
+        prizes: eventData.prizes,
+        requirements: eventData.requirements,
+        contactInfo: eventData.contactInfo,
+        paymentInfo: eventData.paymentInfo,
+        socialLinks: eventData.socialLinks,
       };
 
       await eventAPI.create(apiEventData);
@@ -111,13 +95,31 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
   };
 
   const updateEvent = async (id: string, eventData: Partial<Event>): Promise<{ success: boolean; message: string }> => {
-    // For now, return not implemented since we need to add update API endpoint
-    return { success: false, message: 'Event update not implemented yet' };
+    try {
+      setIsLoading(true);
+      await eventAPI.update(id, eventData);
+      await refreshEvents();
+      return { success: true, message: 'Event updated successfully' };
+    } catch (error: any) {
+      console.error('Failed to update event:', error);
+      return { success: false, message: error.message || 'Failed to update event' };
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const deleteEvent = async (id: string): Promise<{ success: boolean; message: string }> => {
-    // For now, return not implemented since we need to add delete API endpoint
-    return { success: false, message: 'Event deletion not implemented yet' };
+    try {
+      setIsLoading(true);
+      await eventAPI.delete(id);
+      await refreshEvents();
+      return { success: true, message: 'Event deleted successfully' };
+    } catch (error: any) {
+      console.error('Failed to delete event:', error);
+      return { success: false, message: error.message || 'Failed to delete event' };
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const registerForEvent = async (eventId: string, userId: string): Promise<{ success: boolean; message: string }> => {
@@ -141,8 +143,23 @@ export const EventProvider: React.FC<EventProviderProps> = ({ children }) => {
   };
 
   const unregisterFromEvent = async (eventId: string, userId: string): Promise<{ success: boolean; message: string }> => {
-    // For now, return not implemented since we need to add unregister API endpoint
-    return { success: false, message: 'Event unregistration not implemented yet' };
+    try {
+      setIsLoading(true);
+      
+      await registrationAPI.unregister({
+        event_id: parseInt(eventId),
+        user_id: parseInt(userId)
+      });
+      
+      await refreshEvents(); // Refresh to get updated registration count
+      
+      return { success: true, message: 'Successfully unregistered from event!' };
+    } catch (error: any) {
+      console.error('Failed to unregister from event:', error);
+      return { success: false, message: error.message || 'Failed to unregister from event' };
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const getEventById = (id: string): Event | undefined => {

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { User, Event } from '../types';
-import { Shield, Users, Calendar, Trash2, CheckCircle, XCircle, RefreshCw, Search, Download, Edit, Eye, Filter, BarChart3 } from 'lucide-react';
+import { Shield, Users, Calendar, Trash2, CheckCircle, XCircle, RefreshCw, Search, Download, Eye, BarChart3 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { exportUsersToPDF, exportOrganizersToPDF } from '../utils/pdfExport';
+import { adminAPI } from '../services/api';
 
 const AdminPanel: React.FC = () => {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ const AdminPanel: React.FC = () => {
   const [showUserModal, setShowUserModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'approved' | 'pending'>('all');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -27,80 +29,85 @@ const AdminPanel: React.FC = () => {
     loadData();
   }, [user, navigate]);
 
-  const loadData = () => {
-    const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
-    const storedEvents = JSON.parse(localStorage.getItem('events') || '[]');
-    setUsers(storedUsers);
-    setEvents(storedEvents);
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const [usersData, eventsData] = await Promise.all([
+        adminAPI.getUsers(),
+        adminAPI.getEvents(),
+      ]);
+      setUsers(usersData);
+      setEvents(eventsData);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to load admin data');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const deleteUser = (userId: string) => {
+  const deleteUser = async (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      const updated = users.filter(u => u.id !== userId);
-      setUsers(updated);
-      localStorage.setItem('users', JSON.stringify(updated));
-      toast.success('User deleted successfully');
+      try {
+        await adminAPI.deleteUser(userId);
+        toast.success('User deleted successfully');
+        loadData();
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to delete user');
+      }
     }
   };
 
-  const deleteEvent = (eventId: string) => {
+  const deleteEvent = async (eventId: string) => {
     if (window.confirm('Are you sure you want to delete this event?')) {
-      const updated = events.filter(e => e.id !== eventId);
-      setEvents(updated);
-      localStorage.setItem('events', JSON.stringify(updated));
-      toast.success('Event deleted successfully');
+      try {
+        await adminAPI.deleteEvent(eventId);
+        toast.success('Event deleted successfully');
+        loadData();
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to delete event');
+      }
     }
   };
 
-  const approveOrganizer = (userId: string, approve: boolean) => {
-    const organizer = users.find(u => u.id === userId);
-    const updated = users.map(u =>
-      u.id === userId ? { ...u, isApproved: approve, approvalStatus: approve ? 'approved' as const : 'rejected' as const } : u
-    );
-    setUsers(updated);
-    localStorage.setItem('users', JSON.stringify(updated));
-    
-    // Send notification to organizer
-    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
-    const newNotification = {
-      id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
-      userId: userId,
-      type: approve ? 'success' : 'warning',
-      title: approve ? '✅ Account Approved!' : '❌ Account Rejected',
-      message: approve 
-        ? 'Your organizer account has been approved! You can now create events.'
-        : 'Your organizer account application was not approved. Please contact admin for more information.',
-      link: approve ? '/create-event' : undefined,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-    notifications.unshift(newNotification);
-    localStorage.setItem('notifications', JSON.stringify(notifications));
-    window.dispatchEvent(new StorageEvent('storage'));
-    
-    toast.success(approve ? 'Organizer approved!' : 'Organizer rejected');
+  const approveOrganizer = async (organizerId: string, approve: boolean) => {
+    try {
+        const action = approve ? 'approve' : 'reject';
+        if(user){
+            await adminAPI.approveOrganizer(parseInt(organizerId), action, parseInt(user.id));
+            toast.success(`Organizer ${action}d successfully`);
+            loadData();
+        }
+    } catch (error: any) {
+        toast.error(error.message || 'Failed to update organizer status');
+    }
   };
 
-  const changeUserRole = (userId: string, newRole: 'student' | 'organizer' | 'admin') => {
-    const updated = users.map(u =>
-      u.id === userId ? { ...u, role: newRole } : u
-    );
-    setUsers(updated);
-    localStorage.setItem('users', JSON.stringify(updated));
-    toast.success(`Role changed to ${newRole}`);
+  const changeUserRole = async (userId: string, newRole: 'student' | 'organizer' | 'admin') => {
+      if (window.confirm(`Are you sure you want to change this user's role to ${newRole}?`)) {
+        try {
+            await adminAPI.changeUserRole(userId, newRole);
+            toast.success('User role updated successfully');
+            loadData();
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to change user role');
+        }
+      }
   };
 
-  const bulkDeleteUsers = () => {
+  const bulkDeleteUsers = async () => {
     if (selectedUsers.length === 0) {
       toast.error('No users selected');
       return;
     }
     if (window.confirm(`Delete ${selectedUsers.length} selected users?`)) {
-      const updated = users.filter(u => !selectedUsers.includes(u.id));
-      setUsers(updated);
-      localStorage.setItem('users', JSON.stringify(updated));
-      setSelectedUsers([]);
-      toast.success(`${selectedUsers.length} users deleted`);
+        try {
+            await Promise.all(selectedUsers.map(id => adminAPI.deleteUser(id)));
+            toast.success(`${selectedUsers.length} users deleted`);
+            setSelectedUsers([]);
+            loadData();
+        } catch (error: any) {
+            toast.error(error.message || 'Failed to delete users');
+        }
     }
   };
 
@@ -123,7 +130,7 @@ const AdminPanel: React.FC = () => {
 
   const exportOrganizers = () => {
     const organizers = users.filter(u => u.role === 'organizer');
-    exportOrganizersToPDF(organizers);
+    exportOrganizersToPDF(organizers as any);
     toast.success('Organizers exported to PDF');
   };
 
@@ -134,23 +141,23 @@ const AdminPanel: React.FC = () => {
 
   const students = users.filter(u => u.role === 'student');
   const organizers = users.filter(u => u.role === 'organizer');
-  const pendingOrganizers = organizers.filter(o => !o.isApproved);
-  const approvedOrganizers = organizers.filter(o => o.isApproved);
+  const pendingOrganizers = organizers.filter(o => o.approvalStatus === 'pending');
+  const approvedOrganizers = organizers.filter(o => o.approvalStatus === 'approved');
 
-  // Filtered data based on search
+  // Client-side filtering for now. For larger datasets, this should be done on the backend.
   const filteredStudents = students.filter(u =>
     u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.studentId.toLowerCase().includes(searchTerm.toLowerCase())
+    (u.studentId && u.studentId.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const filteredOrganizers = organizers.filter(u => {
     const matchesSearch = u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.studentId.toLowerCase().includes(searchTerm.toLowerCase());
+      (u.studentId && u.studentId.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    if (filterStatus === 'approved') return matchesSearch && u.isApproved;
-    if (filterStatus === 'pending') return matchesSearch && !u.isApproved;
+    if (filterStatus === 'approved') return matchesSearch && u.approvalStatus === 'approved';
+    if (filterStatus === 'pending') return matchesSearch && u.approvalStatus === 'pending';
     return matchesSearch;
   });
 
@@ -159,7 +166,7 @@ const AdminPanel: React.FC = () => {
     e.organizer.toLowerCase().includes(searchTerm.toLowerCase()) ||
     e.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
+  
   return (
     <div style={{
       minHeight: '100vh',
@@ -668,7 +675,7 @@ const AdminPanel: React.FC = () => {
               <div className="backdrop-blur-sm bg-white/10 border border-white/20 p-6 rounded-xl">
                 <p className="text-white/80 text-sm">Students</p>
                 <p className="text-4xl font-bold text-white mt-2">{students.length}</p>
-                <p className="text-white/60 text-xs mt-1">{((students.length / users.length) * 100).toFixed(1)}% of total</p>
+                <p className="text-white/60 text-xs mt-1">{users.length > 0 ? ((students.length / users.length) * 100).toFixed(1) : 0}% of total</p>
               </div>
               <div className="backdrop-blur-sm bg-white/10 border border-white/20 p-6 rounded-xl">
                 <p className="text-white/80 text-sm">Organizers</p>

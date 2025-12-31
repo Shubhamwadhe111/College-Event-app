@@ -15,9 +15,11 @@ const EventStatistics: React.FC<EventStatisticsProps> = ({ events }) => {
   const upcomingEvents = events.filter(e => e.status === 'upcoming').length;
   const completedEvents = events.filter(e => e.status === 'completed').length;
   
-  const mostPopularEvent = events.reduce((max, event) => 
-    event.registered > (max?.registered || 0) ? event : max
-  , events[0]);
+  const mostPopularEvent = events.length > 0
+    ? events.reduce((max, event) => 
+        event.registered > (max?.registered || 0) ? event : max, 
+      events[0])
+    : null;
 
   const stats = [
     {
@@ -117,7 +119,7 @@ const EventStatistics: React.FC<EventStatisticsProps> = ({ events }) => {
                 {mostPopularEvent.registered} registrations
               </div>
               <div className="text-xs text-gray-400">
-                {Math.round((mostPopularEvent.registered / mostPopularEvent.capacity) * 100)}% capacity filled
+                {mostPopularEvent.capacity > 0 ? Math.round((mostPopularEvent.registered / mostPopularEvent.capacity) * 100) : 0}% capacity filled
               </div>
             </div>
           </div>

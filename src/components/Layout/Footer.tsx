@@ -76,18 +76,6 @@ const Footer: React.FC = () => {
                     Login
                   </Link>
                 </li>
-                <li>
-                  <Link to="/register" className="text-white/80 hover:text-emerald-300 transition-colors duration-300 text-sm flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-400 rounded-full"></span>
-                    Register
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/admin-register" className="text-white/80 hover:text-emerald-300 transition-colors duration-300 text-sm flex items-center gap-2">
-                    <span className="w-1 h-1 bg-emerald-400 rounded-full"></span>
-                    Admin Panel
-                  </Link>
-                </li>
               </ul>
             </div>
           </div>

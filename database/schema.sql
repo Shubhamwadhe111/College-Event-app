@@ -52,6 +52,7 @@ CREATE TABLE Admins (
 -- ============================================================================
 CREATE TABLE Students (
     student_id INT PRIMARY KEY AUTO_INCREMENT,
+    studentId VARCHAR(50) UNIQUE,
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     phone VARCHAR(15),
@@ -62,7 +63,8 @@ CREATE TABLE Students (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),
     INDEX idx_department (department),
-    INDEX idx_year (year)
+    INDEX idx_year (year),
+    INDEX idx_studentId (studentId)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ============================================================================
@@ -116,6 +118,7 @@ INSERT INTO Admin_Settings (setting_key, setting_value, description) VALUES
 CREATE TABLE Events (
     event_id INT PRIMARY KEY AUTO_INCREMENT,
     event_name VARCHAR(200) NOT NULL,
+    short_description VARCHAR(255),
     event_type ENUM('technical', 'cultural', 'sports', 'workshop', 'seminar', 'competition') NOT NULL,
     description TEXT,
     start_date DATE NOT NULL,
@@ -127,6 +130,13 @@ CREATE TABLE Events (
     max_participants INT DEFAULT NULL,
     approval_status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
     status ENUM('upcoming', 'ongoing', 'completed', 'cancelled') NOT NULL DEFAULT 'upcoming',
+    images TEXT,
+    tags TEXT,
+    prizes TEXT,
+    requirements TEXT,
+    contact_info TEXT,
+    payment_info TEXT,
+    social_links TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (organizer_id) REFERENCES Organizers(organizer_id) ON DELETE CASCADE,

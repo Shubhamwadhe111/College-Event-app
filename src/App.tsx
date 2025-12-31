@@ -10,12 +10,8 @@ import Events from './pages/Events';
 import EventDetails from './pages/EventDetails';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import CreateEvent from './pages/CreateEvent';
 import Profile from './pages/Profile';
-import AdminPanel from './pages/AdminPanel';
-import AdminRegister from './pages/AdminRegister';
-import SuperAdminPanel from './pages/SuperAdminPanel';
 import Gallery from './pages/Gallery';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -38,8 +34,6 @@ function App() {
                 </ProtectedRoute>
               } />
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/admin-register" element={<AdminRegister />} />
               <Route path="/create-event" element={
                 <ProtectedRoute requiredRole="organizer">
                   <CreateEvent />
@@ -48,21 +42,6 @@ function App() {
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
-                </ProtectedRoute>
-              } />
-              <Route path="/admin-panel" element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminPanel />
-                </ProtectedRoute>
-              } />
-              <Route path="/super-admin" element={
-                <ProtectedRoute requiredRole="superadmin">
-                  <SuperAdminPanel />
-                </ProtectedRoute>
-              } />
-              <Route path="/nexusadmin" element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminPanel />
                 </ProtectedRoute>
               } />
               </Routes>
