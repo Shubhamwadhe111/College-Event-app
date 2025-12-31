@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
 import { userAPI, organizerAPI, adminAPI } from '../services/api';
-import { mockAPI } from '../services/mockApi';
 
 interface AuthContextType {
   user: User | null;
@@ -51,46 +50,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       let response;
       
-      // Check if we should use mock API
-      const useMock = await mockAPI.shouldUseMock();
-      
-      if (useMock) {
-        // Use mock API for demo
-        response = await mockAPI.login({ email, password });
-        const userData: User = {
-          ...response.user,
-          id: response.user.id.toString(),
-          registeredEvents: response.user.registeredEvents || [],
-          createdAt: response.user.createdAt || new Date().toISOString(),
-        };
-        
-        setUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        setIsLoading(false);
-        return { success: true, message: response.message || 'Login successful!' };
+      // Try different login endpoints based on user type
+      if (userType === 'admin') {
+        response = await adminAPI.login({ email, password });
+      } else if (userType === 'organizer') {
+        response = await organizerAPI.login({ email, password });
       } else {
-        // Try different login endpoints based on user type
-        if (userType === 'admin') {
-          response = await adminAPI.login({ email, password });
-        } else if (userType === 'organizer') {
-          response = await organizerAPI.login({ email, password });
-        } else {
-          response = await userAPI.login({ email, password });
-        }
-        
-        // The backend now returns a user object that is mostly compatible with the frontend User type.
-        const userData: User = {
-          ...response.user,
-          id: response.user.id.toString(),
-          registeredEvents: [], // This should be fetched separately.
-          createdAt: response.user.created_at || new Date().toISOString(), // Use backend value if available.
-        };
-        
-        setUser(userData);
-        localStorage.setItem('currentUser', JSON.stringify(userData));
-        setIsLoading(false);
-        return { success: true, message: response.message || 'Login successful!' };
+        response = await userAPI.login({ email, password });
       }
+      
+      // The backend now returns a user object that is mostly compatible with the frontend User type.
+      const userData: User = {
+        ...response.user,
+        id: response.user.id.toString(),
+        registeredEvents: [], // This should be fetched separately.
+        createdAt: response.user.created_at || new Date().toISOString(), // Use backend value if available.
+      };
+      
+      setUser(userData);
+      localStorage.setItem('currentUser', JSON.stringify(userData));
+      setIsLoading(false);
+      return { success: true, message: response.message || 'Login successful!' };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Login error:', error);
@@ -102,51 +82,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Check if we should use mock API
-      const useMock = await mockAPI.shouldUseMock();
+      // Use real API only
+      const response = await userAPI.register({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        studentId: userData.studentId,
+        college: userData.college || '',
+        year: userData.year || '1'
+      });
       
-      if (useMock) {
-        // Use mock API for demo
-        const response = await mockAPI.register({
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          studentId: userData.studentId,
-          college: userData.college || '',
-          role: userData.role as 'student' | 'organizer'
-        });
-        
-        // Auto-login after successful registration
-        const loginResponse = await mockAPI.login({
-          email: userData.email,
-          password: userData.password
-        });
-        
-        const userDataForState: User = {
-          ...loginResponse.user,
-          id: loginResponse.user.id.toString(),
-          registeredEvents: loginResponse.user.registeredEvents || [],
-          createdAt: loginResponse.user.createdAt || new Date().toISOString(),
-        };
-        
-        setUser(userDataForState);
-        localStorage.setItem('currentUser', JSON.stringify(userDataForState));
-        setIsLoading(false);
-        return { success: true, message: response.message || 'Registration successful!' };
-      } else {
-        // Use real API
-        const response = await userAPI.register({
-          name: userData.name,
-          email: userData.email,
-          password: userData.password,
-          studentId: userData.studentId,
-          college: userData.college || '',
-          year: userData.year || '1'
-        });
-        
-        setIsLoading(false);
-        return { success: true, message: response.message || 'Registration successful!' };
-      }
+      setIsLoading(false);
+      return { success: true, message: response.message || 'Registration successful!' };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Registration error:', error);

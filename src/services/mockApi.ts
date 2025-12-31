@@ -5,32 +5,9 @@ import { User } from '../types';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Mock data storage (in real app, this would be a database)
-const mockUsers: Array<User & { password: string }> = [
-  {
-    id: '1',
-    name: 'Demo Student',
-    email: 'student@demo.com',
-    password: 'password123',
-    studentId: '12345',
-    role: 'student',
-    registeredEvents: [],
-    createdAt: new Date().toISOString(),
-    college: 'Demo College'
-  },
-  {
-    id: '2',
-    name: 'Demo Organizer',
-    email: 'organizer@demo.com',
-    password: 'password123',
-    studentId: '67890',
-    role: 'organizer',
-    registeredEvents: [],
-    createdAt: new Date().toISOString(),
-    college: 'Demo College'
-  }
-];
+const mockUsers: Array<User & { password: string }> = [];
 
-let nextUserId = 3;
+let nextUserId = 1;
 
 export const mockAPI = {
   // User registration
