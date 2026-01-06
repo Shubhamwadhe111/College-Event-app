@@ -22,13 +22,18 @@ const Login: React.FC = () => {
 
     const result = await login(email, password, userType);
     if (result.success) {
-      // Redirect based on user type
-      if (userType === 'admin') {
-        navigate('/admin-panel');
-      } else if (userType === 'organizer') {
-        navigate('/dashboard');
+      // Use the redirectTo URL from the login result
+      if (result.redirectTo) {
+        navigate(result.redirectTo);
       } else {
-        navigate('/dashboard');
+        // Fallback redirect logic
+        if (userType === 'admin') {
+          navigate('/nexusadmin/dashboard');
+        } else if (userType === 'organizer') {
+          navigate('/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } else {
       setError(result.message);

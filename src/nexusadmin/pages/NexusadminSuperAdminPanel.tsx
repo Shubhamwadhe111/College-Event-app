@@ -13,9 +13,9 @@ const NexusadminSuperAdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'admins' | 'events' | 'analytics'>('overview');
 
   useEffect(() => {
-    if (!user || user.role !== 'superadmin') {
+    if (!user || user.role !== 'master') {
       navigate('/login');
-      toast.error('Super Admin access required');
+      toast.error('Master Admin access required');
       return;
     }
     loadData();
@@ -218,7 +218,7 @@ const NexusadminSuperAdminPanel: React.FC = () => {
                       <td className="py-4 px-4 text-gray-300">{u.email}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          u.role === 'superadmin' ? 'bg-yellow-500/20 text-yellow-300' :
+                          u.role === 'master' ? 'bg-yellow-500/20 text-yellow-300' :
                           u.role === 'admin' ? 'bg-purple-500/20 text-purple-300' :
                           u.role === 'organizer' ? 'bg-emerald-500/20 text-emerald-300' :
                           'bg-blue-500/20 text-blue-300'
@@ -237,7 +237,7 @@ const NexusadminSuperAdminPanel: React.FC = () => {
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex gap-2">
-                          {u.role !== 'superadmin' && u.role !== 'admin' && (
+                          {u.role !== 'master' && u.role !== 'admin' && (
                             <button
                               onClick={() => makeAdmin(u.id)}
                               className="text-purple-400 hover:text-purple-300 px-3 py-1 hover:bg-purple-500/10 rounded text-sm"
@@ -253,7 +253,7 @@ const NexusadminSuperAdminPanel: React.FC = () => {
                               Remove Admin
                             </button>
                           )}
-                          {u.role !== 'superadmin' && (
+                          {u.role !== 'master' && (
                             <button
                               onClick={() => deleteUser(u.id)}
                               className="text-red-400 hover:text-red-300 px-3 py-1 hover:bg-red-500/10 rounded text-sm"

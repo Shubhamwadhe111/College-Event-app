@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Navigation Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #0a0a0a;
+            color: white;
+        }
+        
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem;
+            z-index: 9999;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .logo {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #10b981, #14b8a6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+        }
+        
+        .menu-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid rgba(16, 185, 129, 0.6);
+            border-radius: 12px;
+            cursor: pointer;
+            color: #10b981;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-button.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(20, 184, 166, 0.3));
+            color: white;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 300px;
+            max-width: 80vw;
+            height: 100vh;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%);
+            z-index: 10000;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+        
+        .sidebar.open {
+            right: 0;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9998;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .close-button {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid rgba(239, 68, 68, 0.5);
+            border-radius: 10px;
+            color: white;
+            padding: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .nav-items {
+            padding: 1rem;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.25rem;
+            margin-bottom: 0.75rem;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.3), rgba(20, 184, 166, 0.25));
+            color: white;
+        }
+        
+        .content {
+            margin-top: 70px;
+            padding: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .menu-button {
+                display: flex;
+            }
+        }
+        
+        @media (min-width: 769px) {
+            .menu-button {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="brand">
+            <div class="logo">🛡️</div>
+            <span>NEXUS ADMIN</span>
+        </div>
+        <button class="menu-button" id="menuButton">
+            <span id="menuIcon">☰</span>
+        </button>
+    </nav>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="brand">
+                <div class="logo">🛡️</div>
+                <div>
+                    <div>NEXUS ADMIN</div>
+                    <div style="font-size: 0.75rem; color: rgba(16, 185, 129, 0.9);">Mobile Menu</div>
+                </div>
+            </div>
+            <button class="close-button" id="closeButton">✕</button>
+        </div>
+        
+        <div class="nav-items">
+            <a href="#" class="nav-item">1. Home</a>
+            <a href="#" class="nav-item">2. Dashboard</a>
+            <a href="#" class="nav-item">3. Events</a>
+            <a href="#" class="nav-item">4. Organizers</a>
+            <a href="#" class="nav-item">5. Approvals</a>
+            <a href="#" class="nav-item">6. Analytics</a>
+            <a href="#" class="nav-item">7. Notifications</a>
+            <a href="#" class="nav-item">8. Settings</a>
+            <a href="#" class="nav-item">9. Help</a>
+        </div>
+    </div>
+    
+    <div class="content">
+        <h1>Mobile Navigation Test</h1>
+        <p>This is a test page to verify the mobile sidebar navigation is working correctly.</p>
+        <p>On mobile devices (screen width ≤ 768px), you should see a hamburger menu button in the top right.</p>
+        <p>Clicking it should open a sidebar that slides in from the right side with all 9 navigation options.</p>
+        
+        <h2>Instructions:</h2>
+        <ol>
+            <li>Resize your browser window to mobile size (≤ 768px wide) or use mobile device</li>
+            <li>Click the hamburger menu button (☰) in the top right</li>
+            <li>Verify the sidebar slides in from the right</li>
+            <li>Verify all 9 navigation options are visible</li>
+            <li>Click the overlay or close button (✕) to close</li>
+        </ol>
+    </div>
+    
+    <script>
+        const menuButton = document.getElementById('menuButton');
+        const closeButton = document.getElementById('closeButton');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const menuIcon = document.getElementById('menuIcon');
+        
+        let isOpen = false;
+        
+        function openMenu() {
+            isOpen = true;
+            sidebar.classList.add('open');
+            overlay.classList.add('show');
+            menuButton.classList.add('active');
+            menuIcon.textContent = '✕';
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeMenu() {
+            isOpen = false;
+            sidebar.classList.remove('open');
+            overlay.classList.remove('show');
+            menuButton.classList.remove('active');
+            menuIcon.textContent = '☰';
+            document.body.style.overflow = '';
+        }
+        
+        menuButton.addEventListener('click', () => {
+            if (isOpen) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
+        });
+        
+        closeButton.addEventListener('click', closeMenu);
+        overlay.addEventListener('click', closeMenu);
+        
+        // Close menu when clicking nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', closeMenu);
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768 && isOpen) {
+                closeMenu();
+            }
+        });
+    </script>
+</body>
+</html>

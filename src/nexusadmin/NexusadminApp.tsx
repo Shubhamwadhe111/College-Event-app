@@ -1,33 +1,78 @@
-import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import NexusadminLayout from './components/NexusadminLayout';
+import { Routes, Route } from 'react-router-dom';
+import NexusadminMainLayout from './components/NexusadminMainLayout';
+import AdminHomePage from './pages/AdminHomePage';
 import NexusadminLogin from './pages/NexusadminLogin';
-import NexusadminDashboard from './pages/NexusadminDashboard';
-import NexusadminUsers from './pages/NexusadminUsers';
-import NexusadminEvents from './pages/NexusadminEvents';
-import NexusadminSettings from './pages/NexusadminSettings';
-import NexusadminAdminPanel from './pages/AdminPanel';
-import NexusadminSuperAdminPanel from './pages/NexusadminSuperAdminPanel';
+import NexusadminRegister from './pages/NexusadminRegister';
+import EnhancedAdminDashboard from './pages/EnhancedAdminDashboard';
+import EnhancedEventsPage from './pages/EnhancedEventsPage';
+import EnhancedOrganizersPage from './pages/EnhancedOrganizersPage';
+import EnhancedApprovalsPage from './pages/EnhancedApprovalsPage';
+import EnhancedAnalyticsPage from './pages/EnhancedAnalyticsPage';
+import EnhancedNotificationsPage from './pages/EnhancedNotificationsPage';
+import EnhancedSettingsPage from './pages/EnhancedSettingsPage';
+import EnhancedHelpPage from './pages/EnhancedHelpPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 function NexusadminApp() {
   return (
     <div className="nexusadmin-app">
       <Routes>
-        <Route path="/login" element={<NexusadminLogin />} />
+        {/* Public routes with main layout */}
         <Route path="/" element={
+          <NexusadminMainLayout>
+            <AdminHomePage />
+          </NexusadminMainLayout>
+        } />
+        <Route path="/login" element={
+          <NexusadminMainLayout>
+            <NexusadminLogin />
+          </NexusadminMainLayout>
+        } />
+        <Route path="/register" element={
+          <NexusadminMainLayout>
+            <NexusadminRegister />
+          </NexusadminMainLayout>
+        } />
+        
+        {/* Protected admin routes with enhanced pages */}
+        <Route path="/dashboard" element={
           <ProtectedRoute requiredRole="admin">
-            <NexusadminLayout>
-              <Routes>
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="/dashboard" element={<NexusadminDashboard />} />
-                <Route path="/users" element={<NexusadminUsers />} />
-                <Route path="/events" element={<NexusadminEvents />} />
-                <Route path="/settings" element={<NexusadminSettings />} />
-                <Route path="/admin-panel" element={<NexusadminAdminPanel />} />
-                <Route path="/super-admin" element={<NexusadminSuperAdminPanel />} />
-              </Routes>
-            </NexusadminLayout>
+            <EnhancedAdminDashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/events" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedEventsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/organizers" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedOrganizersPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/approvals" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedApprovalsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/analytics" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedAnalyticsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/notifications" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedNotificationsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedSettingsPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/help" element={
+          <ProtectedRoute requiredRole="admin">
+            <EnhancedHelpPage />
           </ProtectedRoute>
         } />
       </Routes>

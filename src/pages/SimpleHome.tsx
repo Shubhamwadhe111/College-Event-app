@@ -275,36 +275,71 @@ const SimpleHome: React.FC = () => {
                     <ArrowRight size={20} />
                   </Link>
                   
-                  <Link to="/register" className="btn btn-outline-light btn-lg" style={{
-                    border: '3px solid rgba(255,255,255,0.3)',
-                    color: 'white',
-                    padding: '15px 35px',
-                    borderRadius: '50px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    background: 'rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(10px)',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '10px',
-                    transition: 'all 0.3s ease'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                    e.currentTarget.style.borderColor = '#10b981';
-                    e.currentTarget.style.color = '#10b981';
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
-                    e.currentTarget.style.color = 'white';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                  }}
-                  >
-                    <Play size={20} />
-                    Join Now
-                  </Link>
+                  {!user && (
+                    <Link to="/register" className="btn btn-outline-light btn-lg" style={{
+                      border: '3px solid rgba(255,255,255,0.3)',
+                      color: 'white',
+                      padding: '15px 35px',
+                      borderRadius: '50px',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(10px)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                      e.currentTarget.style.borderColor = '#10b981';
+                      e.currentTarget.style.color = '#10b981';
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                    >
+                      <Play size={20} />
+                      Join Now
+                    </Link>
+                  )}
+                  
+                  {user && (
+                    <Link to="/dashboard" className="btn btn-outline-light btn-lg" style={{
+                      border: '3px solid rgba(255,255,255,0.3)',
+                      color: 'white',
+                      padding: '15px 35px',
+                      borderRadius: '50px',
+                      fontWeight: 700,
+                      textDecoration: 'none',
+                      background: 'rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(10px)',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      transition: 'all 0.3s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                      e.currentTarget.style.borderColor = '#10b981';
+                      e.currentTarget.style.color = '#10b981';
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                      e.currentTarget.style.color = 'white';
+                      e.currentTarget.style.transform = 'translateY(0)';
+                    }}
+                    >
+                      <Users size={20} />
+                      My Dashboard
+                    </Link>
+                  )}
                 </div>
               </div>
             </div>
@@ -1233,7 +1268,7 @@ const SimpleHome: React.FC = () => {
                 </Link>
               </>
             )}
-            {user && (
+            {user?.role === 'organizer' && (
               <Link to="/create-event" className="btn btn-primary" style={{
                 background: 'linear-gradient(45deg, #ed8936, #f59e0b)',
                 border: 'none',
@@ -1244,6 +1279,32 @@ const SimpleHome: React.FC = () => {
                 color: 'white'
               }}>
                 Create Event
+              </Link>
+            )}
+            {user?.role === 'student' && (
+              <Link to="/events" className="btn btn-primary" style={{
+                background: 'linear-gradient(45deg, #ed8936, #f59e0b)',
+                border: 'none',
+                padding: '12px 30px',
+                borderRadius: '50px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                color: 'white'
+              }}>
+                Browse Events
+              </Link>
+            )}
+            {user?.role === 'admin' && (
+              <Link to="/admin-panel" className="btn btn-primary" style={{
+                background: 'linear-gradient(45deg, #ed8936, #f59e0b)',
+                border: 'none',
+                padding: '12px 30px',
+                borderRadius: '50px',
+                fontWeight: 600,
+                textDecoration: 'none',
+                color: 'white'
+              }}>
+                Admin Panel
               </Link>
             )}
           </div>

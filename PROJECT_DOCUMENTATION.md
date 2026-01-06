@@ -73,7 +73,7 @@ The core data structures of the application are defined in `src/types/index.ts`:
       id: string;
       name: string;
       email: string;
-      role: 'student' | 'organizer' | 'admin' | 'superadmin';
+      role: 'student' | 'organizer' | 'admin' | 'master';
       // ... and other properties like college, department, etc.
     }
     ```

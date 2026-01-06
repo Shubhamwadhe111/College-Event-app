@@ -1,37 +1,53 @@
-// Determine API base URL based on environment
-const getApiBaseUrl = () => {
-  // Always try to use real backend first
-  return 'http://localhost:5001/api';
-};
+import { API_CONFIG, checkAPIConnection, retryRequest } from '../config/api.config';
 
-const API_BASE_URL = getApiBaseUrl();
-
-// Helper function for API calls
+// Helper function for API calls with proper error handling and retry mechanism
 async function apiCall(endpoint: string, options: RequestInit = {}) {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+  const url = `${API_CONFIG.BASE_URL}${endpoint}`;
+  
+  const requestFn = () => fetch(url, {
+    ...options,
+    headers: {
+      ...API_CONFIG.DEFAULT_HEADERS,
+      ...options.headers,
+    },
+    signal: AbortSignal.timeout(API_CONFIG.TIMEOUT)
+  });
 
+  try {
+    console.log(`🔗 API Call: ${options.method || 'GET'} ${url}`);
+    
+    const response = await retryRequest(requestFn);
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(data.error || 'API request failed');
+      throw new Error(data.error || `API request failed with status: ${response.status}`);
     }
 
+    console.log('✅ API call successful');
     return data;
   } catch (error: any) {
-    // Check if it's a network error
-    if (error.message === 'Failed to fetch') {
-      throw new Error('Cannot connect to server. Make sure the backend is running.');
+    console.error(`❌ API call failed for ${url}:`, error.message);
+    
+    if (error.name === 'TimeoutError') {
+      throw new Error('Request timeout. Please check your connection and try again.');
     }
+    
+    if (error.message === 'Failed to fetch' || error.name === 'TypeError') {
+      throw new Error('Cannot connect to server. Make sure the backend is running on port 5001.');
+    }
+    
     throw error;
   }
 }
+
+// Test API connection
+export const testAPI = {
+  health: async () => {
+    return apiCall(API_CONFIG.ENDPOINTS.HEALTH);
+  },
+  
+  checkConnection: checkAPIConnection
+};
 
 // User API (Students)
 export const userAPI = {
@@ -207,6 +223,100 @@ export const adminAPI = {
     return apiCall(`/users/${userId}/role`, {
       method: 'PUT',
       body: JSON.stringify({ role: newRole }),
+    });
+  },
+};
+
+// College API (for master admin)
+export const collegeAPI = {
+  getAll: async () => {
+    return apiCall('/colleges');
+  },
+
+  create: async (collegeData: {
+    name: string;
+    location: string;
+    email: string;
+    phone: string;
+    website: string;
+  }) => {
+    return apiCall('/colleges', {
+      method: 'POST',
+      body: JSON.stringify(collegeData),
+    });
+  },
+
+  update: async (id: string, collegeData: any) => {
+    return apiCall(`/colleges/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(collegeData),
+    });
+  },
+
+  delete: async (id: string) => {
+    return apiCall(`/colleges/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Admin Management API (for master admin)
+export const adminManagementAPI = {
+  getAll: async () => {
+    return apiCall('/admins');
+  },
+
+  create: async (adminData: {
+    name: string;
+    email: string;
+    phone: string;
+    department: string;
+    role: string;
+    password?: string;
+  }) => {
+    return apiCall('/admins', {
+      method: 'POST',
+      body: JSON.stringify(adminData),
+    });
+  },
+
+  update: async (id: string, adminData: any) => {
+    return apiCall(`/admins/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(adminData),
+    });
+  },
+
+  delete: async (id: string) => {
+    return apiCall(`/admins/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Notification API (for master admin)
+export const notificationAPI = {
+  getAll: async () => {
+    return apiCall('/notifications');
+  },
+
+  create: async (notificationData: {
+    title: string;
+    message: string;
+    type: string;
+    priority: string;
+    category: string;
+    recipients: string[];
+  }) => {
+    return apiCall('/notifications', {
+      method: 'POST',
+      body: JSON.stringify(notificationData),
+    });
+  },
+
+  delete: async (id: string) => {
+    return apiCall(`/notifications/${id}`, {
+      method: 'DELETE',
     });
   },
 };

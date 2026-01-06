@@ -3,8 +3,9 @@ export interface User {
   name: string;
   email: string;
   studentId: string;
-  role: 'student' | 'organizer' | 'admin' | 'superadmin';
+  role: 'student' | 'organizer' | 'admin' | 'master';
   avatar?: string;
+  phone?: string;
   registeredEvents: string[];
   createdAt: string;
   college?: string;

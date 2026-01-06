@@ -1,0 +1,36 @@
+{
+  "name": "Nexus Event Management System",
+  "version": "1.0.0",
+  "services": {
+    "database": {
+      "host": "localhost",
+      "port": 3306,
+      "name": "nexusxrcpit",
+      "required": true
+    },
+    "backend": {
+      "host": "localhost",
+      "port": 5001,
+      "path": "./server",
+      "command": "npm start",
+      "required": true
+    },
+    "frontend": {
+      "host": "localhost",
+      "port": 3000,
+      "path": "./",
+      "command": "npm start",
+      "required": true
+    }
+  },
+  "urls": {
+    "main": "http://localhost:3000/College-Event-app",
+    "admin": "http://localhost:3000/College-Event-app/nexusadmin.html",
+    "api": "http://localhost:5001/api"
+  },
+  "monitoring": {
+    "enabled": true,
+    "interval": 30000,
+    "retryAttempts": 3
+  }
+}

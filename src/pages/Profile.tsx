@@ -101,9 +101,17 @@ const Profile: React.FC = () => {
               <span className={`inline-block px-4 py-2 rounded-full text-sm font-medium ${
                 user.role === 'student' 
                   ? 'bg-blue-500/20 text-blue-200 border border-blue-400/30' 
+                  : user.role === 'admin' || user.role === 'master'
+                  ? 'bg-red-500/20 text-red-200 border border-red-400/30'
                   : 'bg-purple-500/20 text-purple-200 border border-purple-400/30'
               }`}>
-                {user.role === 'student' ? 'Student' : 'Event Organizer'}
+                {user.role === 'student' 
+                  ? 'Student' 
+                  : user.role === 'admin' 
+                  ? 'Administrator' 
+                  : user.role === 'master'
+                  ? 'Master Administrator'
+                  : 'Event Organizer'}
               </span>
 
               <div className="mt-8 pt-6 border-t border-white/20">

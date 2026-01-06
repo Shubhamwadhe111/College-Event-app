@@ -14,7 +14,7 @@ const Register: React.FC = () => {
     userType: 'student' as 'student' | 'organizer'
   });
   const [error, setError] = useState('');
-  const { register, isLoading } = useAuth();
+  const { register, registerOrganizer, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -44,17 +44,38 @@ const Register: React.FC = () => {
       return;
     }
 
-    const result = await register({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      studentId: formData.phone, // Using phone as studentId for now
-      college: formData.college,
-      role: formData.userType
-    });
+    let result;
+
+    if (formData.userType === 'organizer') {
+      // Register as organizer
+      result = await registerOrganizer({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone || '',
+        department: formData.college || 'Not specified',
+        designation: 'Event Organizer'
+      });
+    } else {
+      // Register as student
+      result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        studentId: formData.phone || 'auto-generated',
+        college: formData.college || 'Not specified',
+        role: 'student'
+      });
+    }
 
     if (result.success) {
-      navigate('/dashboard');
+      if (formData.userType === 'organizer') {
+        setError(''); // Clear any errors
+        alert('Organizer registration submitted! Please wait for admin approval before you can login.');
+        navigate('/login');
+      } else {
+        navigate('/dashboard');
+      }
     } else {
       setError(result.message);
     }

@@ -1,40 +1,47 @@
 console.log('--- Starting server.js ---');
 
 const express = require('express');
-const mysql = require('mysql2/promise');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
+// Import database configuration
+const { pool, testConnection } = require('./database');
+
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
-// Database connection pool
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'nexusxrcpit',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-// Test database connection
-pool.getConnection()
-  .then(connection => {
-    console.log('✅ Connected to MySQL database');
-    connection.release();
+// Test database connection on startup
+testConnection()
+  .then((connected) => {
+    if (!connected) {
+      console.error('❌ Failed to connect to database. Exiting...');
+      process.exit(1);
+    }
   })
-  .catch(err => {
-    console.error('❌ Database connection failed. Please check your database credentials and ensure the database server is running.');
-    console.error('Error details:', err);
-    process.exit(1); // Exit the process with an error code
+  .catch((err) => {
+    console.error('❌ Database connection error:', err);
+    process.exit(1);
   });
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    port: PORT 
+  });
+});
 
 // ==================== USER ROUTES ====================
 
@@ -43,21 +50,21 @@ app.post('/api/users/register', async (req, res) => {
   try {
     const { name, email, password, phone, college, year = '1', studentId } = req.body;
     
-    console.log('Registration attempt:', { name, email, phone, college, studentId });
+    console.log('Registration attempt:', { name, email, phone, college, year });
     
-    // Check if user exists
-    const [existing] = await pool.query('SELECT * FROM Students WHERE email = ? OR studentId = ?', [email, studentId]);
+    // Check if user exists (only check email since studentId column doesn't exist)
+    const [existing] = await pool.query('SELECT * FROM Students WHERE email = ?', [email]);
     if (existing.length > 0) {
-      return res.status(400).json({ error: 'Email or Student ID already registered' });
+      return res.status(400).json({ error: 'Email already registered' });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    // Insert user
+    // Insert user (using actual column names from your database)
     const [result] = await pool.query(
-      'INSERT INTO Students (full_name, email, password, phone, department, year, studentId) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, email, hashedPassword, phone || '', college || 'Not specified', year, studentId]
+      'INSERT INTO Students (full_name, email, password, phone, department, year) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, email, hashedPassword, phone || '', college || 'Not specified', year]
     );
 
     console.log('User registered successfully:', result.insertId);
@@ -103,7 +110,7 @@ app.post('/api/users/login', async (req, res) => {
         phone: user.phone,
         department: user.department,
         year: user.year,
-        studentId: user.studentId,
+        studentId: user.student_id, // Use student_id as studentId for frontend compatibility
         role: 'student'
       }
     });
@@ -264,7 +271,7 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
-// Update user role (for superadmin)
+// Update user role (for master admin)
 app.put('/api/users/:id/role', async (req, res) => {
   try {
     const { id } = req.params;
@@ -590,6 +597,299 @@ app.delete('/api/registrations', async (req, res) => {
   }
 });
 
+// ==================== COLLEGE MANAGEMENT ROUTES ====================
+
+// Get all colleges (for master admin)
+app.get('/api/colleges', async (req, res) => {
+  try {
+    // Since we don't have a colleges table, we'll aggregate from organizers
+    const [colleges] = await pool.query(`
+      SELECT 
+        o.department as name,
+        COUNT(DISTINCT o.organizer_id) as admin_count,
+        COUNT(DISTINCT e.event_id) as event_count,
+        'active' as status,
+        MIN(o.created_at) as joined_date,
+        MAX(o.updated_at) as last_activity
+      FROM Organizers o
+      LEFT JOIN Events e ON o.organizer_id = e.organizer_id
+      WHERE o.department IS NOT NULL AND o.department != ''
+      GROUP BY o.department
+      ORDER BY o.department
+    `);
+    
+    // Add mock data for demonstration
+    const mockColleges = [
+      {
+        id: '1',
+        name: 'MIT College of Engineering',
+        location: 'Cambridge, MA',
+        email: 'admin@mit.edu',
+        phone: '+1-617-253-1000',
+        website: 'https://mit.edu',
+        admin_count: 12,
+        event_count: 45,
+        student_count: 11000,
+        status: 'active',
+        joined_date: '2023-01-15',
+        last_activity: '2 hours ago'
+      }
+    ];
+    
+    res.json(mockColleges);
+  } catch (error) {
+    console.error('Get colleges error:', error);
+    res.status(500).json({ error: 'Failed to fetch colleges' });
+  }
+});
+
+// Add college (for master admin)
+app.post('/api/colleges', async (req, res) => {
+  try {
+    const { name, location, email, phone, website } = req.body;
+    
+    // For now, we'll create a placeholder admin for this college
+    const hashedPassword = await bcrypt.hash('defaultPassword123', 10);
+    
+    const [result] = await pool.query(
+      'INSERT INTO Admins (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+      [`${name} Admin`, email, hashedPassword, phone || '', 'event_manager']
+    );
+
+    res.status(201).json({ 
+      message: 'College added successfully',
+      collegeId: result.insertId 
+    });
+  } catch (error) {
+    console.error('Add college error:', error);
+    res.status(500).json({ error: 'Failed to add college' });
+  }
+});
+
+// Update college (for master admin)
+app.put('/api/colleges/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, location, email, phone, website, status } = req.body;
+    
+    // Update admin record (simplified approach)
+    const [result] = await pool.query(
+      'UPDATE Admins SET name = ?, email = ?, phone = ? WHERE admin_id = ?',
+      [name, email, phone, id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'College not found' });
+    }
+
+    res.json({ message: 'College updated successfully' });
+  } catch (error) {
+    console.error('Update college error:', error);
+    res.status(500).json({ error: 'Failed to update college' });
+  }
+});
+
+// Delete college (for master admin)
+app.delete('/api/colleges/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [result] = await pool.query('DELETE FROM Admins WHERE admin_id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'College not found' });
+    }
+
+    res.json({ message: 'College deleted successfully' });
+  } catch (error) {
+    console.error('Delete college error:', error);
+    res.status(500).json({ error: 'Failed to delete college' });
+  }
+});
+
+// ==================== ADMIN MANAGEMENT ROUTES ====================
+
+// Get all admins (for master admin)
+app.get('/api/admins', async (req, res) => {
+  try {
+    const [admins] = await pool.query(`
+      SELECT 
+        admin_id as id,
+        name,
+        email,
+        phone,
+        role,
+        'Computer Science' as department,
+        'active' as status,
+        0 as events_managed,
+        last_login,
+        created_at as joined_date
+      FROM Admins
+      ORDER BY created_at DESC
+    `);
+    
+    res.json(admins);
+  } catch (error) {
+    console.error('Get admins error:', error);
+    res.status(500).json({ error: 'Failed to fetch admins' });
+  }
+});
+
+// Add admin (for master admin)
+app.post('/api/admins', async (req, res) => {
+  try {
+    const { name, email, phone, department, role, password } = req.body;
+    
+    // Check if admin exists
+    const [existing] = await pool.query('SELECT * FROM Admins WHERE email = ?', [email]);
+    if (existing.length > 0) {
+      return res.status(400).json({ error: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password || 'defaultPassword123', 10);
+    
+    const [result] = await pool.query(
+      'INSERT INTO Admins (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
+      [name, email, hashedPassword, phone || '', role || 'reviewer']
+    );
+
+    res.status(201).json({ 
+      message: 'Admin added successfully',
+      adminId: result.insertId 
+    });
+  } catch (error) {
+    console.error('Add admin error:', error);
+    res.status(500).json({ error: 'Failed to add admin' });
+  }
+});
+
+// Update admin (for master admin)
+app.put('/api/admins/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, phone, role } = req.body;
+    
+    const [result] = await pool.query(
+      'UPDATE Admins SET name = ?, email = ?, phone = ?, role = ? WHERE admin_id = ?',
+      [name, email, phone, role, id]
+    );
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    res.json({ message: 'Admin updated successfully' });
+  } catch (error) {
+    console.error('Update admin error:', error);
+    res.status(500).json({ error: 'Failed to update admin' });
+  }
+});
+
+// Delete admin (for master admin)
+app.delete('/api/admins/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [result] = await pool.query('DELETE FROM Admins WHERE admin_id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    res.json({ message: 'Admin deleted successfully' });
+  } catch (error) {
+    console.error('Delete admin error:', error);
+    res.status(500).json({ error: 'Failed to delete admin' });
+  }
+});
+
+// ==================== NOTIFICATION ROUTES ====================
+
+// Get all notifications (for master admin)
+app.get('/api/notifications', async (req, res) => {
+  try {
+    const [notifications] = await pool.query(`
+      SELECT 
+        notification_id as id,
+        message as title,
+        message,
+        type,
+        'medium' as priority,
+        user_type as category,
+        status,
+        sent_at as created_at,
+        sent_at,
+        0 as read_count,
+        1 as total_recipients
+      FROM Notifications
+      ORDER BY sent_at DESC
+      LIMIT 50
+    `);
+    
+    res.json(notifications);
+  } catch (error) {
+    console.error('Get notifications error:', error);
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
+// Create notification (for master admin)
+app.post('/api/notifications', async (req, res) => {
+  try {
+    const { title, message, type, priority, category, recipients } = req.body;
+    
+    // Insert notification for each recipient type
+    if (recipients.includes('all_users')) {
+      // Notify all students
+      await pool.query(`
+        INSERT INTO Notifications (user_type, user_id, message, type, status)
+        SELECT 'student', student_id, ?, ?, 'unread'
+        FROM Students
+      `, [message, type]);
+      
+      // Notify all organizers
+      await pool.query(`
+        INSERT INTO Notifications (user_type, user_id, message, type, status)
+        SELECT 'organizer', organizer_id, ?, ?, 'unread'
+        FROM Organizers
+      `, [message, type]);
+      
+      // Notify all admins
+      await pool.query(`
+        INSERT INTO Notifications (user_type, user_id, message, type, status)
+        SELECT 'admin', admin_id, ?, ?, 'unread'
+        FROM Admins
+      `, [message, type]);
+    }
+
+    res.status(201).json({ 
+      message: 'Notification created and sent successfully'
+    });
+  } catch (error) {
+    console.error('Create notification error:', error);
+    res.status(500).json({ error: 'Failed to create notification' });
+  }
+});
+
+// Delete notification (for master admin)
+app.delete('/api/notifications/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const [result] = await pool.query('DELETE FROM Notifications WHERE notification_id = ?', [id]);
+    
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Notification not found' });
+    }
+
+    res.json({ message: 'Notification deleted successfully' });
+  } catch (error) {
+    console.error('Delete notification error:', error);
+    res.status(500).json({ error: 'Failed to delete notification' });
+  }
+});
+
 // ==================== ADMIN ROUTES ====================
 
 // Register admin (with secret code)
@@ -617,7 +917,7 @@ app.post('/api/admin/register', async (req, res) => {
     // Insert admin
     const [result] = await pool.query(
       'INSERT INTO Admins (name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)',
-      [name, email, hashedPassword, phone || '', 'super_admin']
+      [name, email, hashedPassword, phone || '', 'master']
     );
 
     console.log('Admin registered successfully:', result.insertId);

@@ -39,6 +39,70 @@ body {
   position: relative;
 }
 
+/* Mobile Navigation Improvements - COMPLETE FIX */
+@media (max-width: 768px) {
+  body.mobile-menu-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+  
+  .mobile-nav-item {
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+  }
+  
+  .mobile-nav-item:active {
+    transform: scale(0.98) !important;
+  }
+  
+  /* Ensure mobile menu is always on top */
+  .mobile-menu-overlay {
+    z-index: 10000 !important;
+    touch-action: none !important;
+    -webkit-overflow-scrolling: auto !important;
+    overflow: hidden !important;
+  }
+  
+  /* Allow scrolling only within the navigation items container */
+  .mobile-nav-container {
+    -webkit-overflow-scrolling: touch !important;
+    overflow-y: auto !important;
+    touch-action: pan-y !important;
+  }
+  
+  /* Hide desktop navigation completely on mobile */
+  .navbar-nav {
+    display: none !important;
+  }
+  
+  /* Ensure mobile menu button is always visible */
+  .mobile-menu-button {
+    display: flex !important;
+    z-index: 10001 !important;
+  }
+}
+
+/* Sidebar Navigation Animation */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 /* Alternative background images for different pages */
 .page-events {
   background: 
@@ -2751,6 +2815,45 @@ body {
   }
 }
 
+/* ============================================ */
+/* ADMIN PORTAL ISOLATION FIXES - SIMPLE & EFFECTIVE */
+/* ============================================ */
+
+/* Complete isolation for admin portals */
+body[data-admin-portal="true"] {
+  background: #0a0a0a !important;
+  background-image: none !important;
+  background-attachment: initial !important;
+  overflow-x: hidden !important;
+}
+
+/* Hide main website background elements in admin portals */
+body[data-admin-portal="true"]::before,
+body[data-admin-portal="true"]::after {
+  display: none !important;
+}
+
+/* Ensure admin navbar is always visible and on top */
+body[data-admin-portal="true"] .admin-navbar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 999999 !important;
+  background: rgba(10, 10, 10, 0.98) !important;
+  backdrop-filter: blur(25px) saturate(180%) !important;
+  border-bottom: 2px solid rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 4px 30px rgba(16, 185, 129, 0.15), 0 0 80px rgba(52, 211, 153, 0.08), inset 0 -1px 0 rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Prevent main site content from appearing in admin portals */
+body[data-admin-portal="true"] .page-home::before,
+body[data-admin-portal="true"] .page-home::after,
+body[data-admin-portal="true"] .hero-section::before,
+body[data-admin-portal="true"] .hero-section::after {
+  display: none !important;
+}
+
 /* FAQ Animations */
 @keyframes faqSlideInUp {
   from {
@@ -2848,4 +2951,9 @@ body {
   .faq-item-hover:hover {
     transform: none !important;
   }
+}
+/* Loading spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

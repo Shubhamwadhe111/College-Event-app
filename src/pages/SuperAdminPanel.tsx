@@ -13,9 +13,9 @@ const SuperAdminPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'admins' | 'events' | 'analytics'>('overview');
 
   useEffect(() => {
-    if (!user || user.role !== 'superadmin') {
+    if (!user || user.role !== 'master') {
       navigate('/');
-      toast.error('Super Admin access required');
+      toast.error('Master Admin access required');
       return;
     }
     loadData();
@@ -69,7 +69,7 @@ const SuperAdminPanel: React.FC = () => {
   const students = users.filter(u => u.role === 'student');
   const organizers = users.filter(u => u.role === 'organizer');
   const admins = users.filter(u => u.role === 'admin');
-  const superadmins = users.filter(u => u.role === 'superadmin');
+  const masters = users.filter(u => u.role === 'master');
 
   return (
     <div className="min-h-screen py-8 px-4">
@@ -79,7 +79,7 @@ const SuperAdminPanel: React.FC = () => {
           <div className="flex items-center gap-3 mb-4">
             <Crown className="w-12 h-12 text-yellow-400" />
             <div>
-              <h1 className="text-4xl font-bold text-white">Super Admin Dashboard</h1>
+              <h1 className="text-4xl font-bold text-white">Master Admin Dashboard</h1>
               <p className="text-gray-400 mt-1">Complete system control and analytics</p>
             </div>
           </div>
@@ -217,7 +217,7 @@ const SuperAdminPanel: React.FC = () => {
                       <td className="py-4 px-4 text-gray-300">{u.email}</td>
                       <td className="py-4 px-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                          u.role === 'superadmin' ? 'bg-yellow-500/20 text-yellow-300' :
+                          u.role === 'master' ? 'bg-yellow-500/20 text-yellow-300' :
                           u.role === 'admin' ? 'bg-purple-500/20 text-purple-300' :
                           u.role === 'organizer' ? 'bg-emerald-500/20 text-emerald-300' :
                           'bg-blue-500/20 text-blue-300'
@@ -236,7 +236,7 @@ const SuperAdminPanel: React.FC = () => {
                       </td>
                       <td className="py-4 px-4">
                         <div className="flex gap-2">
-                          {u.role !== 'superadmin' && u.role !== 'admin' && (
+                          {u.role !== 'master' && u.role !== 'admin' && (
                             <button
                               onClick={() => makeAdmin(u.id)}
                               className="text-purple-400 hover:text-purple-300 px-3 py-1 hover:bg-purple-500/10 rounded text-sm"
@@ -252,7 +252,7 @@ const SuperAdminPanel: React.FC = () => {
                               Remove Admin
                             </button>
                           )}
-                          {u.role !== 'superadmin' && (
+                          {u.role !== 'master' && (
                             <button
                               onClick={() => deleteUser(u.id)}
                               className="text-red-400 hover:text-red-300 px-3 py-1 hover:bg-red-500/10 rounded text-sm"

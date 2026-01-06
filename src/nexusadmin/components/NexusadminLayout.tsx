@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
   Shield, 
@@ -9,9 +9,9 @@ import {
   LogOut, 
   BarChart3,
   Menu,
-  X,
-  Crown
+  X
 } from 'lucide-react';
+import PortalLink from '../../components/PortalLink';
 
 interface NexusadminLayoutProps {
   children: React.ReactNode;
@@ -20,6 +20,7 @@ interface NexusadminLayoutProps {
 const NexusadminLayout: React.FC<NexusadminLayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = React.useState(false);
 
   const navigation = [
@@ -29,11 +30,6 @@ const NexusadminLayout: React.FC<NexusadminLayoutProps> = ({ children }) => {
     { name: 'Events', href: '/events', icon: Calendar },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
-
-  // Add Super Admin link only for superadmin users
-  if (user?.role === 'superadmin') {
-    navigation.splice(2, 0, { name: 'Super Admin', href: '/super-admin', icon: Crown });
-  }
 
   const handleLogout = () => {
     logout();
@@ -62,10 +58,10 @@ const NexusadminLayout: React.FC<NexusadminLayoutProps> = ({ children }) => {
         <nav className="mt-8 px-4">
           <ul className="space-y-2">
             {navigation.map((item) => {
-              const isActive = location.pathname === item.href;
+              const isActive = location.pathname === `/nexusadmin${item.href}`;
               return (
                 <li key={item.name}>
-                  <Link
+                  <PortalLink
                     to={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
                       isActive
@@ -75,7 +71,7 @@ const NexusadminLayout: React.FC<NexusadminLayoutProps> = ({ children }) => {
                   >
                     <item.icon className="w-5 h-5" />
                     {item.name}
-                  </Link>
+                  </PortalLink>
                 </li>
               );
             })}
