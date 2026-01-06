@@ -1,23 +1,13 @@
 {
   "files": {
-    "main.css": "/College-Event-app/static/css/main.3e3f8ec2.css",
-    "main.js": "/College-Event-app/static/js/main.db45b772.js",
-    "static/js/763.97a8db86.chunk.js": "/College-Event-app/static/js/763.97a8db86.chunk.js",
-    "static/js/239.246038c9.chunk.js": "/College-Event-app/static/js/239.246038c9.chunk.js",
-    "static/js/977.b249b7e1.chunk.js": "/College-Event-app/static/js/977.b249b7e1.chunk.js",
-    "static/js/455.261716a6.chunk.js": "/College-Event-app/static/js/455.261716a6.chunk.js",
-    "static/js/36.f45bea73.chunk.js": "/College-Event-app/static/js/36.f45bea73.chunk.js",
+    "main.css": "/College-Event-app/static/css/main.e01f7be0.css",
+    "main.js": "/College-Event-app/static/js/main.8e92707c.js",
     "index.html": "/College-Event-app/index.html",
-    "main.3e3f8ec2.css.map": "/College-Event-app/static/css/main.3e3f8ec2.css.map",
-    "main.db45b772.js.map": "/College-Event-app/static/js/main.db45b772.js.map",
-    "763.97a8db86.chunk.js.map": "/College-Event-app/static/js/763.97a8db86.chunk.js.map",
-    "239.246038c9.chunk.js.map": "/College-Event-app/static/js/239.246038c9.chunk.js.map",
-    "977.b249b7e1.chunk.js.map": "/College-Event-app/static/js/977.b249b7e1.chunk.js.map",
-    "455.261716a6.chunk.js.map": "/College-Event-app/static/js/455.261716a6.chunk.js.map",
-    "36.f45bea73.chunk.js.map": "/College-Event-app/static/js/36.f45bea73.chunk.js.map"
+    "main.e01f7be0.css.map": "/College-Event-app/static/css/main.e01f7be0.css.map",
+    "main.8e92707c.js.map": "/College-Event-app/static/js/main.8e92707c.js.map"
   },
   "entrypoints": [
-    "static/css/main.3e3f8ec2.css",
-    "static/js/main.db45b772.js"
+    "static/css/main.e01f7be0.css",
+    "static/js/main.8e92707c.js"
   ]
 }
