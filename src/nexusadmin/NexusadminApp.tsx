@@ -14,6 +14,10 @@ import EnhancedHelpPage from './pages/EnhancedHelpPage';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 function NexusadminApp() {
+  console.log('🔧 NexusadminApp is loading!');
+  console.log('Current URL:', window.location.href);
+  console.log('Current pathname:', window.location.pathname);
+  
   return (
     <div className="nexusadmin-app">
       <Routes>

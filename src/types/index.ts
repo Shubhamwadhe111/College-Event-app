@@ -5,6 +5,7 @@ export interface User {
   studentId: string;
   role: 'student' | 'organizer' | 'admin' | 'master';
   avatar?: string;
+  profilePicture?: string;
   phone?: string;
   registeredEvents: string[];
   createdAt: string;

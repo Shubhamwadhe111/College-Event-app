@@ -542,6 +542,8 @@ const SimpleHome: React.FC = () => {
         </div>
       </section>
 
+
+
       {/* Event Benefits Section */}
       <section style={{ 
         padding: '100px 0', 

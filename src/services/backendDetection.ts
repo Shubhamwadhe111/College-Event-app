@@ -41,6 +41,8 @@ class BackendDetectionServiceImpl implements BackendDetectionService {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.CHECK_TIMEOUT);
 
+      console.debug('Checking backend health at:', this.HEALTH_CHECK_URL);
+      
       const response = await fetch(this.HEALTH_CHECK_URL, {
         method: 'GET',
         signal: controller.signal,
@@ -51,9 +53,11 @@ class BackendDetectionServiceImpl implements BackendDetectionService {
 
       if (response.ok) {
         const data = await response.json();
+        console.debug('Backend health check response:', data);
         return data.status === 'OK';
       }
 
+      console.debug('Backend health check failed with status:', response.status);
       return false;
     } catch (error) {
       // Network error, timeout, or other issues

@@ -23,7 +23,14 @@ const NexusSuperLogin: React.FC = () => {
 
     const result = await login(email, password, 'master');
     if (result.success) {
-      navigate(result.redirectTo || '/nexussuper/dashboard');
+      // Check for post-login redirect from route recovery
+      const postLoginRedirect = sessionStorage.getItem('nexus_post_login_redirect');
+      if (postLoginRedirect) {
+        sessionStorage.removeItem('nexus_post_login_redirect');
+        navigate(postLoginRedirect);
+      } else {
+        navigate(result.redirectTo || '/nexussuper/dashboard');
+      }
     } else {
       setError(result.message);
     }

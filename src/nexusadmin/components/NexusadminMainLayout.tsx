@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import NexusadminNavbar from './NexusadminNavbar';
 import NexusadminFooter from './NexusadminFooter';
-import { ModeBanner } from '../../components/ModeIndicator';
 
 interface NexusadminMainLayoutProps {
   children: React.ReactNode;
@@ -138,7 +137,6 @@ const NexusadminMainLayout: React.FC<NexusadminMainLayoutProps> = ({ children })
       position: 'relative'
     }}>
       <NexusadminNavbar />
-      <ModeBanner />
       <main style={{
         flex: 1,
         paddingTop: '80px',

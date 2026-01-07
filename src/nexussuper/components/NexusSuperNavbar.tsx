@@ -76,7 +76,7 @@ const NexusSuperNavbar: React.FC = () => {
         borderBottom: '1px solid rgba(16, 185, 129, 0.3)',
         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2), 0 0 60px rgba(16, 185, 129, 0.1)',
         zIndex: 9999,
-        height: '60px',
+        height: '50px',
         WebkitBackdropFilter: 'blur(25px) saturate(180%)'
       }}>
         <div style={{
@@ -101,8 +101,8 @@ const NexusSuperNavbar: React.FC = () => {
             }}
           >
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: '32px',
+              height: '32px',
               background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
               borderRadius: '12px',
               display: 'flex',
@@ -112,7 +112,7 @@ const NexusSuperNavbar: React.FC = () => {
               fontWeight: 800,
               boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
             }}>
-              <Crown size={20} strokeWidth={2.5} />
+              <Crown size={16} strokeWidth={2.5} />
             </div>
             <div style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column' }}>
               <span style={{
@@ -153,10 +153,10 @@ const NexusSuperNavbar: React.FC = () => {
                   textDecoration: 'none',
                   color: item.current ? '#ffffff' : '#cbd5e1',
                   fontWeight: item.current ? 700 : 600,
-                  padding: '0.3rem 0.5rem',
-                  borderRadius: '8px',
+                  padding: '0.25rem 0.4rem',
+                  borderRadius: '6px',
                   transition: 'all 0.3s ease',
-                  fontSize: '0.6rem',
+                  fontSize: '0.55rem',
                   background: item.current 
                     ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(20, 184, 166, 0.2))' 
                     : 'transparent',
@@ -197,8 +197,8 @@ const NexusSuperNavbar: React.FC = () => {
                 border: '1px solid rgba(16, 185, 129, 0.2)'
               }}>
                 <div style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '28px',
+                  height: '28px',
                   borderRadius: '50%',
                   background: 'linear-gradient(135deg, #10b981, #34d399)',
                   display: 'flex',
@@ -206,7 +206,7 @@ const NexusSuperNavbar: React.FC = () => {
                   justifyContent: 'center',
                   color: 'white',
                   fontWeight: 700,
-                  fontSize: '1rem'
+                  fontSize: '0.9rem'
                 }}>
                   {user.avatar ? (
                     <img src={user.avatar} alt={user.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
@@ -216,12 +216,12 @@ const NexusSuperNavbar: React.FC = () => {
                 </div>
                 <div>
                   <div style={{
-                    fontSize: '0.8rem',
+                    fontSize: '0.75rem',
                     fontWeight: 700,
                     color: '#ffffff'
                   }}>{user.name}</div>
                   <div style={{
-                    fontSize: '0.6rem',
+                    fontSize: '0.55rem',
                     fontWeight: 500,
                     color: 'rgba(16, 185, 129, 0.9)',
                     textTransform: 'uppercase'
@@ -282,8 +282,8 @@ const NexusSuperNavbar: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  width: '45px',
-                  height: '45px',
+                  width: '40px',
+                  height: '40px',
                   color: isMenuOpen ? '#ffffff' : '#10b981',
                   background: isMenuOpen 
                     ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(20, 184, 166, 0.3))' 
@@ -302,7 +302,7 @@ const NexusSuperNavbar: React.FC = () => {
                 }}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
-                {isMenuOpen ? <X size={28} strokeWidth={2.5} /> : <Menu size={28} strokeWidth={2.5} />}
+                {isMenuOpen ? <X size={24} strokeWidth={2.5} /> : <Menu size={24} strokeWidth={2.5} />}
               </button>
             )}
           </div>

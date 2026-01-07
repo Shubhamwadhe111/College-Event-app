@@ -1,10 +1,8 @@
 import { Routes, Route } from 'react-router-dom';
 import NexusSuperMainLayout from './components/NexusSuperMainLayout';
-import DashboardLayout from '../components/DashboardLayout';
 import SuperAdminHomePage from './pages/SuperAdminHomePage';
 import NexusSuperLogin from './pages/NexusSuperLogin';
 import NexusSuperRegister from './pages/NexusSuperRegister';
-import MasterDashboard from '../pages/dashboards/MasterDashboard';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 // Enhanced Master Admin Pages
@@ -19,6 +17,10 @@ import {
 } from './pages';
 
 function NexusSuperApp() {
+  console.log('🚀 NexusSuperApp is loading!');
+  console.log('Current URL:', window.location.href);
+  console.log('Current pathname:', window.location.pathname);
+  
   return (
     <div className="nexussuper-app">
       <Routes>
@@ -39,61 +41,54 @@ function NexusSuperApp() {
           </NexusSuperMainLayout>
         } />
         
-        {/* Protected master admin routes with dashboard layout */}
-        <Route path="/dashboard" element={
-          <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
-              <MasterDashboard />
-            </DashboardLayout>
-          </ProtectedRoute>
-        } />
+        {/* Protected master admin routes with main layout */}
         <Route path="/colleges" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedCollegesPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/admins" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedAdminsPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/events" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedMasterEventsPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/analytics" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedMasterAnalyticsPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/command-center" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedCommandCenterPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/system-settings" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedSystemSettingsPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/notifications" element={
           <ProtectedRoute requiredRole="master">
-            <DashboardLayout role="master">
+            <NexusSuperMainLayout>
               <EnhancedMasterNotificationsPage />
-            </DashboardLayout>
+            </NexusSuperMainLayout>
           </ProtectedRoute>
         } />
       </Routes>

@@ -52,8 +52,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
+      console.debug('Login attempt:', { email, userType });
       const storageService = getStorageService();
+      console.debug('Using storage service:', storageService.constructor.name);
+      
       const result = await storageService.loginUser({ email, password });
+      console.debug('Login result:', result);
       
       if (result.success && result.user) {
         // Convert storage user to frontend User type
@@ -90,7 +94,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
+      console.debug('Registration attempt:', { ...userData, password: '[HIDDEN]' });
       const storageService = getStorageService();
+      console.debug('Using storage service:', storageService.constructor.name);
+      
       const registrationData = {
         name: userData.name,
         email: userData.email,
@@ -103,6 +110,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       };
       
       const result = await storageService.registerUser(registrationData);
+      console.debug('Registration result:', result);
       setIsLoading(false);
       
       return { 

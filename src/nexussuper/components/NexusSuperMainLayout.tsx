@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import NexusSuperNavbar from './NexusSuperNavbar';
 import NexusSuperFooter from './NexusSuperFooter';
-import { ModeBanner } from '../../components/ModeIndicator';
 
 interface NexusSuperMainLayoutProps {
   children: React.ReactNode;
@@ -33,12 +32,11 @@ const NexusSuperMainLayout: React.FC<NexusSuperMainLayoutProps> = ({ children })
       position: 'relative'
     }}>
       <NexusSuperNavbar />
-      <ModeBanner />
       <main style={{
         flex: 1,
-        paddingTop: '75px',
+        paddingTop: '65px',
         background: 'transparent',
-        minHeight: 'calc(100vh - 75px)'
+        minHeight: 'calc(100vh - 65px)'
       }}>
         {children}
       </main>
