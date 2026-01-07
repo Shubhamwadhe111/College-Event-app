@@ -379,7 +379,7 @@ body::after {
               0 0 80px rgba(52, 211, 153, 0.08),
               inset 0 -1px 0 rgba(16, 185, 129, 0.2);
   z-index: 1000;
-  height: 75px;
+  height: 60px;
   animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -422,8 +422,8 @@ body::after {
 }
 
 .navbar-logo {
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   background: linear-gradient(135deg, #10b981, #14b8a6, #06b6d4);
   background-size: 200% 200%;
   border-radius: 12px;
@@ -469,7 +469,7 @@ body::after {
 }
 
 .navbar-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 900;
   font-family: 'Orbitron', sans-serif;
   background: linear-gradient(135deg, #10b981, #14b8a6, #06b6d4);
@@ -488,17 +488,17 @@ body::after {
 
 @media (max-width: 768px) {
   .navbar {
-    height: 65px;
+    height: 52px;
   }
   
   .navbar-title {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
   
   .navbar-logo {
-    width: 38px;
-    height: 38px;
-    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
   }
   
   .navbar-nav {
@@ -511,9 +511,9 @@ body::after {
   }
   
   .user-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.9rem;
   }
   
   .btn {
@@ -610,8 +610,8 @@ body::after {
 }
 
 .user-avatar {
-  width: 42px;
-  height: 42px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: linear-gradient(135deg, #10b981, #34d399);
   background-size: 200% 200%;
