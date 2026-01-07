@@ -2,72 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Redirecting...</title>
+  <title>Nexus - Redirecting...</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+      min-height: 100vh;
     }
-    .loading {
+    .container {
       text-align: center;
+      padding: 2rem;
+    }
+    .logo {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
     }
     .spinner {
-      border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%;
-      border-top: 3px solid white;
       width: 40px;
       height: 40px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
       animation: spin 1s linear infinite;
-      margin: 0 auto 20px;
+      margin: 0 auto;
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+    .fallback {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+    .fallback a {
+      color: white;
+      text-decoration: underline;
+    }
   </style>
-  <script>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Nexus</div>
+    <div class="message">Redirecting to the correct page...</div>
+    <div class="spinner"></div>
+    <div class="fallback">
+      If you're not redirected automatically, 
+      <a href="/College-Event-app/">click here to go to the homepage</a>
+    </div>
+  </div>
+
+  <script type="text/javascript">
     (function() {
-      try {
-        // Extract the current path, search, and hash
-        const currentPath = window.location.pathname;
-        const currentSearch = window.location.search;
-        const currentHash = window.location.hash;
+      // Prevent redirect loops by checking redirect count
+      var redirectCount = parseInt(sessionStorage.getItem('nexus_redirect_count') || '0');
+      
+      if (redirectCount >= 3) {
+        console.error('Too many redirects, stopping to prevent infinite loop');
+        document.querySelector('.message').textContent = 'Unable to redirect. Please use the link below.';
+        document.querySelector('.spinner').style.display = 'none';
+        return;
+      }
+      
+      // Increment redirect count
+      sessionStorage.setItem('nexus_redirect_count', (redirectCount + 1).toString());
+      
+      // Get the current path and search parameters
+      var currentPath = window.location.pathname;
+      var currentSearch = window.location.search;
+      var currentHash = window.location.hash;
+      
+      // Remove the base path if it exists (for GitHub Pages)
+      var basePath = '/College-Event-app';
+      if (currentPath.startsWith(basePath)) {
+        currentPath = currentPath.substring(basePath.length);
+      }
+      
+      // Ensure path starts with /
+      if (!currentPath.startsWith('/')) {
+        currentPath = '/' + currentPath;
+      }
+      
+      // Construct the full original URL
+      var originalUrl = currentPath + currentSearch + currentHash;
+      
+      // Only redirect if we have a meaningful path (not just root)
+      if (currentPath && currentPath !== '/' && currentPath !== '') {
+        // Encode the original URL as a query parameter
+        var redirectUrl = basePath + '/?p=' + encodeURIComponent(originalUrl);
         
-        // Combine full route
-        const fullRoute = currentPath + currentSearch + currentHash;
+        console.log('404 Redirect: ' + window.location.href + ' -> ' + redirectUrl);
         
-        // Store the intended route in sessionStorage for recovery
-        sessionStorage.setItem('nexus_redirect_path', fullRoute);
-        sessionStorage.setItem('nexus_redirect_timestamp', Date.now().toString());
-        
-        // Determine the base URL for GitHub Pages
-        const baseUrl = '/College-Event-app/';
-        
-        // Redirect to the main app
-        window.location.replace(baseUrl);
-        
-      } catch (error) {
-        // Fallback if JavaScript fails
-        console.error('Route preservation failed:', error);
-        window.location.replace('/College-Event-app/');
+        // Perform the redirect
+        window.location.replace(redirectUrl);
+      } else {
+        // If it's just the root path, redirect to homepage
+        window.location.replace(basePath + '/');
       }
     })();
   </script>
-  <!-- Fallback meta refresh for browsers with JavaScript disabled -->
-  <meta http-equiv="refresh" content="0; url=/College-Event-app/">
-</head>
-<body>
-  <div class="loading">
-    <div class="spinner"></div>
-    <h2>Redirecting to Nexus...</h2>
-    <p>If you are not redirected automatically, <a href="/College-Event-app/" style="color: white;">click here</a>.</p>
-  </div>
 </body>
 </html>
