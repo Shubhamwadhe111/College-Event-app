@@ -67,65 +67,25 @@
 
   <script type="text/javascript">
     (function() {
-      console.log('=== 404.html Debug ===');
-      console.log('404 page loaded for URL:', window.location.href);
-      console.log('Pathname:', window.location.pathname);
-      console.log('Search:', window.location.search);
-      console.log('Hash:', window.location.hash);
-      
-      // Prevent redirect loops by checking redirect count
-      var redirectCount = parseInt(sessionStorage.getItem('nexus_redirect_count') || '0');
-      console.log('Current redirect count:', redirectCount);
-      
-      if (redirectCount >= 3) {
-        console.error('Too many redirects, stopping to prevent infinite loop');
-        document.querySelector('.message').textContent = 'Unable to redirect. Please use the link below.';
-        document.querySelector('.spinner').style.display = 'none';
-        return;
-      }
-      
-      // Increment redirect count
-      sessionStorage.setItem('nexus_redirect_count', (redirectCount + 1).toString());
-      console.log('Incremented redirect count to:', redirectCount + 1);
-      
-      // Get the current path and search parameters
-      var currentPath = window.location.pathname;
-      var currentSearch = window.location.search;
-      var currentHash = window.location.hash;
-      
-      console.log('Processing path:', currentPath);
-      
-      // Remove the base path if it exists (for GitHub Pages)
+      // GitHub Pages SPA redirect using sessionStorage approach
+      var l = window.location;
       var basePath = '/College-Event-app';
-      if (currentPath.startsWith(basePath)) {
-        currentPath = currentPath.substring(basePath.length);
-        console.log('Removed base path, new path:', currentPath);
+      
+      // Get the path that caused the 404
+      var path = l.pathname;
+      
+      // Remove the base path to get the actual route
+      if (path.startsWith(basePath)) {
+        path = path.substring(basePath.length);
       }
       
-      // Ensure path starts with /
-      if (!currentPath.startsWith('/')) {
-        currentPath = '/' + currentPath;
-        console.log('Added leading slash, path:', currentPath);
+      // Store the intended path in sessionStorage
+      if (path && path !== '/' && path !== '') {
+        sessionStorage.setItem('nexus_redirect_path', path + l.search + l.hash);
       }
       
-      // Construct the full original URL
-      var originalUrl = currentPath + currentSearch + currentHash;
-      console.log('Original URL to preserve:', originalUrl);
-      
-      // Only redirect if we have a meaningful path (not just root)
-      if (currentPath && currentPath !== '/' && currentPath !== '') {
-        // Encode the original URL as a query parameter
-        var redirectUrl = basePath + '/?p=' + encodeURIComponent(originalUrl);
-        
-        console.log('404 Redirect: ' + window.location.href + ' -> ' + redirectUrl);
-        
-        // Perform the redirect
-        window.location.replace(redirectUrl);
-      } else {
-        // If it's just the root path, redirect to homepage
-        console.log('Root path detected, redirecting to homepage');
-        window.location.replace(basePath + '/');
-      }
+      // Always redirect to the main index.html
+      l.replace(basePath + '/');
     })();
   </script>
 </body>
