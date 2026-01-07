@@ -67,8 +67,15 @@
 
   <script type="text/javascript">
     (function() {
+      console.log('=== 404.html Debug ===');
+      console.log('404 page loaded for URL:', window.location.href);
+      console.log('Pathname:', window.location.pathname);
+      console.log('Search:', window.location.search);
+      console.log('Hash:', window.location.hash);
+      
       // Prevent redirect loops by checking redirect count
       var redirectCount = parseInt(sessionStorage.getItem('nexus_redirect_count') || '0');
+      console.log('Current redirect count:', redirectCount);
       
       if (redirectCount >= 3) {
         console.error('Too many redirects, stopping to prevent infinite loop');
@@ -79,25 +86,31 @@
       
       // Increment redirect count
       sessionStorage.setItem('nexus_redirect_count', (redirectCount + 1).toString());
+      console.log('Incremented redirect count to:', redirectCount + 1);
       
       // Get the current path and search parameters
       var currentPath = window.location.pathname;
       var currentSearch = window.location.search;
       var currentHash = window.location.hash;
       
+      console.log('Processing path:', currentPath);
+      
       // Remove the base path if it exists (for GitHub Pages)
       var basePath = '/College-Event-app';
       if (currentPath.startsWith(basePath)) {
         currentPath = currentPath.substring(basePath.length);
+        console.log('Removed base path, new path:', currentPath);
       }
       
       // Ensure path starts with /
       if (!currentPath.startsWith('/')) {
         currentPath = '/' + currentPath;
+        console.log('Added leading slash, path:', currentPath);
       }
       
       // Construct the full original URL
       var originalUrl = currentPath + currentSearch + currentHash;
+      console.log('Original URL to preserve:', originalUrl);
       
       // Only redirect if we have a meaningful path (not just root)
       if (currentPath && currentPath !== '/' && currentPath !== '') {
@@ -110,6 +123,7 @@
         window.location.replace(redirectUrl);
       } else {
         // If it's just the root path, redirect to homepage
+        console.log('Root path detected, redirecting to homepage');
         window.location.replace(basePath + '/');
       }
     })();
