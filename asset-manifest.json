@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/College-Event-app/static/css/main.9fba1702.css",
+    "main.css": "/College-Event-app/static/css/main.bcfc10ef.css",
     "main.js": "/College-Event-app/static/js/main.c610abe7.js",
     "index.html": "/College-Event-app/index.html",
-    "main.9fba1702.css.map": "/College-Event-app/static/css/main.9fba1702.css.map",
+    "main.bcfc10ef.css.map": "/College-Event-app/static/css/main.bcfc10ef.css.map",
     "main.c610abe7.js.map": "/College-Event-app/static/js/main.c610abe7.js.map"
   },
   "entrypoints": [
-    "static/css/main.9fba1702.css",
+    "static/css/main.bcfc10ef.css",
     "static/js/main.c610abe7.js"
   ]
 }
