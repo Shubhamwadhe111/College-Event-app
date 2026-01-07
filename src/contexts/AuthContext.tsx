@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { userAPI, organizerAPI, adminAPI } from '../services/api';
+import { getStorageService } from '../services/storageAbstraction';
+import { useBackendStatus } from '../hooks/useBackendStatus';
 
 interface AuthContextType {
   user: User | null;
@@ -32,6 +33,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { isAvailable: isBackendAvailable } = useBackendStatus();
 
   useEffect(() => {
     // Check for existing session
@@ -50,58 +52,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      let response;
+      const storageService = getStorageService();
+      const result = await storageService.loginUser({ email, password });
       
-      // Try different login endpoints based on user type
-      if (userType === 'admin' || userType === 'master') {
-        response = await adminAPI.login({ email, password });
-      } else if (userType === 'organizer') {
-        response = await organizerAPI.login({ email, password });
+      if (result.success && result.user) {
+        // Convert storage user to frontend User type
+        const userData: User = {
+          ...result.user,
+          studentId: result.user.studentId || result.user.id, // Use ID as fallback for studentId
+          registeredEvents: [], // This should be fetched separately if needed
+        };
+        
+        setUser(userData);
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        setIsLoading(false);
+        
+        return { 
+          success: true, 
+          message: result.message, 
+          redirectTo: result.redirectTo 
+        };
       } else {
-        // For student, try student API first, then try organizer and admin as fallback
-        try {
-          response = await userAPI.login({ email, password });
-        } catch (studentError: any) {
-          // If student login fails, try organizer
-          try {
-            response = await organizerAPI.login({ email, password });
-          } catch (organizerError: any) {
-            // If organizer login fails, try admin
-            try {
-              response = await adminAPI.login({ email, password });
-            } catch (adminError: any) {
-              // If all fail, throw the original student error
-              throw studentError;
-            }
-          }
-        }
+        setIsLoading(false);
+        return { 
+          success: false, 
+          message: result.message 
+        };
       }
-      
-      // The backend now returns a user object that is mostly compatible with the frontend User type.
-      const userData: User = {
-        ...response.user,
-        id: response.user.id.toString(),
-        registeredEvents: [], // This should be fetched separately.
-        createdAt: response.user.created_at || new Date().toISOString(), // Use backend value if available.
-      };
-      
-      setUser(userData);
-      localStorage.setItem('currentUser', JSON.stringify(userData));
-      setIsLoading(false);
-      
-      // Determine redirect URL based on user role
-      let redirectTo = '/dashboard';
-      if (userData.role === 'master') {
-        redirectTo = '/nexussuper/dashboard';
-      } else if (userData.role === 'admin') {
-        redirectTo = '/nexusadmin/dashboard';
-      } else if (userData.role === 'organizer') {
-        redirectTo = '/dashboard'; // Organizers use main portal dashboard
-      } else {
-        redirectTo = '/dashboard'; // Students use main portal dashboard
-      }
-      
-      return { success: true, message: response.message || 'Login successful!', redirectTo };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Login error:', error);
@@ -113,20 +90,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // Use real API only
-      const response = await userAPI.register({
+      const storageService = getStorageService();
+      const registrationData = {
         name: userData.name,
         email: userData.email,
         password: userData.password,
         phone: userData.phone || '',
         studentId: userData.studentId,
         college: userData.college || '',
-        year: userData.year || '1'
-      });
+        year: userData.year || '1',
+        role: 'student'
+      };
       
-      // Don't auto-login after registration - let user manually login
+      const result = await storageService.registerUser(registrationData);
       setIsLoading(false);
-      return { success: true, message: response.message || 'Registration successful! Please login to continue.' };
+      
+      return { 
+        success: result.success, 
+        message: result.message 
+      };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Registration error:', error);
@@ -145,10 +127,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      const response = await organizerAPI.register(organizerData);
+      const storageService = getStorageService();
+      const registrationData = {
+        ...organizerData,
+        role: 'organizer'
+      };
       
+      const result = await storageService.registerUser(registrationData);
       setIsLoading(false);
-      return { success: true, message: response.message || 'Organizer registration submitted for approval!' };
+      
+      return { 
+        success: result.success, 
+        message: result.message || 'Organizer registration submitted for approval!' 
+      };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Organizer registration error:', error);
@@ -167,10 +158,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      const response = await adminAPI.register(adminData);
+      const storageService = getStorageService();
+      const registrationData = {
+        ...adminData,
+        role: 'admin'
+      };
       
+      const result = await storageService.registerUser(registrationData);
       setIsLoading(false);
-      return { success: true, message: response.message || 'Admin account created successfully!' };
+      
+      return { 
+        success: result.success, 
+        message: result.message || 'Admin account created successfully!' 
+      };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Admin registration error:', error);
@@ -189,18 +189,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      // For now, use the admin registration API with master code validation
-      const response = await adminAPI.register({
+      const storageService = getStorageService();
+      const registrationData = {
         name: masterData.name,
         email: masterData.email,
         password: masterData.password,
         phone: masterData.phone,
         department: masterData.organization,
-        secretCode: masterData.masterCode
-      });
+        secretCode: masterData.masterCode,
+        role: 'master'
+      };
       
+      const result = await storageService.registerUser(registrationData);
       setIsLoading(false);
-      return { success: true, message: 'Master registration successful' };
+      
+      return { 
+        success: result.success, 
+        message: result.message || 'Master registration successful' 
+      };
     } catch (error: any) {
       setIsLoading(false);
       console.error('Master registration error:', error);
