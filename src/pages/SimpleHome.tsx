@@ -170,7 +170,7 @@ const SimpleHome: React.FC = () => {
                 {/* Animated Title with Typewriter Effect */}
                 <div style={{ position: 'relative', marginBottom: '1rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(1rem, 2.5vw, 1.8rem)',
+                    fontSize: 'clamp(0.9rem, 2vw, 1.4rem)',
                     fontWeight: 800,
                     color: 'white',
                     marginBottom: '0',
@@ -184,7 +184,7 @@ const SimpleHome: React.FC = () => {
                     NEXUS EVENT
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(1rem, 2.5vw, 1.8rem)',
+                    fontSize: 'clamp(0.9rem, 2vw, 1.4rem)',
                     fontWeight: 800,
                     color: 'white',
                     margin: '0',
@@ -216,22 +216,22 @@ const SimpleHome: React.FC = () => {
                 </div>
                 
                 <h2 style={{
-                  fontSize: '0.95rem',
+                  fontSize: '0.8rem',
                   fontWeight: 600,
                   color: '#10b981',
-                  marginBottom: '0.8rem',
+                  marginBottom: '0.6rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Heart style={{ display: 'inline', marginRight: '6px', color: '#ef4444' }} size={16} />
+                  <Heart style={{ display: 'inline', marginRight: '5px', color: '#ef4444' }} size={14} />
                   Where Innovation Meets Community
                 </h2>
                 
                 <p style={{
-                  fontSize: '0.85rem',
+                  fontSize: '0.75rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '1.2rem',
-                  lineHeight: 1.5,
+                  marginBottom: '1rem',
+                  lineHeight: 1.4,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
                   🚀 Discover amazing events, workshops, and competitions. Connect with your community
@@ -248,19 +248,19 @@ const SimpleHome: React.FC = () => {
                     background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                     backgroundSize: '200% 200%',
                     border: 'none',
-                    padding: '8px 20px',
-                    borderRadius: '18px',
+                    padding: '6px 16px',
+                    borderRadius: '16px',
                     fontWeight: 600,
                     textDecoration: 'none',
                     color: 'white',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '5px',
-                    boxShadow: '0 5px 15px rgba(16, 185, 129, 0.4)',
+                    gap: '4px',
+                    boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)',
                     animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                     transform: 'translateY(0)',
                     transition: 'all 0.3s ease',
-                    fontSize: '0.8rem'
+                    fontSize: '0.75rem'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
