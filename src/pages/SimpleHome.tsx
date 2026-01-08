@@ -170,7 +170,7 @@ const SimpleHome: React.FC = () => {
                 {/* Animated Title with Typewriter Effect */}
                 <div style={{ position: 'relative', marginBottom: '1rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(1.8rem, 4vw, 3.2rem)',
+                    fontSize: 'clamp(1.2rem, 3vw, 2.4rem)',
                     fontWeight: 800,
                     color: 'white',
                     marginBottom: '0',
@@ -184,7 +184,7 @@ const SimpleHome: React.FC = () => {
                     NEXUS EVENT
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(1.8rem, 4vw, 3.2rem)',
+                    fontSize: 'clamp(1.2rem, 3vw, 2.4rem)',
                     fontWeight: 800,
                     color: 'white',
                     margin: '0',
@@ -216,21 +216,21 @@ const SimpleHome: React.FC = () => {
                 </div>
                 
                 <h2 style={{
-                  fontSize: '1.4rem',
+                  fontSize: '1.1rem',
                   fontWeight: 600,
                   color: '#10b981',
-                  marginBottom: '1.2rem',
+                  marginBottom: '1rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Heart style={{ display: 'inline', marginRight: '10px', color: '#ef4444' }} size={24} />
+                  <Heart style={{ display: 'inline', marginRight: '8px', color: '#ef4444' }} size={20} />
                   Where Innovation Meets Community
                 </h2>
                 
                 <p style={{
-                  fontSize: '1.1rem',
+                  fontSize: '0.95rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '2rem',
+                  marginBottom: '1.5rem',
                   lineHeight: 1.6,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
@@ -240,7 +240,7 @@ const SimpleHome: React.FC = () => {
                 
                 <div style={{ 
                   display: 'flex', 
-                  gap: '1.5rem', 
+                  gap: '1rem', 
                   flexWrap: 'wrap',
                   animation: 'slideInUp 1s ease-out 0.9s both'
                 }}>
@@ -248,47 +248,49 @@ const SimpleHome: React.FC = () => {
                     background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                     backgroundSize: '200% 200%',
                     border: 'none',
-                    padding: '12px 28px',
-                    borderRadius: '25px',
+                    padding: '10px 24px',
+                    borderRadius: '20px',
                     fontWeight: 600,
                     textDecoration: 'none',
                     color: 'white',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    boxShadow: '0 8px 25px rgba(16, 185, 129, 0.4)',
+                    gap: '6px',
+                    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
                     animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                     transform: 'translateY(0)',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    fontSize: '0.9rem'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px) scale(1.02)';
-                    e.currentTarget.style.boxShadow = '0 12px 35px rgba(16, 185, 129, 0.6)';
+                    e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.6)';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                    e.currentTarget.style.boxShadow = '0 8px 25px rgba(16, 185, 129, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
                   }}
                   >
-                    <Rocket size={20} />
+                    <Rocket size={16} />
                     Explore Events
-                    <ArrowRight size={18} />
+                    <ArrowRight size={14} />
                   </Link>
                   
                   {!user && (
                     <Link to="/register" className="btn btn-outline-light btn-lg" style={{
                       border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '12px 28px',
-                      borderRadius: '25px',
+                      padding: '10px 24px',
+                      borderRadius: '20px',
                       fontWeight: 600,
                       textDecoration: 'none',
                       background: 'rgba(255,255,255,0.1)',
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease'
+                      gap: '6px',
+                      transition: 'all 0.3s ease',
+                      fontSize: '0.9rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
@@ -303,31 +305,32 @@ const SimpleHome: React.FC = () => {
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                     >
-                      <Play size={18} />
+                      <Play size={16} />
                       Join Now
                     </Link>
                   )}
                   
                   {user && (
                     <Link to="/dashboard" className="btn btn-outline-light btn-lg" style={{
-                      border: '3px solid rgba(255,255,255,0.3)',
+                      border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '15px 35px',
-                      borderRadius: '50px',
-                      fontWeight: 700,
+                      padding: '10px 24px',
+                      borderRadius: '20px',
+                      fontWeight: 600,
                       textDecoration: 'none',
                       background: 'rgba(255,255,255,0.1)',
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '10px',
-                      transition: 'all 0.3s ease'
+                      gap: '6px',
+                      transition: 'all 0.3s ease',
+                      fontSize: '0.9rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
                       e.currentTarget.style.borderColor = '#10b981';
                       e.currentTarget.style.color = '#10b981';
-                      e.currentTarget.style.transform = 'translateY(-3px)';
+                      e.currentTarget.style.transform = 'translateY(-2px)';
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
@@ -336,7 +339,7 @@ const SimpleHome: React.FC = () => {
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                     >
-                      <Users size={20} />
+                      <Users size={18} />
                       My Dashboard
                     </Link>
                   )}
@@ -546,7 +549,7 @@ const SimpleHome: React.FC = () => {
 
       {/* Event Benefits Section */}
       <section style={{ 
-        padding: '100px 0', 
+        padding: '60px 0', 
         background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
         position: 'relative',
         overflow: 'hidden'
@@ -570,10 +573,10 @@ const SimpleHome: React.FC = () => {
             animation: 'slideInUp 1s ease-out'
           }}>
             <h2 style={{ 
-              fontSize: '2.2rem', 
+              fontSize: '1.8rem', 
               fontWeight: 700, 
               color: '#1e293b', 
-              marginBottom: '1rem',
+              marginBottom: '0.8rem',
               background: 'linear-gradient(135deg, #1e293b, #10b981)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
@@ -581,7 +584,7 @@ const SimpleHome: React.FC = () => {
               🌟 EVENT BENEFITS
             </h2>
             <p style={{ 
-              fontSize: '1.1rem', 
+              fontSize: '0.95rem', 
               color: '#64748b',
               maxWidth: '600px',
               margin: '0 auto'
@@ -617,9 +620,9 @@ const SimpleHome: React.FC = () => {
               <div key={index} className="col-lg-4">
                 <div style={{
                   background: 'white',
-                  padding: '3rem 2rem',
-                  borderRadius: '25px',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+                  padding: '2rem 1.5rem',
+                  borderRadius: '20px',
+                  boxShadow: '0 15px 30px rgba(0,0,0,0.1)',
                   textAlign: 'center',
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                   cursor: 'pointer',
@@ -652,18 +655,18 @@ const SimpleHome: React.FC = () => {
                   
                   <div style={{
                     color: benefit.color,
-                    marginBottom: '2rem',
+                    marginBottom: '1.5rem',
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '100px',
-                    height: '100px',
+                    width: '80px',
+                    height: '80px',
                     borderRadius: '50%',
                     background: `linear-gradient(135deg, ${benefit.color}15, ${benefit.color}25)`,
                     position: 'relative',
                     animation: 'pulse 3s ease-in-out infinite'
                   }}>
-                    {benefit.icon}
+                    {React.cloneElement(benefit.icon, { size: 40 })}
                     
                     {/* Sparkle effects */}
                     <Sparkles style={{
@@ -672,23 +675,23 @@ const SimpleHome: React.FC = () => {
                       right: '5px',
                       color: benefit.color,
                       animation: 'sparkle 2s ease-in-out infinite'
-                    }} size={16} />
+                    }} size={14} />
                   </div>
                   
                   <h4 style={{ 
-                    fontSize: '1.5rem', 
+                    fontSize: '1.2rem', 
                     fontWeight: 700, 
                     color: '#1e293b', 
-                    marginBottom: '1.5rem' 
+                    marginBottom: '1rem' 
                   }}>
                     {benefit.title}
                   </h4>
                   
                   <p style={{ 
                     color: '#64748b', 
-                    lineHeight: 1.7,
-                    fontSize: '1.1rem',
-                    marginBottom: '2rem'
+                    lineHeight: 1.6,
+                    fontSize: '0.95rem',
+                    marginBottom: '1.5rem'
                   }}>
                     {benefit.desc}
                   </p>
@@ -726,20 +729,20 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section style={{ padding: '80px 0', background: 'linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%)', color: 'white' }}>
+      <section style={{ padding: '60px 0', background: 'linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%)', color: 'white' }}>
         <div className="container">
           <div className="text-center mb-5">
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.8rem' }}>
               Our Impact
             </h2>
-            <p style={{ fontSize: '1.1rem', opacity: 0.9 }}>
+            <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>
               Numbers that speak for themselves
             </p>
           </div>
           <div className="row g-4">
             {/* Statistics will be populated from real data */}
             <div className="col-12 text-center">
-              <p style={{ fontSize: '1.2rem', opacity: 0.9, fontStyle: 'italic' }}>
+              <p style={{ fontSize: '1rem', opacity: 0.9, fontStyle: 'italic' }}>
                 Real statistics will appear here once events are created and students start participating.
               </p>
             </div>
@@ -748,20 +751,20 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section style={{ padding: '80px 0', background: '#f8f9fa' }}>
+      <section style={{ padding: '60px 0', background: '#f8f9fa' }}>
         <div className="container">
           <div className="text-center mb-5">
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1a365d', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1a365d', marginBottom: '0.8rem' }}>
               What Students Say
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            <p style={{ fontSize: '0.95rem', color: '#666' }}>
               Hear from our community
             </p>
           </div>
           <div className="row g-4">
             {/* Testimonials will be populated from real user feedback */}
             <div className="col-12 text-center">
-              <p style={{ fontSize: '1.2rem', color: '#666', fontStyle: 'italic' }}>
+              <p style={{ fontSize: '1rem', color: '#666', fontStyle: 'italic' }}>
                 Real testimonials from your students will appear here once events are held and feedback is collected.
               </p>
             </div>
@@ -770,24 +773,24 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* About Section */}
-      <section style={{ padding: '80px 0', background: 'white' }}>
+      <section style={{ padding: '60px 0', background: 'white' }}>
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6">
               <h2 style={{
-                fontSize: '2.5rem',
+                fontSize: '2rem',
                 fontWeight: 700,
                 color: '#333',
-                marginBottom: '1rem',
+                marginBottom: '0.8rem',
                 lineHeight: 1.2
               }}>
                 Uniting Students Through<br />
                 Academic Excellence
               </h2>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '0.8rem' }}>
                 <div style={{
-                  width: '60px',
-                  height: '60px',
+                  width: '50px',
+                  height: '50px',
                   borderRadius: '50%',
                   background: 'linear-gradient(45deg, #667eea, #764ba2)',
                   display: 'flex',
@@ -795,19 +798,19 @@ const SimpleHome: React.FC = () => {
                   justifyContent: 'center',
                   color: 'white'
                 }}>
-                  <Mic size={24} />
+                  <Mic size={20} />
                 </div>
                 <div>
-                  <h5 style={{ margin: 0, fontWeight: 600 }}>Guest Speakers & Workshops</h5>
-                  <p style={{ margin: 0, color: '#666' }}>
+                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>Guest Speakers & Workshops</h5>
+                  <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
                     Learn from industry experts and enhance your knowledge through interactive sessions.
                   </p>
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1.5rem' }}>
                 <div style={{
-                  width: '60px',
-                  height: '60px',
+                  width: '50px',
+                  height: '50px',
                   borderRadius: '50%',
                   background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
                   display: 'flex',
@@ -815,11 +818,11 @@ const SimpleHome: React.FC = () => {
                   justifyContent: 'center',
                   color: 'white'
                 }}>
-                  <Users size={24} />
+                  <Users size={20} />
                 </div>
                 <div>
-                  <h5 style={{ margin: 0, fontWeight: 600 }}>Student Organizers</h5>
-                  <p style={{ margin: 0, color: '#666' }}>
+                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>Student Organizers</h5>
+                  <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
                     Events organized by students, for students, fostering leadership and collaboration.
                   </p>
                 </div>
@@ -827,23 +830,24 @@ const SimpleHome: React.FC = () => {
               <Link to="/events" className="btn btn-primary" style={{
                 background: 'linear-gradient(45deg, #1a365d, #2b6cb0)',
                 border: 'none',
-                padding: '12px 30px',
-                borderRadius: '50px',
+                padding: '10px 24px',
+                borderRadius: '20px',
                 fontWeight: 600,
                 textDecoration: 'none',
                 color: 'white',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '8px'
+                gap: '6px',
+                fontSize: '0.9rem'
               }}>
-                Explore Events <ArrowRight size={16} />
+                Explore Events <ArrowRight size={14} />
               </Link>
             </div>
             <div className="col-lg-6">
               <div style={{
                 background: '#000000',
-                borderRadius: '20px',
-                padding: '2rem',
+                borderRadius: '15px',
+                padding: '1.5rem',
                 color: 'white',
                 position: 'relative',
                 overflow: 'hidden'
@@ -859,24 +863,28 @@ const SimpleHome: React.FC = () => {
                   transform: 'rotate(45deg)'
                 }} />
                 <div style={{ position: 'relative', zIndex: 1 }}>
-                  <h3 style={{ marginBottom: '1rem' }}>Register for Events Today</h3>
-                  <p style={{ marginBottom: '1.5rem', opacity: 0.9 }}>
+                  <h3 style={{ marginBottom: '0.8rem', fontSize: '1.2rem' }}>Register for Events Today</h3>
+                  <p style={{ marginBottom: '1.2rem', opacity: 0.9, fontSize: '0.9rem' }}>
                     Join thousands of students in exciting college events, from technical workshops
                     to cultural festivals, enhancing your college experience.
                   </p>
-                  <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
                     <Link to="/events" className="btn btn-light" style={{
-                      borderRadius: '50px',
+                      borderRadius: '20px',
                       fontWeight: 600,
                       textDecoration: 'none',
-                      color: '#1a365d'
+                      color: '#1a365d',
+                      padding: '8px 20px',
+                      fontSize: '0.85rem'
                     }}>
                       View Events
                     </Link>
                     <Link to="/contact" className="btn btn-outline-light" style={{
-                      borderRadius: '50px',
+                      borderRadius: '20px',
                       fontWeight: 600,
-                      textDecoration: 'none'
+                      textDecoration: 'none',
+                      padding: '8px 20px',
+                      fontSize: '0.85rem'
                     }}>
                       Contact Us
                     </Link>
@@ -894,67 +902,67 @@ const SimpleHome: React.FC = () => {
           <div className="row text-center">
             <div className="col-lg-3 col-md-6 mb-4">
               <div style={{
-                fontSize: '3rem',
+                fontSize: '2.2rem',
                 fontWeight: 900,
-                marginBottom: '0.5rem',
+                marginBottom: '0.4rem',
                 color: '#ff6b6b'
               }}>
                 {events.filter(e => e.status === 'upcoming').length}+
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Upcoming Events</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>Upcoming Events</div>
             </div>
             <div className="col-lg-3 col-md-6 mb-4">
               <div style={{
-                fontSize: '3rem',
+                fontSize: '2.2rem',
                 fontWeight: 900,
-                marginBottom: '0.5rem',
+                marginBottom: '0.4rem',
                 color: '#ff6b6b'
               }}>
                 {events.reduce((sum, event) => sum + (event.registered || 0), 0)}+
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Total Registrations</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>Total Registrations</div>
             </div>
             <div className="col-lg-3 col-md-6 mb-4">
               <div style={{
-                fontSize: '3rem',
+                fontSize: '2.2rem',
                 fontWeight: 900,
-                marginBottom: '0.5rem',
+                marginBottom: '0.4rem',
                 color: '#ff6b6b'
               }}>
                 {new Set(events.map(e => e.category)).size}+
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Event Categories</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>Event Categories</div>
             </div>
             <div className="col-lg-3 col-md-6 mb-4">
               <div style={{
-                fontSize: '3rem',
+                fontSize: '2.2rem',
                 fontWeight: 900,
-                marginBottom: '0.5rem',
+                marginBottom: '0.4rem',
                 color: '#ff6b6b'
               }}>
                 50+
               </div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Student Participants</div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600 }}>Student Participants</div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Gallery Preview Section */}
-      <section style={{ padding: '80px 0', background: 'white' }}>
+      <section style={{ padding: '60px 0', background: 'white' }}>
         <div className="container">
           <div className="text-center mb-5">
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#1a365d', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#1a365d', marginBottom: '0.8rem' }}>
               Event Gallery
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            <p style={{ fontSize: '0.95rem', color: '#666' }}>
               Glimpses of our vibrant college events
             </p>
           </div>
           <div className="row g-3">
             {/* Event gallery images will be populated from real events */}
             <div className="col-12 text-center">
-              <p style={{ fontSize: '1.2rem', color: '#666', fontStyle: 'italic' }}>
+              <p style={{ fontSize: '1rem', color: '#666', fontStyle: 'italic' }}>
                 Event photos will appear here once events are created and images are uploaded.
               </p>
             </div>
@@ -963,13 +971,13 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* Featured Events Section */}
-      <section style={{ padding: '80px 0', background: '#f8f9fa' }}>
+      <section style={{ padding: '60px 0', background: '#f8f9fa' }}>
         <div className="container">
           <div className="text-center mb-5">
-            <h2 style={{ fontSize: '2.5rem', fontWeight: 700, color: '#333', marginBottom: '1rem' }}>
+            <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#333', marginBottom: '0.8rem' }}>
               Featured Events
             </h2>
-            <p style={{ fontSize: '1.1rem', color: '#666' }}>
+            <p style={{ fontSize: '0.95rem', color: '#666' }}>
               Discover exciting college events and register to participate
             </p>
           </div>
