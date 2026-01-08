@@ -94,12 +94,12 @@ const SimpleHome: React.FC = () => {
       {/* Hero Section */}
       <section className="hero-section" style={{
         background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
-        minHeight: 'calc(100vh - 75px)',
+        minHeight: 'calc(100vh - 90px)',
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        paddingTop: '2rem'
+        paddingTop: '1rem'
       }}>
         {/* Animated Background Elements */}
         <div style={{
@@ -170,7 +170,7 @@ const SimpleHome: React.FC = () => {
                 {/* Animated Title with Typewriter Effect */}
                 <div style={{ position: 'relative', marginBottom: '1rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(1.2rem, 3vw, 2.4rem)',
+                    fontSize: 'clamp(1rem, 2.5vw, 1.8rem)',
                     fontWeight: 800,
                     color: 'white',
                     marginBottom: '0',
@@ -184,7 +184,7 @@ const SimpleHome: React.FC = () => {
                     NEXUS EVENT
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(1.2rem, 3vw, 2.4rem)',
+                    fontSize: 'clamp(1rem, 2.5vw, 1.8rem)',
                     fontWeight: 800,
                     color: 'white',
                     margin: '0',
@@ -216,22 +216,22 @@ const SimpleHome: React.FC = () => {
                 </div>
                 
                 <h2 style={{
-                  fontSize: '1.1rem',
+                  fontSize: '0.95rem',
                   fontWeight: 600,
                   color: '#10b981',
-                  marginBottom: '1rem',
+                  marginBottom: '0.8rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Heart style={{ display: 'inline', marginRight: '8px', color: '#ef4444' }} size={20} />
+                  <Heart style={{ display: 'inline', marginRight: '6px', color: '#ef4444' }} size={16} />
                   Where Innovation Meets Community
                 </h2>
                 
                 <p style={{
-                  fontSize: '0.95rem',
+                  fontSize: '0.85rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '1.5rem',
-                  lineHeight: 1.6,
+                  marginBottom: '1.2rem',
+                  lineHeight: 1.5,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
                   🚀 Discover amazing events, workshops, and competitions. Connect with your community
@@ -248,19 +248,19 @@ const SimpleHome: React.FC = () => {
                     background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                     backgroundSize: '200% 200%',
                     border: 'none',
-                    padding: '10px 24px',
-                    borderRadius: '20px',
+                    padding: '8px 20px',
+                    borderRadius: '18px',
                     fontWeight: 600,
                     textDecoration: 'none',
                     color: 'white',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '6px',
-                    boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
+                    gap: '5px',
+                    boxShadow: '0 5px 15px rgba(16, 185, 129, 0.4)',
                     animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                     transform: 'translateY(0)',
                     transition: 'all 0.3s ease',
-                    fontSize: '0.9rem'
+                    fontSize: '0.8rem'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
@@ -280,17 +280,17 @@ const SimpleHome: React.FC = () => {
                     <Link to="/register" className="btn btn-outline-light btn-lg" style={{
                       border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '10px 24px',
-                      borderRadius: '20px',
+                      padding: '8px 20px',
+                      borderRadius: '18px',
                       fontWeight: 600,
                       textDecoration: 'none',
                       background: 'rgba(255,255,255,0.1)',
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px',
+                      gap: '5px',
                       transition: 'all 0.3s ease',
-                      fontSize: '0.9rem'
+                      fontSize: '0.8rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
@@ -314,17 +314,17 @@ const SimpleHome: React.FC = () => {
                     <Link to="/dashboard" className="btn btn-outline-light btn-lg" style={{
                       border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '10px 24px',
-                      borderRadius: '20px',
+                      padding: '8px 20px',
+                      borderRadius: '18px',
                       fontWeight: 600,
                       textDecoration: 'none',
                       background: 'rgba(255,255,255,0.1)',
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '6px',
+                      gap: '5px',
                       transition: 'all 0.3s ease',
-                      fontSize: '0.9rem'
+                      fontSize: '0.8rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
@@ -549,7 +549,7 @@ const SimpleHome: React.FC = () => {
 
       {/* Event Benefits Section */}
       <section style={{ 
-        padding: '60px 0', 
+        padding: '40px 0', 
         background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
         position: 'relative',
         overflow: 'hidden'
@@ -573,10 +573,10 @@ const SimpleHome: React.FC = () => {
             animation: 'slideInUp 1s ease-out'
           }}>
             <h2 style={{ 
-              fontSize: '1.8rem', 
+              fontSize: '1.4rem', 
               fontWeight: 700, 
               color: '#1e293b', 
-              marginBottom: '0.8rem',
+              marginBottom: '0.6rem',
               background: 'linear-gradient(135deg, #1e293b, #10b981)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent'
@@ -584,7 +584,7 @@ const SimpleHome: React.FC = () => {
               🌟 EVENT BENEFITS
             </h2>
             <p style={{ 
-              fontSize: '0.95rem', 
+              fontSize: '0.85rem', 
               color: '#64748b',
               maxWidth: '600px',
               margin: '0 auto'
@@ -679,19 +679,19 @@ const SimpleHome: React.FC = () => {
                   </div>
                   
                   <h4 style={{ 
-                    fontSize: '1.2rem', 
+                    fontSize: '1rem', 
                     fontWeight: 700, 
                     color: '#1e293b', 
-                    marginBottom: '1rem' 
+                    marginBottom: '0.8rem' 
                   }}>
                     {benefit.title}
                   </h4>
                   
                   <p style={{ 
                     color: '#64748b', 
-                    lineHeight: 1.6,
-                    fontSize: '0.95rem',
-                    marginBottom: '1.5rem'
+                    lineHeight: 1.5,
+                    fontSize: '0.85rem',
+                    marginBottom: '1.2rem'
                   }}>
                     {benefit.desc}
                   </p>
@@ -729,13 +729,13 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section style={{ padding: '60px 0', background: 'linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%)', color: 'white' }}>
+      <section style={{ padding: '40px 0', background: 'linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%)', color: 'white' }}>
         <div className="container">
           <div className="text-center mb-5">
-            <h2 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.8rem' }}>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 700, marginBottom: '0.6rem' }}>
               Our Impact
             </h2>
-            <p style={{ fontSize: '0.95rem', opacity: 0.9 }}>
+            <p style={{ fontSize: '0.85rem', opacity: 0.9 }}>
               Numbers that speak for themselves
             </p>
           </div>
@@ -773,15 +773,15 @@ const SimpleHome: React.FC = () => {
       </section>
 
       {/* About Section */}
-      <section style={{ padding: '60px 0', background: 'white' }}>
+      <section style={{ padding: '40px 0', background: 'white' }}>
         <div className="container">
           <div className="row align-items-center">
             <div className="col-lg-6">
               <h2 style={{
-                fontSize: '2rem',
+                fontSize: '1.6rem',
                 fontWeight: 700,
                 color: '#333',
-                marginBottom: '0.8rem',
+                marginBottom: '0.6rem',
                 lineHeight: 1.2
               }}>
                 Uniting Students Through<br />
@@ -801,8 +801,8 @@ const SimpleHome: React.FC = () => {
                   <Mic size={20} />
                 </div>
                 <div>
-                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>Guest Speakers & Workshops</h5>
-                  <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem' }}>Guest Speakers & Workshops</h5>
+                  <p style={{ margin: 0, color: '#666', fontSize: '0.8rem' }}>
                     Learn from industry experts and enhance your knowledge through interactive sessions.
                   </p>
                 </div>
@@ -821,8 +821,8 @@ const SimpleHome: React.FC = () => {
                   <Users size={20} />
                 </div>
                 <div>
-                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>Student Organizers</h5>
-                  <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                  <h5 style={{ margin: 0, fontWeight: 600, fontSize: '0.9rem' }}>Student Organizers</h5>
+                  <p style={{ margin: 0, color: '#666', fontSize: '0.8rem' }}>
                     Events organized by students, for students, fostering leadership and collaboration.
                   </p>
                 </div>
@@ -830,15 +830,15 @@ const SimpleHome: React.FC = () => {
               <Link to="/events" className="btn btn-primary" style={{
                 background: 'linear-gradient(45deg, #1a365d, #2b6cb0)',
                 border: 'none',
-                padding: '10px 24px',
-                borderRadius: '20px',
+                padding: '8px 20px',
+                borderRadius: '18px',
                 fontWeight: 600,
                 textDecoration: 'none',
                 color: 'white',
                 display: 'inline-flex',
                 alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.9rem'
+                gap: '5px',
+                fontSize: '0.8rem'
               }}>
                 Explore Events <ArrowRight size={14} />
               </Link>
