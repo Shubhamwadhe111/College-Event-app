@@ -99,7 +99,8 @@ const SimpleHome: React.FC = () => {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        paddingTop: '1rem'
+        paddingTop: '80px',
+        marginTop: '50px'
       }}>
         {/* Animated Background Elements */}
         <div style={{
@@ -168,9 +169,9 @@ const SimpleHome: React.FC = () => {
                 transition: 'all 1s ease-out'
               }}>
                 {/* Animated Title with Typewriter Effect */}
-                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                <div style={{ position: 'relative', marginBottom: '1.5rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(0.9rem, 2vw, 1.4rem)',
+                    fontSize: 'clamp(2rem, 4vw, 3.5rem)',
                     fontWeight: 800,
                     color: 'white',
                     marginBottom: '0',
@@ -184,7 +185,7 @@ const SimpleHome: React.FC = () => {
                     NEXUS EVENT
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(0.9rem, 2vw, 1.4rem)',
+                    fontSize: 'clamp(2rem, 4vw, 3.5rem)',
                     fontWeight: 800,
                     color: 'white',
                     margin: '0',
@@ -216,22 +217,22 @@ const SimpleHome: React.FC = () => {
                 </div>
                 
                 <h2 style={{
-                  fontSize: '0.8rem',
+                  fontSize: '1.4rem',
                   fontWeight: 600,
                   color: '#10b981',
-                  marginBottom: '0.6rem',
+                  marginBottom: '1rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Heart style={{ display: 'inline', marginRight: '5px', color: '#ef4444' }} size={14} />
+                  <Heart style={{ display: 'inline', marginRight: '8px', color: '#ef4444' }} size={20} />
                   Where Innovation Meets Community
                 </h2>
                 
                 <p style={{
-                  fontSize: '0.75rem',
+                  fontSize: '1.1rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '1rem',
-                  lineHeight: 1.4,
+                  marginBottom: '1.5rem',
+                  lineHeight: 1.6,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
                   🚀 Discover amazing events, workshops, and competitions. Connect with your community
@@ -240,7 +241,7 @@ const SimpleHome: React.FC = () => {
                 
                 <div style={{ 
                   display: 'flex', 
-                  gap: '1rem', 
+                  gap: '1.5rem', 
                   flexWrap: 'wrap',
                   animation: 'slideInUp 1s ease-out 0.9s both'
                 }}>
@@ -248,19 +249,19 @@ const SimpleHome: React.FC = () => {
                     background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                     backgroundSize: '200% 200%',
                     border: 'none',
-                    padding: '6px 16px',
+                    padding: '14px 28px',
                     borderRadius: '16px',
                     fontWeight: 600,
                     textDecoration: 'none',
                     color: 'white',
                     display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '4px',
+                    gap: '8px',
                     boxShadow: '0 4px 12px rgba(16, 185, 129, 0.4)',
                     animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                     transform: 'translateY(0)',
                     transition: 'all 0.3s ease',
-                    fontSize: '0.75rem'
+                    fontSize: '1.1rem'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
@@ -271,16 +272,16 @@ const SimpleHome: React.FC = () => {
                     e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.4)';
                   }}
                   >
-                    <Rocket size={16} />
+                    <Rocket size={20} />
                     Explore Events
-                    <ArrowRight size={14} />
+                    <ArrowRight size={18} />
                   </Link>
                   
                   {!user && (
                     <Link to="/register" className="btn btn-outline-light btn-lg" style={{
                       border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '8px 20px',
+                      padding: '14px 28px',
                       borderRadius: '18px',
                       fontWeight: 600,
                       textDecoration: 'none',
@@ -288,9 +289,9 @@ const SimpleHome: React.FC = () => {
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '5px',
+                      gap: '8px',
                       transition: 'all 0.3s ease',
-                      fontSize: '0.8rem'
+                      fontSize: '1.1rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
@@ -305,7 +306,7 @@ const SimpleHome: React.FC = () => {
                       e.currentTarget.style.transform = 'translateY(0)';
                     }}
                     >
-                      <Play size={16} />
+                      <Play size={20} />
                       Join Now
                     </Link>
                   )}
@@ -314,7 +315,7 @@ const SimpleHome: React.FC = () => {
                     <Link to="/dashboard" className="btn btn-outline-light btn-lg" style={{
                       border: '2px solid rgba(255,255,255,0.3)',
                       color: 'white',
-                      padding: '8px 20px',
+                      padding: '14px 28px',
                       borderRadius: '18px',
                       fontWeight: 600,
                       textDecoration: 'none',
@@ -322,9 +323,9 @@ const SimpleHome: React.FC = () => {
                       backdropFilter: 'blur(10px)',
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '5px',
+                      gap: '8px',
                       transition: 'all 0.3s ease',
-                      fontSize: '0.8rem'
+                      fontSize: '1.1rem'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
