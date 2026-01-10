@@ -13,7 +13,10 @@ import {
   User, 
   ChevronDown,
   Menu,
-  X
+  X,
+  UserPlus,
+  LogIn,
+  Sparkles
 } from 'lucide-react';
 import NotificationCenter from '../NotificationCenter';
 
@@ -213,12 +216,80 @@ const Navbar: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="auth-buttons">
-              <Link to="/register" className="btn btn-primary">
-                Sign Up
+            <div className="auth-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {/* Sign Up Button - Gradient filled */}
+              <Link 
+                to="/register" 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 20px',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+                  backgroundSize: '200% 200%',
+                  border: 'none',
+                  borderRadius: '12px',
+                  color: 'white',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4), 0 0 20px rgba(139, 92, 246, 0.2)',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
+                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.5), 0 0 30px rgba(139, 92, 246, 0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.4), 0 0 20px rgba(139, 92, 246, 0.2)';
+                }}
+              >
+                <UserPlus size={16} />
+                <span>Sign Up</span>
+                <Sparkles size={14} style={{ opacity: 0.8 }} />
               </Link>
-              <Link to="/login" className="btn btn-secondary">
-                Login
+              
+              {/* Login Button - Outlined with glow */}
+              <Link 
+                to="/login" 
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 20px',
+                  background: 'transparent',
+                  border: '2px solid rgba(139, 92, 246, 0.5)',
+                  borderRadius: '12px',
+                  color: '#a855f7',
+                  fontWeight: 700,
+                  fontSize: '0.9rem',
+                  textDecoration: 'none',
+                  transition: 'all 0.3s ease',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(139, 92, 246, 0.15)';
+                  e.currentTarget.style.borderColor = '#a855f7';
+                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(139, 92, 246, 0.3), inset 0 0 20px rgba(139, 92, 246, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.5)';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+              >
+                <LogIn size={16} />
+                <span>Login</span>
               </Link>
             </div>
           )}

@@ -46,6 +46,7 @@ const Login: React.FC = () => {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '2rem 1rem',
+      paddingTop: '100px',
       position: 'relative',
       overflow: 'hidden'
     }}>
