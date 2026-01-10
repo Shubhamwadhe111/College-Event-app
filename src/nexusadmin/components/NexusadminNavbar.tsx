@@ -396,7 +396,7 @@ const NexusadminNavbar: React.FC = () => {
                         My Profile
                       </PortalLink>
                       <PortalLink
-                        to="/settings"
+                        to="/approvals"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -411,7 +411,7 @@ const NexusadminNavbar: React.FC = () => {
                         }}
                       >
                         <Settings size={16} />
-                        Settings
+                        Approvals
                       </PortalLink>
                     </div>
                     <div style={{ padding: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
