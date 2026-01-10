@@ -47,21 +47,32 @@ const EnhancedOrganizersPage: React.FC = () => {
   const loadOrganizers = () => {
     setIsLoading(true);
     try {
+      // Debug: Show all localStorage keys
+      console.log('=== ORGANIZERS PAGE DEBUG ===');
+      console.log('All localStorage keys:', Object.keys(localStorage));
+      
       const usersData = localStorage.getItem(STORAGE_KEY);
-      console.log('Loading organizers from localStorage:', usersData ? 'Data found' : 'No data');
+      console.log('Raw localStorage data for', STORAGE_KEY, ':', usersData);
       
       if (usersData) {
         const users = JSON.parse(usersData);
-        console.log('All users:', Object.keys(users).length);
+        console.log('Parsed users object:', users);
+        console.log('Total users count:', Object.keys(users).length);
         
         const organizersList: Organizer[] = [];
         
         Object.entries(users).forEach(([key, user]: [string, any]) => {
-          console.log(`User ${key}:`, { role: user.role, name: user.name, isApproved: user.isApproved });
+          console.log(`Checking user ${key}:`, { 
+            role: user.role, 
+            name: user.name, 
+            isApproved: user.isApproved,
+            isOrganizerRole: user.role === 'organizer'
+          });
           
           if (user.role === 'organizer') {
             // Treat undefined/null isApproved as false (pending)
             const isApproved = user.isApproved === true;
+            console.log(`  -> Adding organizer: ${user.name}, isApproved: ${isApproved}`);
             
             organizersList.push({
               id: user.id || key,
@@ -82,10 +93,12 @@ const EnhancedOrganizersPage: React.FC = () => {
           }
         });
         
-        console.log('Found organizers:', organizersList.length);
+        console.log('Final organizers list:', organizersList);
+        console.log('Found organizers count:', organizersList.length);
         setOrganizers(organizersList);
       } else {
-        console.log('No users data in localStorage');
+        console.log('No users data found in localStorage key:', STORAGE_KEY);
+        console.log('This means no users have registered yet, or data was cleared');
         setOrganizers([]);
       }
     } catch (error) {
