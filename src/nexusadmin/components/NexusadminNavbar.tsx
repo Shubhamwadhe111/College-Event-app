@@ -62,13 +62,13 @@ const NexusadminNavbar: React.FC = () => {
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/nexusadmin/dashboard' },
     { name: 'Events', href: '/events', current: location.pathname === '/nexusadmin/events' },
     { name: 'Analytics', href: '/analytics', current: location.pathname === '/nexusadmin/analytics' },
-    { name: 'Settings', href: '/settings', current: location.pathname === '/nexusadmin/settings' },
+    { name: 'Organizers', href: '/organizers', current: location.pathname === '/nexusadmin/organizers' },
   ];
   
   // Hidden items (only in mobile menu)
   const moreNavigation = [
-    { name: 'Organizers', href: '/organizers', current: location.pathname === '/nexusadmin/organizers' },
     { name: 'Approvals', href: '/approvals', current: location.pathname === '/nexusadmin/approvals' },
+    { name: 'Settings', href: '/settings', current: location.pathname === '/nexusadmin/settings' },
     { name: 'Notifications', href: '/notifications', current: location.pathname === '/nexusadmin/notifications' },
     { name: 'Help', href: '/help', current: location.pathname === '/nexusadmin/help' },
   ];
@@ -209,18 +209,18 @@ const NexusadminNavbar: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '44px',
-                    height: '44px',
+                    width: '48px',
+                    height: '48px',
                     background: 'rgba(16, 185, 129, 0.1)',
                     border: '1px solid rgba(16, 185, 129, 0.3)',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     cursor: 'pointer',
                     color: '#10b981',
                     transition: 'all 0.2s ease',
                     position: 'relative'
                   }}
                 >
-                  <Bell size={24} />
+                  <Bell size={26} />
                   {/* Notification Badge */}
                   <span style={{
                     position: 'absolute',
@@ -396,7 +396,7 @@ const NexusadminNavbar: React.FC = () => {
                         My Profile
                       </PortalLink>
                       <PortalLink
-                        to="/settings"
+                        to="/approvals"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -410,8 +410,8 @@ const NexusadminNavbar: React.FC = () => {
                           transition: 'background 0.2s ease'
                         }}
                       >
-                        <Settings size={16} />
-                        Settings
+                        <Shield size={16} />
+                        Approvals
                       </PortalLink>
                     </div>
                     <div style={{ padding: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
