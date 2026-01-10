@@ -35,6 +35,8 @@ interface Organizer {
   createdAt?: string;
 }
 
+const STORAGE_KEY = 'nexus_demo_users';
+
 const EnhancedOrganizersPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
@@ -45,15 +47,21 @@ const EnhancedOrganizersPage: React.FC = () => {
   const loadOrganizers = () => {
     setIsLoading(true);
     try {
-      const usersData = localStorage.getItem('nexus_demo_users');
+      const usersData = localStorage.getItem(STORAGE_KEY);
+      console.log('Loading organizers from localStorage:', usersData ? 'Data found' : 'No data');
+      
       if (usersData) {
         const users = JSON.parse(usersData);
+        console.log('All users:', Object.keys(users).length);
+        
         const organizersList: Organizer[] = [];
         
-        Object.values(users).forEach((user: any) => {
+        Object.entries(users).forEach(([key, user]: [string, any]) => {
+          console.log(`User ${key}:`, { role: user.role, name: user.name, isApproved: user.isApproved });
+          
           if (user.role === 'organizer') {
             organizersList.push({
-              id: user.id,
+              id: user.id || key,
               name: user.name,
               email: user.email,
               phone: user.phone || 'Not provided',
@@ -71,10 +79,15 @@ const EnhancedOrganizersPage: React.FC = () => {
           }
         });
         
+        console.log('Found organizers:', organizersList.length);
         setOrganizers(organizersList);
+      } else {
+        console.log('No users data in localStorage');
+        setOrganizers([]);
       }
     } catch (error) {
       console.error('Error loading organizers:', error);
+      setOrganizers([]);
     }
     setIsLoading(false);
   };
@@ -102,14 +115,17 @@ const EnhancedOrganizersPage: React.FC = () => {
 
   const handleApprove = (organizerId: string) => {
     try {
-      const usersData = localStorage.getItem('nexus_demo_users');
+      const usersData = localStorage.getItem(STORAGE_KEY);
       if (usersData) {
         const users = JSON.parse(usersData);
         if (users[organizerId]) {
           users[organizerId].isApproved = true;
-          localStorage.setItem('nexus_demo_users', JSON.stringify(users));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
           loadOrganizers(); // Reload the list
           alert('Organizer approved successfully!');
+        } else {
+          console.error('Organizer not found with ID:', organizerId);
+          alert('Organizer not found');
         }
       }
     } catch (error) {
@@ -120,14 +136,17 @@ const EnhancedOrganizersPage: React.FC = () => {
 
   const handleReject = (organizerId: string) => {
     try {
-      const usersData = localStorage.getItem('nexus_demo_users');
+      const usersData = localStorage.getItem(STORAGE_KEY);
       if (usersData) {
         const users = JSON.parse(usersData);
         if (users[organizerId]) {
           delete users[organizerId];
-          localStorage.setItem('nexus_demo_users', JSON.stringify(users));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
           loadOrganizers(); // Reload the list
           alert('Organizer rejected and removed');
+        } else {
+          console.error('Organizer not found with ID:', organizerId);
+          alert('Organizer not found');
         }
       }
     } catch (error) {
@@ -138,12 +157,12 @@ const EnhancedOrganizersPage: React.FC = () => {
 
   const handleToggleStatus = (organizerId: string) => {
     try {
-      const usersData = localStorage.getItem('nexus_demo_users');
+      const usersData = localStorage.getItem(STORAGE_KEY);
       if (usersData) {
         const users = JSON.parse(usersData);
         if (users[organizerId]) {
           users[organizerId].isApproved = !users[organizerId].isApproved;
-          localStorage.setItem('nexus_demo_users', JSON.stringify(users));
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
           loadOrganizers(); // Reload the list
         }
       }
@@ -607,10 +626,13 @@ const EnhancedOrganizersPage: React.FC = () => {
             <h3 style={{ color: '#ffffff', fontSize: '1.25rem', fontWeight: 600, margin: 0, marginBottom: '0.5rem' }}>
               {activeTab === 'pending' ? 'No pending approvals' : 'No organizers found'}
             </h3>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', margin: 0 }}>
+            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', margin: 0, marginBottom: '1rem' }}>
               {activeTab === 'pending' 
                 ? 'All organizer requests have been processed' 
                 : 'Organizers who register on the main website will appear here'}
+            </p>
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', margin: 0 }}>
+              Tip: Users can register as organizers at the main website's signup page
             </p>
           </div>
         )}
