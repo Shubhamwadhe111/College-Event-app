@@ -23,5 +23,28 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    
+    <!-- GitHub Pages SPA redirect handler -->
+    <script type="text/javascript">
+      (function() {
+        // Check if there's a redirect path stored from 404.html
+        var redirectPath = sessionStorage.getItem('nexus_redirect_path');
+        if (redirectPath) {
+          // Clear the stored path
+          sessionStorage.removeItem('nexus_redirect_path');
+          
+          // Use history.replaceState to update the URL without reloading
+          // This allows React Router to handle the route
+          var basePath = '/College-Event-app';
+          var fullPath = basePath + redirectPath;
+          
+          console.log('SPA Redirect: Restoring path:', redirectPath);
+          console.log('SPA Redirect: Full path:', fullPath);
+          
+          // Replace the current history entry with the intended path
+          window.history.replaceState(null, '', fullPath);
+        }
+      })();
+    </script>
   </body>
 </html>
