@@ -8,6 +8,7 @@ const AdminHomePage: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     setIsVisible(true);
@@ -20,12 +21,18 @@ const AdminHomePage: React.FC = () => {
       setScrollY(window.scrollY);
     };
 
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -45,8 +52,9 @@ const AdminHomePage: React.FC = () => {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        padding: '2rem 0',
-        width: '100%'
+        padding: isMobile ? '80px 1rem 2rem 1rem' : '2rem 0',
+        width: '100%',
+        marginTop: isMobile ? '0' : '0'
       }}>
         {/* Animated Background Elements */}
         <div style={{
@@ -105,9 +113,10 @@ const AdminHomePage: React.FC = () => {
         <div className="container" style={{ 
           position: 'relative', 
           zIndex: 1,
-          paddingTop: '1rem',
+          paddingTop: isMobile ? '0' : '1rem',
           maxWidth: '1200px',
-          margin: '0 auto'
+          margin: '0 auto',
+          padding: isMobile ? '0 1rem' : '0'
         }}>
           <div className="row align-items-center" style={{
             display: 'flex',
@@ -126,9 +135,9 @@ const AdminHomePage: React.FC = () => {
                 transition: 'all 1s ease-out'
               }}>
                 {/* Animated Title */}
-                <div style={{ position: 'relative', marginBottom: '2rem' }}>
+                <div style={{ position: 'relative', marginBottom: isMobile ? '1rem' : '2rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                    fontSize: isMobile ? '1.8rem' : 'clamp(2rem, 5vw, 3.5rem)',
                     fontWeight: 900,
                     color: 'white',
                     marginBottom: '0',
@@ -138,12 +147,12 @@ const AdminHomePage: React.FC = () => {
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     lineHeight: '1.1',
-                    letterSpacing: '-2px'
+                    letterSpacing: isMobile ? '-1px' : '-2px'
                   }}>
                     NEXUS ADMIN
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(2rem, 5vw, 3.5rem)',
+                    fontSize: isMobile ? '1.8rem' : 'clamp(2rem, 5vw, 3.5rem)',
                     fontWeight: 900,
                     color: 'white',
                     margin: '0',
@@ -153,7 +162,7 @@ const AdminHomePage: React.FC = () => {
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     lineHeight: '1.1',
-                    letterSpacing: '-2px'
+                    letterSpacing: isMobile ? '-1px' : '-2px'
                   }}>
                     PORTAL
                   </h1>
@@ -169,21 +178,21 @@ const AdminHomePage: React.FC = () => {
                 </div>
                 
                 <h2 style={{
-                  fontSize: '1.6rem',
+                  fontSize: isMobile ? '1.1rem' : '1.6rem',
                   fontWeight: 700,
                   color: '#10b981',
-                  marginBottom: '2rem',
+                  marginBottom: isMobile ? '1rem' : '2rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Trophy style={{ display: 'inline', marginRight: '15px', color: '#f59e0b' }} size={32} />
+                  <Trophy style={{ display: 'inline', marginRight: '10px', color: '#f59e0b' }} size={isMobile ? 20 : 32} />
                   College Event Management Hub
                 </h2>
                 
                 <p style={{
-                  fontSize: '1.1rem',
+                  fontSize: isMobile ? '0.95rem' : '1.1rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '3rem',
+                  marginBottom: isMobile ? '1.5rem' : '3rem',
                   lineHeight: 1.7,
                   animation: 'slideInLeft 1s ease-out 0.7s both',
                   maxWidth: '600px'

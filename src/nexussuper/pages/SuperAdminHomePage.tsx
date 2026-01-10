@@ -8,6 +8,7 @@ const SuperAdminHomePage: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [scrollY, setScrollY] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
     setIsVisible(true);
@@ -20,12 +21,18 @@ const SuperAdminHomePage: React.FC = () => {
       setScrollY(window.scrollY);
     };
 
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleResize);
     
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 
@@ -45,8 +52,9 @@ const SuperAdminHomePage: React.FC = () => {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        padding: '2rem 0',
-        width: '100%'
+        padding: isMobile ? '80px 1rem 2rem 1rem' : '2rem 0',
+        width: '100%',
+        marginTop: isMobile ? '0' : '0'
       }}>
         {/* Animated Background Elements */}
         <div style={{
@@ -105,7 +113,8 @@ const SuperAdminHomePage: React.FC = () => {
         <div className="container" style={{ 
           position: 'relative', 
           zIndex: 1,
-          paddingTop: '1rem'
+          paddingTop: isMobile ? '0' : '1rem',
+          padding: isMobile ? '0 1rem' : '0'
         }}>
           <div className="row align-items-center">
             <div className="col-lg-6">
@@ -115,9 +124,9 @@ const SuperAdminHomePage: React.FC = () => {
                 transition: 'all 1s ease-out'
               }}>
                 {/* Animated Title */}
-                <div style={{ position: 'relative', marginBottom: '1rem' }}>
+                <div style={{ position: 'relative', marginBottom: isMobile ? '0.5rem' : '1rem' }}>
                   <h1 style={{
-                    fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                    fontSize: isMobile ? '1.8rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
                     fontWeight: 900,
                     color: 'white',
                     marginBottom: '0',
@@ -131,7 +140,7 @@ const SuperAdminHomePage: React.FC = () => {
                     NEXUS MASTER
                   </h1>
                   <h1 style={{
-                    fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+                    fontSize: isMobile ? '1.8rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
                     fontWeight: 900,
                     color: 'white',
                     margin: '0',
@@ -152,36 +161,29 @@ const SuperAdminHomePage: React.FC = () => {
                     right: '20px',
                     color: '#10b981',
                     animation: 'sparkle 2s ease-in-out infinite'
-                  }} size={24} />
-                  <Crown style={{
-                    position: 'absolute',
-                    bottom: '10px',
-                    left: '10px',
-                    color: '#14b8a6',
-                    animation: 'sparkle 2s ease-in-out infinite 0.5s'
-                  }} size={20} />
+                  }} size={isMobile ? 18 : 24} />
                 </div>
                 
                 <h2 style={{
-                  fontSize: '1.8rem',
+                  fontSize: isMobile ? '1.1rem' : '1.8rem',
                   fontWeight: 700,
                   color: '#10b981',
-                  marginBottom: '1.5rem',
+                  marginBottom: isMobile ? '1rem' : '1.5rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Trophy style={{ display: 'inline', marginRight: '10px', color: '#f59e0b' }} size={24} />
+                  <Trophy style={{ display: 'inline', marginRight: '10px', color: '#f59e0b' }} size={isMobile ? 18 : 24} />
                   Ultimate System Administration
                 </h2>
                 
                 <p style={{
-                  fontSize: '1.3rem',
+                  fontSize: isMobile ? '0.95rem' : '1.3rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: '2.5rem',
+                  marginBottom: isMobile ? '1.5rem' : '2.5rem',
                   lineHeight: 1.7,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
-                  👑 Master control over all college portals, system-wide analytics, global user management,
+                  Master control over all college portals, system-wide analytics, global user management,
                   and comprehensive platform oversight with ultimate administrative privileges.
                 </p>
                 
@@ -457,17 +459,23 @@ const SuperAdminHomePage: React.FC = () => {
                   <>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{
-                        fontSize: '5rem',
-                        marginBottom: '20px',
+                        width: isMobile ? '60px' : '80px',
+                        height: isMobile ? '60px' : '80px',
+                        background: 'linear-gradient(45deg, #10b981, #14b8a6)',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 20px auto',
                         animation: 'bounce 2s ease-in-out infinite'
                       }}>
-                        👑
+                        <Shield size={isMobile ? 30 : 40} color="white" />
                       </div>
                       
                       <h3 style={{ 
                         color: 'white', 
                         marginBottom: '20px',
-                        fontSize: '2rem',
+                        fontSize: isMobile ? '1.3rem' : '2rem',
                         fontWeight: 800,
                         background: 'linear-gradient(45deg, #10b981, #14b8a6)',
                         WebkitBackgroundClip: 'text',
