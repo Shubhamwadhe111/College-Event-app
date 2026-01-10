@@ -11,6 +11,7 @@ import EnhancedAnalyticsPage from './pages/EnhancedAnalyticsPage';
 import EnhancedNotificationsPage from './pages/EnhancedNotificationsPage';
 import EnhancedSettingsPage from './pages/EnhancedSettingsPage';
 import EnhancedHelpPage from './pages/EnhancedHelpPage';
+import AdminProfilePage from './pages/AdminProfilePage';
 import ProtectedRoute from '../components/ProtectedRoute';
 
 function NexusadminApp() {
@@ -85,6 +86,13 @@ function NexusadminApp() {
           <ProtectedRoute requiredRole="admin">
             <NexusadminMainLayout>
               <EnhancedSettingsPage />
+            </NexusadminMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute requiredRole="admin">
+            <NexusadminMainLayout>
+              <AdminProfilePage />
             </NexusadminMainLayout>
           </ProtectedRoute>
         } />

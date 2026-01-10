@@ -209,8 +209,8 @@ const NexusadminNavbar: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '40px',
-                    height: '40px',
+                    width: '44px',
+                    height: '44px',
                     background: 'rgba(16, 185, 129, 0.1)',
                     border: '1px solid rgba(16, 185, 129, 0.3)',
                     borderRadius: '10px',
@@ -220,7 +220,7 @@ const NexusadminNavbar: React.FC = () => {
                     position: 'relative'
                   }}
                 >
-                  <Bell size={20} />
+                  <Bell size={24} />
                   {/* Notification Badge */}
                   <span style={{
                     position: 'absolute',
@@ -378,7 +378,7 @@ const NexusadminNavbar: React.FC = () => {
                     </div>
                     <div style={{ padding: '0.5rem' }}>
                       <PortalLink
-                        to="/settings"
+                        to="/profile"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -396,7 +396,7 @@ const NexusadminNavbar: React.FC = () => {
                         My Profile
                       </PortalLink>
                       <PortalLink
-                        to="/approvals"
+                        to="/settings"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -411,7 +411,7 @@ const NexusadminNavbar: React.FC = () => {
                         }}
                       >
                         <Settings size={16} />
-                        Approvals
+                        Settings
                       </PortalLink>
                     </div>
                     <div style={{ padding: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
