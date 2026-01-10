@@ -14,7 +14,11 @@ import {
   Calendar,
   UserCheck,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Download,
+  X,
+  Save,
+  Trash2
 } from 'lucide-react';
 
 interface Organizer {
@@ -42,12 +46,22 @@ const EnhancedOrganizersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [organizers, setOrganizers] = useState<Organizer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedOrganizer, setSelectedOrganizer] = useState<Organizer | null>(null);
+  const [newOrganizer, setNewOrganizer] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    department: '',
+    designation: 'Event Organizer'
+  });
 
   // Load organizers from localStorage
   const loadOrganizers = () => {
     setIsLoading(true);
     try {
-      // Debug: Show all localStorage keys
       console.log('=== ORGANIZERS PAGE DEBUG ===');
       console.log('All localStorage keys:', Object.keys(localStorage));
       
@@ -70,7 +84,6 @@ const EnhancedOrganizersPage: React.FC = () => {
           });
           
           if (user.role === 'organizer') {
-            // Treat undefined/null isApproved as false (pending)
             const isApproved = user.isApproved === true;
             console.log(`  -> Adding organizer: ${user.name}, isApproved: ${isApproved}`);
             
@@ -98,7 +111,6 @@ const EnhancedOrganizersPage: React.FC = () => {
         setOrganizers(organizersList);
       } else {
         console.log('No users data found in localStorage key:', STORAGE_KEY);
-        console.log('This means no users have registered yet, or data was cleared');
         setOrganizers([]);
       }
     } catch (error) {
@@ -137,10 +149,9 @@ const EnhancedOrganizersPage: React.FC = () => {
         if (users[organizerId]) {
           users[organizerId].isApproved = true;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-          loadOrganizers(); // Reload the list
+          loadOrganizers();
           alert('Organizer approved successfully!');
         } else {
-          console.error('Organizer not found with ID:', organizerId);
           alert('Organizer not found');
         }
       }
@@ -151,6 +162,7 @@ const EnhancedOrganizersPage: React.FC = () => {
   };
 
   const handleReject = (organizerId: string) => {
+    if (!window.confirm('Are you sure you want to reject and remove this organizer?')) return;
     try {
       const usersData = localStorage.getItem(STORAGE_KEY);
       if (usersData) {
@@ -158,11 +170,8 @@ const EnhancedOrganizersPage: React.FC = () => {
         if (users[organizerId]) {
           delete users[organizerId];
           localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-          loadOrganizers(); // Reload the list
+          loadOrganizers();
           alert('Organizer rejected and removed');
-        } else {
-          console.error('Organizer not found with ID:', organizerId);
-          alert('Organizer not found');
         }
       }
     } catch (error) {
@@ -179,11 +188,147 @@ const EnhancedOrganizersPage: React.FC = () => {
         if (users[organizerId]) {
           users[organizerId].isApproved = !users[organizerId].isApproved;
           localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-          loadOrganizers(); // Reload the list
+          loadOrganizers();
         }
       }
     } catch (error) {
       console.error('Error toggling organizer status:', error);
+    }
+  };
+
+  const handleExport = () => {
+    try {
+      const exportData = organizers.map(org => ({
+        Name: org.name,
+        Email: org.email,
+        Phone: org.phone,
+        Department: org.department,
+        Designation: org.designation,
+        Status: org.status,
+        'Approval Status': org.approvalStatus,
+        'Joined Date': org.joinedDate
+      }));
+      
+      // Create CSV content
+      const headers = Object.keys(exportData[0] || {}).join(',');
+      const rows = exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','));
+      const csv = [headers, ...rows].join('\n');
+      
+      // Download file
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `organizers_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      alert('Organizers exported successfully!');
+    } catch (error) {
+      console.error('Export error:', error);
+      alert('Failed to export organizers');
+    }
+  };
+
+  const handleAddOrganizer = () => {
+    if (!newOrganizer.name || !newOrganizer.email) {
+      alert('Please fill in name and email');
+      return;
+    }
+    
+    try {
+      const usersData = localStorage.getItem(STORAGE_KEY);
+      const users = usersData ? JSON.parse(usersData) : {};
+      
+      // Check if email exists
+      const emailExists = Object.values(users).some((u: any) => u.email === newOrganizer.email);
+      if (emailExists) {
+        alert('Email already exists');
+        return;
+      }
+      
+      // Generate new ID
+      const newId = Date.now().toString();
+      
+      users[newId] = {
+        id: newId,
+        name: newOrganizer.name,
+        email: newOrganizer.email,
+        phone: newOrganizer.phone,
+        department: newOrganizer.department,
+        designation: newOrganizer.designation,
+        role: 'organizer',
+        isApproved: true, // Admin-added organizers are pre-approved
+        createdAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+      loadOrganizers();
+      setShowAddModal(false);
+      setNewOrganizer({ name: '', email: '', phone: '', department: '', designation: 'Event Organizer' });
+      alert('Organizer added successfully!');
+    } catch (error) {
+      console.error('Error adding organizer:', error);
+      alert('Failed to add organizer');
+    }
+  };
+
+  const handleViewOrganizer = (organizer: Organizer) => {
+    setSelectedOrganizer(organizer);
+    setShowViewModal(true);
+  };
+
+  const handleEditOrganizer = (organizer: Organizer) => {
+    setSelectedOrganizer(organizer);
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (!selectedOrganizer) return;
+    
+    try {
+      const usersData = localStorage.getItem(STORAGE_KEY);
+      if (usersData) {
+        const users = JSON.parse(usersData);
+        if (users[selectedOrganizer.id]) {
+          users[selectedOrganizer.id] = {
+            ...users[selectedOrganizer.id],
+            name: selectedOrganizer.name,
+            email: selectedOrganizer.email,
+            phone: selectedOrganizer.phone,
+            department: selectedOrganizer.department,
+            designation: selectedOrganizer.designation
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+          loadOrganizers();
+          setShowEditModal(false);
+          setSelectedOrganizer(null);
+          alert('Organizer updated successfully!');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating organizer:', error);
+      alert('Failed to update organizer');
+    }
+  };
+
+  const handleDeleteOrganizer = (organizerId: string) => {
+    if (!window.confirm('Are you sure you want to delete this organizer?')) return;
+    
+    try {
+      const usersData = localStorage.getItem(STORAGE_KEY);
+      if (usersData) {
+        const users = JSON.parse(usersData);
+        delete users[organizerId];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        loadOrganizers();
+        alert('Organizer deleted successfully!');
+      }
+    } catch (error) {
+      console.error('Error deleting organizer:', error);
+      alert('Failed to delete organizer');
     }
   };
 
@@ -197,6 +342,42 @@ const EnhancedOrganizersPage: React.FC = () => {
   };
 
   const totalEvents = organizers.reduce((sum, o) => sum + o.eventsCreated, 0);
+
+  const modalOverlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'rgba(0,0,0,0.7)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000
+  };
+
+  const modalStyle: React.CSSProperties = {
+    background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
+    borderRadius: '16px',
+    padding: '1.5rem',
+    width: '90%',
+    maxWidth: '500px',
+    maxHeight: '90vh',
+    overflow: 'auto',
+    border: '1px solid rgba(255,255,255,0.1)'
+  };
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '0.75rem',
+    background: 'rgba(255,255,255,0.1)',
+    border: '1px solid rgba(255,255,255,0.2)',
+    borderRadius: '8px',
+    color: '#ffffff',
+    fontSize: '0.9rem',
+    outline: 'none',
+    boxSizing: 'border-box'
+  };
 
   return (
     <div style={{
@@ -217,7 +398,25 @@ const EnhancedOrganizersPage: React.FC = () => {
                 Manage event organizers, approvals, and permissions
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button 
+                onClick={handleExport}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1rem',
+                  background: 'rgba(59, 130, 246, 0.2)',
+                  color: '#3b82f6',
+                  border: '1px solid rgba(59, 130, 246, 0.4)',
+                  borderRadius: '10px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer'
+                }}>
+                <Download size={18} />
+                Export
+              </button>
               <button 
                 onClick={loadOrganizers}
                 style={{
@@ -236,20 +435,22 @@ const EnhancedOrganizersPage: React.FC = () => {
                 <RefreshCw size={18} />
                 Refresh
               </button>
-              <button style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.75rem 1.25rem',
-                background: 'linear-gradient(135deg, #10b981, #059669)',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: '10px',
-                fontWeight: 600,
-                fontSize: '0.9rem',
-                cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
-              }}>
+              <button 
+                onClick={() => setShowAddModal(true)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.75rem 1.25rem',
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '10px',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                }}>
                 <Plus size={18} />
                 Add Organizer
               </button>
@@ -375,8 +576,7 @@ const EnhancedOrganizersPage: React.FC = () => {
           marginBottom: '1rem'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-            {/* Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
@@ -407,8 +607,7 @@ const EnhancedOrganizersPage: React.FC = () => {
               ))}
             </div>
 
-            {/* Search */}
-            <div style={{ position: 'relative', minWidth: '280px' }}>
+            <div style={{ position: 'relative', minWidth: '250px' }}>
               <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'rgba(255,255,255,0.4)' }} />
               <input
                 type="text"
@@ -423,7 +622,8 @@ const EnhancedOrganizersPage: React.FC = () => {
                   borderRadius: '8px',
                   color: '#ffffff',
                   fontSize: '0.9rem',
-                  outline: 'none'
+                  outline: 'none',
+                  boxSizing: 'border-box'
                 }}
               />
             </div>
@@ -461,7 +661,6 @@ const EnhancedOrganizersPage: React.FC = () => {
               }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '1rem', flex: 1 }}>
-                    {/* Avatar */}
                     <div style={{
                       width: '56px',
                       height: '56px',
@@ -479,7 +678,6 @@ const EnhancedOrganizersPage: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Info */}
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
                         <h3 style={{ color: '#ffffff', fontSize: '1.1rem', fontWeight: 600, margin: 0 }}>{organizer.name}</h3>
@@ -546,26 +744,45 @@ const EnhancedOrganizersPage: React.FC = () => {
                   </div>
 
                   {/* Actions */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <button style={{
-                      padding: '0.5rem',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: '8px',
-                      color: 'rgba(255,255,255,0.7)',
-                      cursor: 'pointer'
-                    }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <button 
+                      onClick={() => handleViewOrganizer(organizer)}
+                      title="View Details"
+                      style={{
+                        padding: '0.5rem',
+                        background: 'rgba(59, 130, 246, 0.2)',
+                        border: '1px solid rgba(59, 130, 246, 0.4)',
+                        borderRadius: '8px',
+                        color: '#3b82f6',
+                        cursor: 'pointer'
+                      }}>
                       <Eye size={16} />
                     </button>
-                    <button style={{
-                      padding: '0.5rem',
-                      background: 'rgba(255,255,255,0.1)',
-                      border: '1px solid rgba(255,255,255,0.2)',
-                      borderRadius: '8px',
-                      color: 'rgba(255,255,255,0.7)',
-                      cursor: 'pointer'
-                    }}>
+                    <button 
+                      onClick={() => handleEditOrganizer(organizer)}
+                      title="Edit"
+                      style={{
+                        padding: '0.5rem',
+                        background: 'rgba(245, 158, 11, 0.2)',
+                        border: '1px solid rgba(245, 158, 11, 0.4)',
+                        borderRadius: '8px',
+                        color: '#f59e0b',
+                        cursor: 'pointer'
+                      }}>
                       <Edit size={16} />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteOrganizer(organizer.id)}
+                      title="Delete"
+                      style={{
+                        padding: '0.5rem',
+                        background: 'rgba(239, 68, 68, 0.2)',
+                        border: '1px solid rgba(239, 68, 68, 0.4)',
+                        borderRadius: '8px',
+                        color: '#ef4444',
+                        cursor: 'pointer'
+                      }}>
+                      <Trash2 size={16} />
                     </button>
 
                     {organizer.approvalStatus === 'pending' && (
@@ -647,12 +864,326 @@ const EnhancedOrganizersPage: React.FC = () => {
                 ? 'All organizer requests have been processed' 
                 : 'Organizers who register on the main website will appear here'}
             </p>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', margin: 0 }}>
-              Tip: Users can register as organizers at the main website's signup page
-            </p>
+            <button
+              onClick={() => setShowAddModal(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.75rem 1.5rem',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '10px',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={18} />
+              Add First Organizer
+            </button>
           </div>
         )}
       </div>
+
+      {/* Add Organizer Modal */}
+      {showAddModal && (
+        <div style={modalOverlayStyle} onClick={() => setShowAddModal(false)}>
+          <div style={modalStyle} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ color: '#ffffff', fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Add New Organizer</h2>
+              <button onClick={() => setShowAddModal(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Name *</label>
+                <input
+                  type="text"
+                  value={newOrganizer.name}
+                  onChange={e => setNewOrganizer({...newOrganizer, name: e.target.value})}
+                  style={inputStyle}
+                  placeholder="Enter organizer name"
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Email *</label>
+                <input
+                  type="email"
+                  value={newOrganizer.email}
+                  onChange={e => setNewOrganizer({...newOrganizer, email: e.target.value})}
+                  style={inputStyle}
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Phone</label>
+                <input
+                  type="tel"
+                  value={newOrganizer.phone}
+                  onChange={e => setNewOrganizer({...newOrganizer, phone: e.target.value})}
+                  style={inputStyle}
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Department/Organization</label>
+                <input
+                  type="text"
+                  value={newOrganizer.department}
+                  onChange={e => setNewOrganizer({...newOrganizer, department: e.target.value})}
+                  style={inputStyle}
+                  placeholder="Enter department or organization"
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Designation</label>
+                <input
+                  type="text"
+                  value={newOrganizer.designation}
+                  onChange={e => setNewOrganizer({...newOrganizer, designation: e.target.value})}
+                  style={inputStyle}
+                  placeholder="Enter designation"
+                />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button
+                  onClick={() => setShowAddModal(false)}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleAddOrganizer}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <Plus size={18} />
+                  Add Organizer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Organizer Modal */}
+      {showViewModal && selectedOrganizer && (
+        <div style={modalOverlayStyle} onClick={() => setShowViewModal(false)}>
+          <div style={modalStyle} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ color: '#ffffff', fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Organizer Details</h2>
+              <button onClick={() => setShowViewModal(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+              <div style={{
+                width: '80px',
+                height: '80px',
+                background: selectedOrganizer.approvalStatus === 'pending' 
+                  ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
+                  : 'linear-gradient(135deg, #10b981, #059669)',
+                borderRadius: '16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 1rem'
+              }}>
+                <span style={{ color: '#ffffff', fontWeight: 700, fontSize: '2rem' }}>
+                  {selectedOrganizer.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <h3 style={{ color: '#ffffff', fontSize: '1.25rem', fontWeight: 600, margin: 0 }}>{selectedOrganizer.name}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem', margin: '0.25rem 0' }}>{selectedOrganizer.designation}</p>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <Mail size={18} color="#10b981" />
+                <div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: 0 }}>Email</p>
+                  <p style={{ color: '#ffffff', fontSize: '0.9rem', margin: 0 }}>{selectedOrganizer.email}</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <Phone size={18} color="#10b981" />
+                <div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: 0 }}>Phone</p>
+                  <p style={{ color: '#ffffff', fontSize: '0.9rem', margin: 0 }}>{selectedOrganizer.phone}</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <Building size={18} color="#10b981" />
+                <div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: 0 }}>Department</p>
+                  <p style={{ color: '#ffffff', fontSize: '0.9rem', margin: 0 }}>{selectedOrganizer.department}</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <Calendar size={18} color="#10b981" />
+                <div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: 0 }}>Joined Date</p>
+                  <p style={{ color: '#ffffff', fontSize: '0.9rem', margin: 0 }}>{selectedOrganizer.joinedDate}</p>
+                </div>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                <CheckCircle size={18} color={selectedOrganizer.status === 'active' ? '#10b981' : '#f59e0b'} />
+                <div>
+                  <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: 0 }}>Status</p>
+                  <p style={{ color: selectedOrganizer.status === 'active' ? '#10b981' : '#f59e0b', fontSize: '0.9rem', margin: 0, fontWeight: 600 }}>
+                    {selectedOrganizer.status.charAt(0).toUpperCase() + selectedOrganizer.status.slice(1)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={() => setShowViewModal(false)}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                background: 'rgba(255,255,255,0.1)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                borderRadius: '8px',
+                color: '#ffffff',
+                fontWeight: 600,
+                cursor: 'pointer',
+                marginTop: '1.5rem'
+              }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Organizer Modal */}
+      {showEditModal && selectedOrganizer && (
+        <div style={modalOverlayStyle} onClick={() => setShowEditModal(false)}>
+          <div style={modalStyle} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ color: '#ffffff', fontSize: '1.25rem', fontWeight: 700, margin: 0 }}>Edit Organizer</h2>
+              <button onClick={() => setShowEditModal(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Name</label>
+                <input
+                  type="text"
+                  value={selectedOrganizer.name}
+                  onChange={e => setSelectedOrganizer({...selectedOrganizer, name: e.target.value})}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Email</label>
+                <input
+                  type="email"
+                  value={selectedOrganizer.email}
+                  onChange={e => setSelectedOrganizer({...selectedOrganizer, email: e.target.value})}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Phone</label>
+                <input
+                  type="tel"
+                  value={selectedOrganizer.phone}
+                  onChange={e => setSelectedOrganizer({...selectedOrganizer, phone: e.target.value})}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Department</label>
+                <input
+                  type="text"
+                  value={selectedOrganizer.department}
+                  onChange={e => setSelectedOrganizer({...selectedOrganizer, department: e.target.value})}
+                  style={inputStyle}
+                />
+              </div>
+              <div>
+                <label style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem', marginBottom: '0.5rem', display: 'block' }}>Designation</label>
+                <input
+                  type="text"
+                  value={selectedOrganizer.designation}
+                  onChange={e => setSelectedOrganizer({...selectedOrganizer, designation: e.target.value})}
+                  style={inputStyle}
+                />
+              </div>
+              
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  style={{
+                    flex: 1,
+                    padding: '0.75rem',
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#ffffff',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '0.5rem'
+                  }}
+                >
+                  <Save size={18} />
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
