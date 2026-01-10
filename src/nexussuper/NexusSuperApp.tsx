@@ -16,6 +16,10 @@ import {
   EnhancedMasterNotificationsPage
 } from './pages';
 
+// New Profile and Settings Pages
+import MasterProfilePage from './pages/MasterProfilePage';
+import MasterSettingsPage from './pages/MasterSettingsPage';
+
 function NexusSuperApp() {
   console.log('🚀 NexusSuperApp is loading!');
   console.log('Current URL:', window.location.href);
@@ -88,6 +92,20 @@ function NexusSuperApp() {
           <ProtectedRoute requiredRole="master">
             <NexusSuperMainLayout>
               <EnhancedMasterNotificationsPage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <MasterProfilePage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/settings" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <MasterSettingsPage />
             </NexusSuperMainLayout>
           </ProtectedRoute>
         } />

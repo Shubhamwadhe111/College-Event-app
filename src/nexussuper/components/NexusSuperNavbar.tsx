@@ -218,18 +218,18 @@ const NexusSuperNavbar: React.FC = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    width: '36px',
-                    height: '36px',
+                    width: '48px',
+                    height: '48px',
                     background: 'rgba(16, 185, 129, 0.1)',
                     border: '1px solid rgba(16, 185, 129, 0.3)',
-                    borderRadius: '10px',
+                    borderRadius: '12px',
                     cursor: 'pointer',
                     color: '#10b981',
                     transition: 'all 0.2s ease',
                     position: 'relative'
                   }}
                 >
-                  <Bell size={18} />
+                  <Bell size={26} />
                   {/* Notification Badge */}
                   <span style={{
                     position: 'absolute',
@@ -387,7 +387,7 @@ const NexusSuperNavbar: React.FC = () => {
                     </div>
                     <div style={{ padding: '0.5rem' }}>
                       <PortalLink
-                        to="/system-settings"
+                        to="/profile"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -405,7 +405,7 @@ const NexusSuperNavbar: React.FC = () => {
                         My Profile
                       </PortalLink>
                       <PortalLink
-                        to="/command-center"
+                        to="/settings"
                         onClick={() => setIsProfileOpen(false)}
                         style={{
                           display: 'flex',
@@ -420,7 +420,7 @@ const NexusSuperNavbar: React.FC = () => {
                         }}
                       >
                         <Settings size={16} />
-                        Command Center
+                        Settings
                       </PortalLink>
                     </div>
                     <div style={{ padding: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
