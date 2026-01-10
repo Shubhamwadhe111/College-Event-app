@@ -111,6 +111,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       const result = await storageService.registerUser(registrationData);
       console.debug('Registration result:', result);
+      
+      if (result.success) {
+        // Auto-login after successful registration
+        console.debug('Auto-logging in after registration...');
+        const loginResult = await storageService.loginUser({ 
+          email: userData.email, 
+          password: userData.password 
+        }, 'student');
+        
+        if (loginResult.success && loginResult.user) {
+          const userDataForContext: User = {
+            ...loginResult.user,
+            studentId: loginResult.user.studentId || loginResult.user.id,
+            registeredEvents: [],
+          };
+          
+          setUser(userDataForContext);
+          localStorage.setItem('currentUser', JSON.stringify(userDataForContext));
+          console.debug('Auto-login successful after registration');
+        }
+      }
+      
       setIsLoading(false);
       
       return { 

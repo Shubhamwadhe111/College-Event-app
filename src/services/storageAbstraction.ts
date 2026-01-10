@@ -172,6 +172,7 @@ export interface StorageService {
 class DatabaseStorageService implements StorageService {
   async registerUser(userData: any): Promise<RegistrationResult> {
     try {
+      console.debug('DatabaseStorageService: Registering user', { ...userData, password: '[HIDDEN]' });
       let response;
       
       if (userData.role === 'organizer') {
@@ -182,21 +183,24 @@ class DatabaseStorageService implements StorageService {
         response = await userAPI.register(userData);
       }
       
+      console.debug('DatabaseStorageService: Registration successful', response);
       return {
         success: true,
         message: response.message || 'Registration successful',
         userId: response.userId || response.organizerId || response.adminId,
       };
     } catch (error: any) {
+      console.error('DatabaseStorageService: Registration failed', error);
       return {
         success: false,
-        message: error.message || 'Registration failed',
+        message: error.message || 'Registration failed. Please check your connection and try again.',
       };
     }
   }
 
   async loginUser(credentials: { email: string; password: string }, userType = 'student'): Promise<LoginResult> {
     try {
+      console.debug('DatabaseStorageService: Logging in user', { email: credentials.email, userType });
       let response;
       
       if (userType === 'admin' || userType === 'master') {
@@ -206,6 +210,8 @@ class DatabaseStorageService implements StorageService {
       } else {
         response = await userAPI.login(credentials);
       }
+      
+      console.debug('DatabaseStorageService: Login successful', response);
       
       const user: User = {
         id: response.user.id.toString(),
@@ -235,9 +241,10 @@ class DatabaseStorageService implements StorageService {
         redirectTo,
       };
     } catch (error: any) {
+      console.error('DatabaseStorageService: Login failed', error);
       return {
         success: false,
-        message: error.message || 'Login failed',
+        message: error.message || 'Login failed. Please check your credentials and try again.',
       };
     }
   }
@@ -366,11 +373,16 @@ export const getStorageService = (): StorageService => {
   const backendService = getBackendDetectionService();
   const status = backendService.getCurrentStatus();
   
-  // If backend is available, use database service
-  if (status === 'available') {
+  console.debug('Storage service selection - Backend status:', status);
+  
+  // If backend is available OR still checking, try database service first
+  // This ensures we don't fall back to localStorage prematurely
+  if (status === 'available' || status === 'checking') {
+    console.debug('Using DatabaseStorageService');
     return new DatabaseStorageService();
   } else {
-    // If backend is unavailable or still checking, use localStorage service
+    // Only use localStorage if backend is confirmed unavailable
+    console.debug('Using LocalStorageService (backend unavailable)');
     return new LocalStorageService();
   }
 };
