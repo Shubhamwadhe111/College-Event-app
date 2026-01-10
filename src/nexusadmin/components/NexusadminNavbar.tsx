@@ -1,8 +1,8 @@
-// Nexusadmin Navbar Component - Simple Mobile Navigation Fix
-import React, { useState, useEffect } from 'react';
+// Nexusadmin Navbar Component - With Profile Dropdown and Notifications
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Shield, Menu, X } from 'lucide-react';
+import { Shield, Menu, X, Bell, LogOut, Settings, User, ChevronDown } from 'lucide-react';
 import PortalLink from '../../components/PortalLink';
 
 const NexusadminNavbar: React.FC = () => {
@@ -10,6 +10,24 @@ const NexusadminNavbar: React.FC = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setIsProfileOpen(false);
+      }
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setIsNotificationOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Handle window resize for responsive behavior
   useEffect(() => {
@@ -176,51 +194,254 @@ const NexusadminNavbar: React.FC = () => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '1rem',
+            gap: '0.75rem',
             flexShrink: 0
           }}>
-            {/* User Info - Desktop Only */}
+            {/* Notification Bell - Desktop Only */}
             {user && !isMobile && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                padding: '0.5rem 1rem',
-                background: 'rgba(16, 185, 129, 0.1)',
-                borderRadius: '20px',
-                border: '1px solid rgba(16, 185, 129, 0.2)'
-              }}>
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #10b981, #34d399)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontWeight: 700,
-                  fontSize: '1rem'
-                }}>
-                  {user.avatar ? (
-                    <img src={user.avatar} alt={user.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
-                  ) : (
-                    <span>{user.name.charAt(0).toUpperCase()}</span>
-                  )}
-                </div>
-                <div>
+              <div ref={notificationRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => {
+                    setIsNotificationOpen(!isNotificationOpen);
+                    setIsProfileOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '40px',
+                    height: '40px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    color: '#10b981',
+                    transition: 'all 0.2s ease',
+                    position: 'relative'
+                  }}
+                >
+                  <Bell size={20} />
+                  {/* Notification Badge */}
+                  <span style={{
+                    position: 'absolute',
+                    top: '6px',
+                    right: '6px',
+                    width: '8px',
+                    height: '8px',
+                    background: '#ef4444',
+                    borderRadius: '50%',
+                    border: '2px solid #0f172a'
+                  }} />
+                </button>
+                
+                {/* Notification Dropdown */}
+                {isNotificationOpen && (
                   <div style={{
-                    fontSize: '0.8rem',
+                    position: 'absolute',
+                    top: '50px',
+                    right: 0,
+                    width: '300px',
+                    background: 'rgba(15, 23, 42, 0.98)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                    zIndex: 10000,
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      padding: '1rem',
+                      borderBottom: '1px solid rgba(255,255,255,0.1)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center'
+                    }}>
+                      <span style={{ color: '#ffffff', fontWeight: 600 }}>Notifications</span>
+                      <span style={{ color: '#10b981', fontSize: '0.75rem', cursor: 'pointer' }}>Mark all read</span>
+                    </div>
+                    <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                      <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+                        <p style={{ color: '#ffffff', fontSize: '0.85rem', margin: 0 }}>New organizer registration</p>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>2 minutes ago</p>
+                      </div>
+                      <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', cursor: 'pointer' }}>
+                        <p style={{ color: '#ffffff', fontSize: '0.85rem', margin: 0 }}>Event approval pending</p>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>15 minutes ago</p>
+                      </div>
+                      <div style={{ padding: '0.75rem 1rem', cursor: 'pointer' }}>
+                        <p style={{ color: '#ffffff', fontSize: '0.85rem', margin: 0 }}>System update completed</p>
+                        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>1 hour ago</p>
+                      </div>
+                    </div>
+                    <PortalLink
+                      to="/notifications"
+                      onClick={() => setIsNotificationOpen(false)}
+                      style={{
+                        display: 'block',
+                        padding: '0.75rem 1rem',
+                        textAlign: 'center',
+                        color: '#10b981',
+                        fontSize: '0.85rem',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        borderTop: '1px solid rgba(255,255,255,0.1)'
+                      }}
+                    >
+                      View All Notifications
+                    </PortalLink>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* User Profile - Desktop Only */}
+            {user && !isMobile && (
+              <div ref={profileRef} style={{ position: 'relative' }}>
+                <button
+                  onClick={() => {
+                    setIsProfileOpen(!isProfileOpen);
+                    setIsNotificationOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.4rem 0.75rem 0.4rem 0.5rem',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    borderRadius: '25px',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <div style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #10b981, #34d399)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
                     fontWeight: 700,
-                    color: '#ffffff'
-                  }}>{user.name}</div>
+                    fontSize: '0.9rem'
+                  }}>
+                    {user.avatar ? (
+                      <img src={user.avatar} alt={user.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
+                    ) : (
+                      <span>{user.name.charAt(0).toUpperCase()}</span>
+                    )}
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{
+                      fontSize: '0.8rem',
+                      fontWeight: 700,
+                      color: '#ffffff',
+                      lineHeight: 1.2
+                    }}>{user.name}</div>
+                    <div style={{
+                      fontSize: '0.6rem',
+                      fontWeight: 500,
+                      color: 'rgba(16, 185, 129, 0.9)',
+                      textTransform: 'uppercase'
+                    }}>Admin</div>
+                  </div>
+                  <ChevronDown 
+                    size={16} 
+                    color="#10b981" 
+                    style={{ 
+                      transform: isProfileOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease'
+                    }} 
+                  />
+                </button>
+                
+                {/* Profile Dropdown */}
+                {isProfileOpen && (
                   <div style={{
-                    fontSize: '0.6rem',
-                    fontWeight: 500,
-                    color: 'rgba(16, 185, 129, 0.9)',
-                    textTransform: 'uppercase'
-                  }}>Admin</div>
-                </div>
+                    position: 'absolute',
+                    top: '50px',
+                    right: 0,
+                    width: '200px',
+                    background: 'rgba(15, 23, 42, 0.98)',
+                    border: '1px solid rgba(16, 185, 129, 0.3)',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.4)',
+                    zIndex: 10000,
+                    overflow: 'hidden'
+                  }}>
+                    <div style={{
+                      padding: '1rem',
+                      borderBottom: '1px solid rgba(255,255,255,0.1)'
+                    }}>
+                      <p style={{ color: '#ffffff', fontWeight: 600, margin: 0, fontSize: '0.9rem' }}>{user.name}</p>
+                      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: '0.25rem 0 0 0' }}>{user.email}</p>
+                    </div>
+                    <div style={{ padding: '0.5rem' }}>
+                      <PortalLink
+                        to="/settings"
+                        onClick={() => setIsProfileOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.75rem',
+                          color: '#cbd5e1',
+                          textDecoration: 'none',
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          transition: 'background 0.2s ease'
+                        }}
+                      >
+                        <User size={16} />
+                        My Profile
+                      </PortalLink>
+                      <PortalLink
+                        to="/settings"
+                        onClick={() => setIsProfileOpen(false)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.75rem',
+                          color: '#cbd5e1',
+                          textDecoration: 'none',
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          transition: 'background 0.2s ease'
+                        }}
+                      >
+                        <Settings size={16} />
+                        Settings
+                      </PortalLink>
+                    </div>
+                    <div style={{ padding: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                      <button
+                        onClick={() => {
+                          setIsProfileOpen(false);
+                          handleLogout();
+                        }}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          width: '100%',
+                          padding: '0.75rem',
+                          color: '#ef4444',
+                          background: 'transparent',
+                          border: 'none',
+                          borderRadius: '8px',
+                          fontSize: '0.85rem',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'background 0.2s ease'
+                        }}
+                      >
+                        <LogOut size={16} />
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
