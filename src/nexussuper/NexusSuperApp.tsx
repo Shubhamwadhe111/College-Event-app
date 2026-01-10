@@ -17,7 +17,8 @@ import {
   FunctionsPage,
   AddCollegePage,
   AddAdminPage,
-  BroadcastPage
+  BroadcastPage,
+  MasterDashboardPage
 } from './pages';
 
 // New Profile and Settings Pages
@@ -50,6 +51,13 @@ function NexusSuperApp() {
         } />
         
         {/* Protected master admin routes with main layout */}
+        <Route path="/dashboard" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <MasterDashboardPage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
         <Route path="/colleges" element={
           <ProtectedRoute requiredRole="master">
             <NexusSuperMainLayout>
