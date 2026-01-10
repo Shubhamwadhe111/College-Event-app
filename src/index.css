@@ -654,11 +654,11 @@ body::after {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #10b981, #34d399, #14b8a6);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
   background-size: 200% 200%;
   color: white;
   font-weight: 700;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3), 0 0 30px rgba(52, 211, 153, 0.15);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4), 0 0 30px rgba(139, 92, 246, 0.2);
   position: relative;
   overflow: hidden;
   animation: gradientShiftBtn 5s ease infinite;
@@ -690,13 +690,13 @@ body::after {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(16, 185, 129, 0.4), 0 0 45px rgba(52, 211, 153, 0.2);
+  box-shadow: 0 10px 35px rgba(99, 102, 241, 0.5), 0 0 50px rgba(139, 92, 246, 0.3);
 }
 
 .btn-secondary {
-  background: rgba(30, 30, 30, 0.8);
+  background: rgba(15, 15, 35, 0.9);
   color: #ffffff;
-  border: 2px solid rgba(16, 185, 129, 0.25);
+  border: 2px solid rgba(99, 102, 241, 0.4);
   font-weight: 600;
   backdrop-filter: blur(10px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -704,9 +704,9 @@ body::after {
 }
 
 .btn-secondary:hover {
-  background: rgba(16, 185, 129, 0.08);
-  border-color: #10b981;
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25), 0 0 35px rgba(16, 185, 129, 0.15);
+  background: rgba(99, 102, 241, 0.15);
+  border-color: #8b5cf6;
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.35), 0 0 40px rgba(139, 92, 246, 0.2);
   transform: translateY(-2px);
 }
 
@@ -847,7 +847,7 @@ body::after {
 
 .form-input:focus {
   outline: none;
-  border-color: #10b981;
+  border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12), 
               0 6px 20px rgba(16, 185, 129, 0.15),
               inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -870,7 +870,7 @@ body::after {
 
 .form-select:focus {
   outline: none;
-  border-color: #10b981;
+  border-color: #8b5cf6;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12), 
               0 6px 20px rgba(16, 185, 129, 0.15);
   background: rgba(20, 20, 20, 0.9);
@@ -1077,7 +1077,7 @@ body::after {
   font-size: 1rem;
   resize: vertical;
   min-height: 100px;
-  background: rgba(30, 30, 30, 0.8);
+  background: rgba(15, 15, 35, 0.9);
   color: #e2e8f0;
 }
 
@@ -1322,7 +1322,7 @@ a:hover {
 
 /* Text gradient animation */
 .text-gradient {
-  background: linear-gradient(135deg, #10b981, #34d399, #14b8a6);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
