@@ -60,6 +60,9 @@ const EnhancedOrganizersPage: React.FC = () => {
           console.log(`User ${key}:`, { role: user.role, name: user.name, isApproved: user.isApproved });
           
           if (user.role === 'organizer') {
+            // Treat undefined/null isApproved as false (pending)
+            const isApproved = user.isApproved === true;
+            
             organizersList.push({
               id: user.id || key,
               name: user.name,
@@ -67,14 +70,14 @@ const EnhancedOrganizersPage: React.FC = () => {
               phone: user.phone || 'Not provided',
               department: user.department || user.college || 'Not specified',
               designation: user.designation || 'Event Organizer',
-              status: user.isApproved ? 'active' : 'pending',
+              status: isApproved ? 'active' : 'pending',
               eventsCreated: 0,
               totalParticipants: 0,
               joinedDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
               lastActive: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
-              approvalStatus: user.isApproved ? 'approved' : 'pending',
+              approvalStatus: isApproved ? 'approved' : 'pending',
               rating: 0,
-              isApproved: user.isApproved
+              isApproved: isApproved
             });
           }
         });
