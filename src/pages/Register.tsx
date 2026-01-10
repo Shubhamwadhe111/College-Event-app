@@ -143,12 +143,11 @@ const Register: React.FC = () => {
             <h2 style={{
               fontSize: '1.6rem',
               fontWeight: 800,
-              background: isOrganizer 
-                ? 'linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #d97706 100%)'
-                : 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              marginBottom: '0.3rem'
+              color: isOrganizer ? '#f59e0b' : '#10b981',
+              marginBottom: '0.3rem',
+              textShadow: isOrganizer 
+                ? '0 0 20px rgba(245, 158, 11, 0.3)'
+                : '0 0 20px rgba(16, 185, 129, 0.3)'
             }}>
               Join Nexus
             </h2>
