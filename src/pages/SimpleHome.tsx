@@ -313,36 +313,45 @@ const SimpleHome: React.FC = () => {
                   )}
                   
                   {user && (
-                    <Link to="/dashboard" className="btn btn-outline-light btn-lg" style={{
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      color: 'white',
-                      padding: '14px 28px',
-                      borderRadius: '18px',
-                      fontWeight: 600,
-                      textDecoration: 'none',
-                      background: 'rgba(255,255,255,0.1)',
-                      backdropFilter: 'blur(10px)',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      transition: 'all 0.3s ease',
-                      fontSize: '1.1rem'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-                      e.currentTarget.style.borderColor = '#10b981';
-                      e.currentTarget.style.color = '#10b981';
-                      e.currentTarget.style.transform = 'translateY(-2px)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-                      e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
-                      e.currentTarget.style.color = 'white';
-                      e.currentTarget.style.transform = 'translateY(0)';
-                    }}
+                    <Link 
+                      to={
+                        user.role === 'master' ? '/nexussuper/dashboard' :
+                        user.role === 'admin' ? '/nexusadmin/dashboard' :
+                        '/my-events'
+                      } 
+                      className="btn btn-outline-light btn-lg" 
+                      style={{
+                        border: '2px solid rgba(255,255,255,0.3)',
+                        color: 'white',
+                        padding: '14px 28px',
+                        borderRadius: '18px',
+                        fontWeight: 600,
+                        textDecoration: 'none',
+                        background: 'rgba(255,255,255,0.1)',
+                        backdropFilter: 'blur(10px)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        transition: 'all 0.3s ease',
+                        fontSize: '1.1rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                        e.currentTarget.style.borderColor = '#10b981';
+                        e.currentTarget.style.color = '#10b981';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)';
+                        e.currentTarget.style.color = 'white';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                      }}
                     >
                       <Users size={18} />
-                      My Dashboard
+                      {user.role === 'master' ? 'Super Admin Panel' :
+                       user.role === 'admin' ? 'Admin Dashboard' :
+                       'My Dashboard'}
                     </Link>
                   )}
                 </div>
