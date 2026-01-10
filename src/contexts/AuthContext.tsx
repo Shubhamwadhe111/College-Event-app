@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from '../types';
-import { getStorageService } from '../services/storageAbstraction';
-import { useBackendStatus } from '../hooks/useBackendStatus';
+import { getStorageService, getStorageServiceAsync } from '../services/storageAbstraction';
 
 interface AuthContextType {
   user: User | null;
@@ -33,7 +32,6 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { isAvailable: isBackendAvailable } = useBackendStatus();
 
   useEffect(() => {
     // Check for existing session
@@ -53,7 +51,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       console.debug('Login attempt:', { email, userType });
-      const storageService = getStorageService();
+      // Use async version to wait for backend check
+      const storageService = await getStorageServiceAsync();
       console.debug('Using storage service:', storageService.constructor.name);
       
       const result = await storageService.loginUser({ email, password });
@@ -95,7 +94,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     
     try {
       console.debug('Registration attempt:', { ...userData, password: '[HIDDEN]' });
-      const storageService = getStorageService();
+      // Use async version to wait for backend check
+      const storageService = await getStorageServiceAsync();
       console.debug('Using storage service:', storageService.constructor.name);
       
       const registrationData = {
@@ -157,7 +157,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      const storageService = getStorageService();
+      // Use async version to wait for backend check
+      const storageService = await getStorageServiceAsync();
       const registrationData = {
         ...organizerData,
         role: 'organizer'
@@ -188,7 +189,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      const storageService = getStorageService();
+      // Use async version to wait for backend check
+      const storageService = await getStorageServiceAsync();
       const registrationData = {
         ...adminData,
         role: 'admin'
@@ -219,7 +221,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
-      const storageService = getStorageService();
+      // Use async version to wait for backend check
+      const storageService = await getStorageServiceAsync();
       const registrationData = {
         name: masterData.name,
         email: masterData.email,

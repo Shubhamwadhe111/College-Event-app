@@ -375,20 +375,40 @@ export const getStorageService = (): StorageService => {
   
   console.debug('Storage service selection - Backend status:', status);
   
-  // If backend is available, always use database service
+  // If backend is available, use database service
   if (status === 'available') {
     console.debug('Using DatabaseStorageService (backend available)');
     return new DatabaseStorageService();
   }
   
-  // If still checking, try database service first (it will fail gracefully if backend is down)
-  if (status === 'checking') {
-    console.debug('Using DatabaseStorageService (checking backend...)');
-    return new DatabaseStorageService();
-  }
-  
-  // Backend is unavailable - use localStorage for demo mode
-  console.debug('Using LocalStorageService (demo mode - backend unavailable)');
+  // For 'checking' or 'unavailable' status, use localStorage
+  // This ensures the app works immediately on GitHub Pages without waiting for backend check
+  console.debug('Using LocalStorageService (demo mode - backend status:', status, ')');
   console.info('📱 Running in DEMO MODE - Data is stored locally in your browser');
   return new LocalStorageService();
+};
+
+// Async version that waits for backend check to complete
+export const getStorageServiceAsync = async (): Promise<StorageService> => {
+  const backendService = getBackendDetectionService();
+  
+  // Wait for initial check if still checking
+  if (backendService.getCurrentStatus() === 'checking') {
+    console.debug('Waiting for backend check to complete...');
+    await new Promise<void>((resolve) => {
+      const unsubscribe = backendService.onStatusChange((event) => {
+        if (event.status !== 'checking') {
+          unsubscribe();
+          resolve();
+        }
+      });
+      // Timeout after 3 seconds
+      setTimeout(() => {
+        unsubscribe();
+        resolve();
+      }, 3000);
+    });
+  }
+  
+  return getStorageService();
 };
