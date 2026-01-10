@@ -34,7 +34,7 @@ const NexusadminRegister: React.FC = () => {
     if (result.success) {
       setSuccess('Registration successful! You can now login.');
       setTimeout(() => {
-        navigate('/login');
+        navigate('/nexusadmin/login');
       }, 2000);
     } else {
       setError(result.message);

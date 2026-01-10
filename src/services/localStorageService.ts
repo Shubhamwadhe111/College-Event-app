@@ -163,6 +163,10 @@ export class LocalStorageService implements StorageService {
       
       // Create user
       const userId = this.generateId('user');
+      
+      // Organizers need admin approval before they can login
+      const isOrganizer = userData.role === 'organizer';
+      
       const user: User = {
         id: userId,
         name: userData.name,
@@ -174,6 +178,7 @@ export class LocalStorageService implements StorageService {
         year: userData.year,
         department: userData.department,
         designation: userData.designation,
+        isApproved: isOrganizer ? false : true, // Organizers need approval, others are auto-approved
         createdAt: new Date().toISOString(),
       };
 
@@ -182,9 +187,18 @@ export class LocalStorageService implements StorageService {
       users[userId] = userWithPassword;
       this.setData(STORAGE_KEYS.USERS, users);
 
+      // Create notification for admin if organizer registered
+      if (isOrganizer) {
+        this.createOrganizerApprovalNotification(user);
+      }
+
+      const message = isOrganizer 
+        ? 'Registration submitted! Please wait for admin approval before you can login.'
+        : 'Registration successful! Please login to continue.';
+
       return {
         success: true,
-        message: 'Registration successful! Please login to continue.',
+        message,
         userId,
       };
     } catch (error: any) {
@@ -193,6 +207,36 @@ export class LocalStorageService implements StorageService {
         message: error.message || 'Registration failed',
       };
     }
+  }
+
+  // Create notification for admin when organizer registers
+  private createOrganizerApprovalNotification(organizer: User): void {
+    const notifications = this.getData<StoredNotifications>(STORAGE_KEYS.NOTIFICATIONS, {});
+    const notificationId = this.generateId('notification');
+    
+    const notification: Notification = {
+      id: notificationId,
+      title: 'New Organizer Registration',
+      message: `${organizer.name} (${organizer.email}) from ${organizer.department || 'Unknown Organization'} has registered as an organizer and is waiting for approval.`,
+      type: 'info',
+      priority: 'high',
+      category: 'approval',
+      status: 'sent',
+      createdAt: new Date().toISOString(),
+      sentAt: new Date().toISOString(),
+      readCount: 0,
+      totalRecipients: 1,
+      metadata: {
+        organizerId: organizer.id,
+        organizerName: organizer.name,
+        organizerEmail: organizer.email,
+        organizerDepartment: organizer.department,
+        actionRequired: 'approve_organizer'
+      }
+    };
+
+    notifications[notificationId] = notification;
+    this.setData(STORAGE_KEYS.NOTIFICATIONS, notifications);
   }
 
   async loginUser(credentials: { email: string; password: string }): Promise<LoginResult> {
@@ -220,6 +264,14 @@ export class LocalStorageService implements StorageService {
         return {
           success: false,
           message: 'Invalid credentials',
+        };
+      }
+
+      // Check if organizer is approved
+      if (user.role === 'organizer' && user.isApproved === false) {
+        return {
+          success: false,
+          message: 'Your organizer account is pending approval. Please wait for admin to approve your registration.',
         };
       }
 
@@ -416,9 +468,28 @@ export class LocalStorageService implements StorageService {
   async approveOrganizer(organizerId: string, action: 'approve' | 'reject'): Promise<void> {
     const users = this.getData<StoredUsers>(STORAGE_KEYS.USERS, {});
     if (users[organizerId] && users[organizerId].role === 'organizer') {
-      // In demo mode, we just simulate approval
-      console.log(`${action}d organizer ${organizerId}`);
+      if (action === 'approve') {
+        users[organizerId].isApproved = true;
+        this.setData(STORAGE_KEYS.USERS, users);
+        console.log(`Approved organizer ${organizerId}`);
+      } else {
+        // For reject, we can either delete the user or mark them as rejected
+        delete users[organizerId];
+        this.setData(STORAGE_KEYS.USERS, users);
+        console.log(`Rejected and removed organizer ${organizerId}`);
+      }
     }
+  }
+
+  // Get pending organizer approvals
+  async getPendingOrganizers(): Promise<User[]> {
+    const users = this.getData<StoredUsers>(STORAGE_KEYS.USERS, {});
+    return Object.values(users)
+      .filter((user: UserWithPassword) => user.role === 'organizer' && user.isApproved === false)
+      .map((user: UserWithPassword) => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
   }
 
   async approveEvent(eventId: string, action: 'approve' | 'reject'): Promise<void> {

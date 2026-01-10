@@ -1,300 +1,263 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-  Calendar, 
-  Users, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertCircle,
-  Search,
-  Filter,
-  Plus,
-  Eye,
-  Edit,
-  Download,
-  MapPin,
-  User,
-  MoreHorizontal
+  Calendar, Search, Filter, Eye, Edit, Trash2, CheckCircle, XCircle, Clock,
+  MapPin, Users, Plus, ChevronDown, Sparkles, TrendingUp, RefreshCw
 } from 'lucide-react';
-import PortalLink from '../../components/PortalLink';
+import { getStorageService, Event } from '../../services/storageAbstraction';
 
 const EnhancedEventsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [events, setEvents] = useState([
-    {
-      id: 1,
-      title: 'Tech Innovation Summit 2024',
-      organizer: 'John Smith',
-      date: '2024-01-15',
-      time: '10:00 AM',
-      location: 'Main Auditorium',
-      status: 'pending',
-      participants: 150,
-      maxParticipants: 200,
-      category: 'Technology',
-      description: 'A comprehensive summit on latest technology trends and innovations.',
-      submittedDate: '2024-01-10'
-    },
-    {
-      id: 2,
-      title: 'Cultural Fest - Spring Edition',
-      organizer: 'Sarah Johnson',
-      date: '2024-01-20',
-      time: '2:00 PM',
-      location: 'College Ground',
-      status: 'approved',
-      participants: 300,
-      maxParticipants: 500,
-      category: 'Cultural',
-      description: 'Annual cultural festival celebrating diversity and talent.',
-      submittedDate: '2024-01-08'
-    },
-    {
-      id: 3,
-      title: 'Career Development Workshop',
-      organizer: 'Mike Wilson',
-      date: '2024-01-18',
-      time: '11:00 AM',
-      location: 'Conference Hall',
-      status: 'approved',
-      participants: 75,
-      maxParticipants: 100,
-      category: 'Professional',
-      description: 'Workshop on career planning and professional development.',
-      submittedDate: '2024-01-12'
-    },
-    {
-      id: 4,
-      title: 'Sports Tournament',
-      organizer: 'Alex Brown',
-      date: '2024-01-25',
-      time: '9:00 AM',
-      location: 'Sports Complex',
-      status: 'rejected',
-      participants: 0,
-      maxParticipants: 300,
-      category: 'Sports',
-      description: 'Inter-college sports tournament with multiple events.',
-      submittedDate: '2024-01-14',
-      rejectionReason: 'Insufficient safety measures outlined'
-    }
-  ]);
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [events, setEvents] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const tabs = [
-    { id: 'all', label: 'All Events', count: events.length },
-    { id: 'pending', label: 'Pending Approval', count: events.filter(e => e.status === 'pending').length },
-    { id: 'approved', label: 'Approved', count: events.filter(e => e.status === 'approved').length },
-    { id: 'rejected', label: 'Rejected', count: events.filter(e => e.status === 'rejected').length }
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  const loadEvents = async () => {
+    setIsLoading(true);
+    try {
+      const storageService = getStorageService();
+      const loadedEvents = await storageService.getEvents();
+      setEvents(loadedEvents.length > 0 ? loadedEvents : mockEvents);
+    } catch (error) {
+      setEvents(mockEvents);
+    }
+    setIsLoading(false);
+  };
+
+  const mockEvents = [
+    { id: '1', name: 'Tech Innovation Summit 2024', organizer: 'John Smith', startDate: '2024-01-15', time: '10:00 AM', venue: 'Main Auditorium', approvalStatus: 'approved', registrations: Array(150), eventType: 'Technology' },
+    { id: '2', name: 'Cultural Fest - Spring Edition', organizer: 'Sarah Johnson', startDate: '2024-01-20', time: '2:00 PM', venue: 'Open Ground', approvalStatus: 'pending', registrations: Array(300), eventType: 'Cultural' },
+    { id: '3', name: 'Career Development Workshop', organizer: 'Mike Wilson', startDate: '2024-01-18', time: '11:00 AM', venue: 'Seminar Hall B', approvalStatus: 'approved', registrations: Array(75), eventType: 'Workshop' },
+    { id: '4', name: 'Sports Day 2024', organizer: 'Emily Davis', startDate: '2024-01-25', time: '8:00 AM', venue: 'Sports Complex', approvalStatus: 'pending', registrations: Array(500), eventType: 'Sports' },
+    { id: '5', name: 'Art Exhibition', organizer: 'Alex Brown', startDate: '2024-01-22', time: '3:00 PM', venue: 'Art Gallery', approvalStatus: 'rejected', registrations: [], eventType: 'Art' },
   ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'approved': return 'bg-green-100 text-green-800 border-green-200';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'rejected': return 'bg-red-100 text-red-800 border-red-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'approved': return '#10b981';
+      case 'pending': return '#f59e0b';
+      case 'rejected': return '#ef4444';
+      default: return '#6b7280';
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved': return <CheckCircle size={16} />;
-      case 'pending': return <Clock size={16} />;
-      case 'rejected': return <XCircle size={16} />;
-      default: return <AlertCircle size={16} />;
-    }
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      'Technology': '#3b82f6', 'Cultural': '#8b5cf6', 'Workshop': '#10b981',
+      'Sports': '#f59e0b', 'Art': '#ec4899'
+    };
+    return colors[category] || '#6b7280';
   };
 
-  const filteredEvents = events.filter(event => {
-    const matchesTab = activeTab === 'all' || event.status === activeTab;
-    const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.organizer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         event.category.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesTab && matchesSearch;
+  const displayEvents = events.length > 0 ? events : mockEvents;
+  const filteredEvents = displayEvents.filter(event => {
+    const matchesSearch = (event.name || event.title || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || event.approvalStatus === filterStatus;
+    return matchesSearch && matchesFilter;
   });
 
-  const handleApprove = (eventId: number) => {
-    setEvents(events.map(event => 
-      event.id === eventId ? { ...event, status: 'approved' } : event
-    ));
-  };
-
-  const handleReject = (eventId: number) => {
-    setEvents(events.map(event => 
-      event.id === eventId ? { ...event, status: 'rejected' } : event
-    ));
+  const stats = {
+    total: displayEvents.length,
+    approved: displayEvents.filter(e => e.approvalStatus === 'approved').length,
+    pending: displayEvents.filter(e => e.approvalStatus === 'pending').length,
+    rejected: displayEvents.filter(e => e.approvalStatus === 'rejected').length
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+      padding: '2rem', paddingTop: '80px', position: 'relative', overflow: 'hidden'
+    }}>
+      {/* Animated Background */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)', pointerEvents: 'none', zIndex: 0 }} />
+      {[...Array(6)].map((_, i) => (
+        <div key={i} style={{
+          position: 'absolute', width: `${Math.random() * 300 + 100}px`, height: `${Math.random() * 300 + 100}px`,
+          background: `rgba(255,255,255,${Math.random() * 0.1})`, borderRadius: '50%',
+          left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`, filter: 'blur(40px)',
+          animation: `float ${Math.random() * 10 + 10}s ease-in-out infinite`
+        }} />
+      ))}
+
+      <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        {/* Header */}
+        <div style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">Events Management</h1>
-            <p className="text-gray-400">Manage all college events and approvals</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              <Calendar size={28} color="#fbbf24" />
+              <h1 style={{ fontSize: '2rem', fontWeight: 800, color: 'white', margin: 0, textShadow: '2px 2px 4px rgba(0,0,0,0.2)' }}>
+                Event Management
+              </h1>
+            </div>
+            <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '1rem' }}>Manage and monitor all college events</p>
           </div>
-          <div className="flex items-center gap-4">
-            <button className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors">
-              <Download size={16} />
-              Export
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button onClick={loadEvents} style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem',
+              background: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(10px)', color: 'white',
+              border: '2px solid rgba(255,255,255,0.3)', borderRadius: '12px', fontWeight: 600, cursor: 'pointer'
+            }}>
+              <RefreshCw size={18} style={{ animation: isLoading ? 'spin 1s linear infinite' : 'none' }} /> Refresh
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-              <Plus size={16} />
-              Create Event
+            <button style={{
+              display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.5rem',
+              background: 'linear-gradient(135deg, #fbbf24, #f59e0b)', color: '#1e293b',
+              border: 'none', borderRadius: '12px', fontWeight: 700, cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(251, 191, 36, 0.4)'
+            }}>
+              <Plus size={20} /> Create Event
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="mb-6">
-        <div className="border-b border-gray-700">
-          <nav className="flex space-x-8">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-400'
-                    : 'border-transparent text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                {tab.label}
-                <span className="ml-2 bg-gray-700 text-gray-300 py-1 px-2 rounded-full text-xs">
-                  {tab.count}
-                </span>
+        {/* Stats Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+          {[
+            { label: 'Total Events', value: stats.total, icon: Calendar, color: '#3b82f6' },
+            { label: 'Approved', value: stats.approved, icon: CheckCircle, color: '#10b981' },
+            { label: 'Pending', value: stats.pending, icon: Clock, color: '#f59e0b' },
+            { label: 'Rejected', value: stats.rejected, icon: XCircle, color: '#ef4444' }
+          ].map((stat, i) => (
+            <div key={i} style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '20px', padding: '1.25rem',
+              boxShadow: '0 15px 35px rgba(0,0,0,0.1)', display: 'flex', alignItems: 'center', gap: '1rem'
+            }}>
+              <div style={{
+                width: '55px', height: '55px', background: `linear-gradient(135deg, ${stat.color}, ${stat.color}99)`,
+                borderRadius: '15px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: `0 8px 20px ${stat.color}40`
+              }}>
+                <stat.icon size={26} color="white" />
+              </div>
+              <div>
+                <p style={{ color: '#64748b', fontSize: '0.85rem', margin: 0 }}>{stat.label}</p>
+                <p style={{ fontSize: '2rem', fontWeight: 800, color: '#1e293b', margin: 0 }}>{stat.value}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Search and Filter */}
+        <div style={{
+          background: 'rgba(255,255,255,0.95)', borderRadius: '20px', padding: '1.25rem',
+          boxShadow: '0 15px 35px rgba(0,0,0,0.1)', marginBottom: '1.5rem'
+        }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+            <div style={{ flex: 1, minWidth: '250px', position: 'relative' }}>
+              <Search size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+              <input type="text" placeholder="Search events..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                style={{
+                  width: '100%', padding: '0.875rem 1rem 0.875rem 3rem', border: '2px solid #e2e8f0',
+                  borderRadius: '12px', fontSize: '0.95rem', outline: 'none', background: '#f8fafc'
+                }}
+              />
+            </div>
+            <div style={{ position: 'relative' }}>
+              <button onClick={() => setShowFilterDropdown(!showFilterDropdown)} style={{
+                display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.875rem 1.25rem',
+                background: 'linear-gradient(135deg, #667eea, #764ba2)', border: 'none', borderRadius: '12px',
+                cursor: 'pointer', fontWeight: 600, color: 'white'
+              }}>
+                <Filter size={18} />
+                {filterStatus === 'all' ? 'All Status' : filterStatus.charAt(0).toUpperCase() + filterStatus.slice(1)}
+                <ChevronDown size={16} />
               </button>
-            ))}
-          </nav>
-        </div>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="mb-6 flex items-center gap-4">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Search events, organizers, or categories..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors">
-          <Filter size={16} />
-          Filters
-        </button>
-      </div>
-
-      {/* Events List */}
-      <div className="space-y-4">
-        {filteredEvents.map((event) => (
-          <div key={event.id} className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <h3 className="text-xl font-semibold text-white">{event.title}</h3>
-                  <span className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(event.status)}`}>
-                    {getStatusIcon(event.status)}
-                    {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-                  </span>
-                  <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded-full text-xs">
-                    {event.category}
-                  </span>
-                </div>
-
-                <p className="text-gray-400 mb-4">{event.description}</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <User size={16} />
-                    <span className="text-sm">{event.organizer}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Calendar size={16} />
-                    <span className="text-sm">{event.date} at {event.time}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <MapPin size={16} />
-                    <span className="text-sm">{event.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-gray-300">
-                    <Users size={16} />
-                    <span className="text-sm">{event.participants}/{event.maxParticipants} participants</span>
-                  </div>
-                </div>
-
-                {event.status === 'rejected' && event.rejectionReason && (
-                  <div className="bg-red-900/20 border border-red-800 rounded-lg p-3 mb-4">
-                    <p className="text-red-400 text-sm">
-                      <strong>Rejection Reason:</strong> {event.rejectionReason}
-                    </p>
-                  </div>
-                )}
-
-                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                  <Clock size={14} />
-                  <span>Submitted on {event.submittedDate}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 ml-4">
-                <button className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
-                  <Eye size={16} />
-                </button>
-                <button className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
-                  <Edit size={16} />
-                </button>
-                {event.status === 'pending' && (
-                  <>
-                    <button 
-                      onClick={() => handleApprove(event.id)}
-                      className="px-3 py-1 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors"
+              {showFilterDropdown && (
+                <div style={{
+                  position: 'absolute', top: '100%', right: 0, marginTop: '0.5rem', background: 'white',
+                  borderRadius: '12px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)', border: '1px solid #e2e8f0',
+                  zIndex: 100, minWidth: '150px', overflow: 'hidden'
+                }}>
+                  {['all', 'approved', 'pending', 'rejected'].map(status => (
+                    <button key={status} onClick={() => { setFilterStatus(status); setShowFilterDropdown(false); }}
+                      style={{
+                        display: 'block', width: '100%', padding: '0.75rem 1rem', border: 'none',
+                        background: filterStatus === status ? 'linear-gradient(135deg, #667eea15, #764ba215)' : 'white',
+                        textAlign: 'left', cursor: 'pointer', fontWeight: filterStatus === status ? 600 : 400,
+                        color: filterStatus === status ? '#667eea' : '#475569'
+                      }}
                     >
-                      Approve
+                      {status.charAt(0).toUpperCase() + status.slice(1)}
                     </button>
-                    <button 
-                      onClick={() => handleReject(event.id)}
-                      className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
-                    >
-                      Reject
-                    </button>
-                  </>
-                )}
-                <button className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
-                  <MoreHorizontal size={16} />
-                </button>
-              </div>
-            </div>
-
-            {/* Progress Bar for Participants */}
-            <div className="mt-4">
-              <div className="flex items-center justify-between text-sm text-gray-400 mb-1">
-                <span>Registration Progress</span>
-                <span>{Math.round((event.participants / event.maxParticipants) * 100)}%</span>
-              </div>
-              <div className="w-full bg-gray-700 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(event.participants / event.maxParticipants) * 100}%` }}
-                />
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
-        ))}
+        </div>
+
+        {/* Events Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '1.5rem' }}>
+          {filteredEvents.map(event => (
+            <div key={event.id} style={{
+              background: 'rgba(255,255,255,0.95)', borderRadius: '24px', padding: '1.5rem',
+              boxShadow: '0 20px 40px rgba(0,0,0,0.1)', transition: 'all 0.3s ease', cursor: 'pointer',
+              position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.5)'
+            }}>
+              {/* Category Badge */}
+              <div style={{
+                position: 'absolute', top: '1rem', right: '1rem', padding: '0.4rem 0.85rem',
+                borderRadius: '20px', background: `${getCategoryColor(event.eventType || event.category)}15`,
+                color: getCategoryColor(event.eventType || event.category), fontSize: '0.75rem', fontWeight: 600
+              }}>
+                {event.eventType || event.category || 'General'}
+              </div>
+
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#1e293b', marginBottom: '0.5rem', paddingRight: '90px' }}>
+                {event.name || event.title}
+              </h3>
+              <p style={{ color: '#64748b', fontSize: '0.9rem', marginBottom: '1rem' }}>by {event.organizer || 'Unknown'}</p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+                  <Calendar size={16} color="#667eea" /> {event.startDate || event.date} at {event.time}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+                  <MapPin size={16} color="#667eea" /> {event.venue || event.location}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+                  <Users size={16} color="#667eea" /> {event.registrations?.length || 0} participants
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '1rem', borderTop: '1px solid #e2e8f0' }}>
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.85rem',
+                  borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600,
+                  background: `${getStatusColor(event.approvalStatus || event.status)}15`,
+                  color: getStatusColor(event.approvalStatus || event.status), textTransform: 'capitalize'
+                }}>
+                  {event.approvalStatus === 'approved' ? <CheckCircle size={14} /> : event.approvalStatus === 'pending' ? <Clock size={14} /> : <XCircle size={14} />}
+                  {event.approvalStatus || event.status}
+                </span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button style={{ padding: '0.5rem', background: 'linear-gradient(135deg, #667eea15, #764ba215)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#667eea' }}><Eye size={16} /></button>
+                  <button style={{ padding: '0.5rem', background: 'linear-gradient(135deg, #10b98115, #34d39915)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#10b981' }}><Edit size={16} /></button>
+                  <button style={{ padding: '0.5rem', background: 'linear-gradient(135deg, #ef444415, #f8717115)', border: 'none', borderRadius: '10px', cursor: 'pointer', color: '#ef4444' }}><Trash2 size={16} /></button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {filteredEvents.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '4rem', background: 'rgba(255,255,255,0.95)', borderRadius: '24px' }}>
+            <Calendar size={64} color="#94a3b8" style={{ marginBottom: '1rem' }} />
+            <h3 style={{ color: '#64748b', fontSize: '1.25rem', marginBottom: '0.5rem' }}>No events found</h3>
+            <p style={{ color: '#94a3b8' }}>Try adjusting your search or filter criteria</p>
+          </div>
+        )}
       </div>
 
-      {filteredEvents.length === 0 && (
-        <div className="text-center py-12">
-          <Calendar size={48} className="mx-auto text-gray-600 mb-4" />
-          <h3 className="text-xl font-medium text-gray-400 mb-2">No events found</h3>
-          <p className="text-gray-500">Try adjusting your search or filter criteria</p>
-        </div>
-      )}
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+      `}</style>
     </div>
   );
 };

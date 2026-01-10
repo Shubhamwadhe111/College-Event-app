@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import NexusSuperNavbar from './NexusSuperNavbar';
-import NexusSuperFooter from './NexusSuperFooter';
 
 interface NexusSuperMainLayoutProps {
   children: React.ReactNode;
@@ -40,7 +39,6 @@ const NexusSuperMainLayout: React.FC<NexusSuperMainLayoutProps> = ({ children })
       }}>
         {children}
       </main>
-      <NexusSuperFooter />
     </div>
   );
 };

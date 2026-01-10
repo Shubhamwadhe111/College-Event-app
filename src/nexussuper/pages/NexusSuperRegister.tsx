@@ -34,7 +34,7 @@ const NexusSuperRegister: React.FC = () => {
     if (result.success) {
       setSuccess('Master Admin registration successful! You can now login.');
       setTimeout(() => {
-        navigate('/login');
+        navigate('/nexussuper/login');
       }, 2000);
     } else {
       setError(result.message);

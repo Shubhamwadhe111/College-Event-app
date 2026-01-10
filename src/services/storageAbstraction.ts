@@ -31,6 +31,7 @@ export interface User {
   year?: string;
   department?: string;
   designation?: string;
+  isApproved?: boolean; // For organizers - requires admin approval
   createdAt: string;
 }
 
@@ -101,6 +102,13 @@ export interface Notification {
   sentAt?: string;
   readCount: number;
   totalRecipients: number;
+  metadata?: {
+    organizerId?: string;
+    organizerName?: string;
+    organizerEmail?: string;
+    organizerDepartment?: string;
+    actionRequired?: string;
+  };
 }
 
 // Results for operations

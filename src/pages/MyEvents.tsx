@@ -1,309 +1,470 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useEvents } from '../contexts/EventContext';
-import { Calendar, Clock, MapPin, Users, Eye, Edit, Trash2, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { 
+  Calendar, 
+  Clock, 
+  MapPin, 
+  Users, 
+  Eye, 
+  Bookmark, 
+  History, 
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Loader2
+} from 'lucide-react';
 
-interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
+interface Registration {
+  event_id: number;
+  event_name: string;
+  start_date: string;
   time: string;
-  location: string;
-  maxParticipants: number;
-  currentParticipants: number;
-  status: 'pending' | 'approved' | 'rejected';
-  poster?: string;
-  organizer?: string;
-  registrationDate?: string;
+  venue: string;
+  event_type: string;
+  registration_date: string;
 }
 
 const MyEvents: React.FC = () => {
   const { user } = useAuth();
   const { events } = useEvents();
-  const [activeTab, setActiveTab] = useState<'registered' | 'created'>('registered');
-  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [activeTab, setActiveTab] = useState<'registered' | 'saved' | 'history'>('registered');
+  const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Simulate loading user's events
-    const loadMyEvents = async () => {
-      setLoading(true);
-      
-      // Mock data - in real app, this would come from API
-      const mockRegisteredEvents: Event[] = [
-        {
-          id: 1,
-          title: "Tech Innovation Summit 2024",
-          description: "Annual technology conference featuring latest innovations",
-          date: "2024-02-15",
-          time: "09:00",
-          location: "Main Auditorium",
-          maxParticipants: 500,
-          currentParticipants: 342,
-          status: 'approved',
-          registrationDate: "2024-01-20"
-        },
-        {
-          id: 2,
-          title: "Cultural Fest - Rangoli Competition",
-          description: "Traditional art competition celebrating cultural diversity",
-          date: "2024-02-20",
-          time: "14:00",
-          location: "Central Courtyard",
-          maxParticipants: 100,
-          currentParticipants: 78,
-          status: 'approved',
-          registrationDate: "2024-01-25"
-        }
-      ];
-
-      const mockCreatedEvents: Event[] = [
-        {
-          id: 3,
-          title: "Photography Workshop",
-          description: "Learn professional photography techniques",
-          date: "2024-02-25",
-          time: "10:00",
-          location: "Art Studio",
-          maxParticipants: 30,
-          currentParticipants: 15,
-          status: 'approved',
-          organizer: user?.name
-        },
-        {
-          id: 4,
-          title: "Coding Bootcamp",
-          description: "Intensive programming workshop for beginners",
-          date: "2024-03-01",
-          time: "09:00",
-          location: "Computer Lab",
-          maxParticipants: 50,
-          currentParticipants: 0,
-          status: 'pending',
-          organizer: user?.name
-        }
-      ];
-
-      // Filter based on user role and tab
-      if (user?.role === 'organizer') {
-        setMyEvents(activeTab === 'registered' ? mockRegisteredEvents : mockCreatedEvents);
-      } else {
-        setMyEvents(mockRegisteredEvents);
+    const fetchRegistrations = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
       }
-      
-      setLoading(false);
+
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:5001/api/registrations/user/${user.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setRegistrations(data);
+        } else {
+          // If API fails, use local events context
+          console.log('Using local events data');
+        }
+      } catch (err) {
+        console.log('Backend not available, using local data');
+      } finally {
+        setLoading(false);
+      }
     };
 
-    loadMyEvents();
-  }, [user, activeTab]);
+    fetchRegistrations();
+  }, [user]);
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <CheckCircle className="text-green-400" size={16} />;
-      case 'rejected':
-        return <XCircle className="text-red-400" size={16} />;
-      case 'pending':
-        return <AlertCircle className="text-yellow-400" size={16} />;
-      default:
-        return null;
-    }
-  };
+  // Get user's registered events from context as fallback
+  const userRegisteredEvents = events.filter(event => 
+    user?.registeredEvents?.includes(event.id)
+  );
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return 'Approved';
-      case 'rejected':
-        return 'Rejected';
-      case 'pending':
-        return 'Pending Approval';
-      default:
-        return status;
-    }
-  };
+  // Define display event type
+  interface DisplayEvent {
+    id: string;
+    title: string;
+    date: string;
+    time: string;
+    location: string;
+    category: string;
+    registrationDate: string;
+  }
 
-  if (loading) {
+  // Combine API registrations with local data
+  const displayEvents: DisplayEvent[] = registrations.length > 0 
+    ? registrations.map(reg => ({
+        id: String(reg.event_id),
+        title: reg.event_name,
+        date: reg.start_date,
+        time: reg.time,
+        location: reg.venue,
+        category: reg.event_type,
+        registrationDate: reg.registration_date
+      }))
+    : userRegisteredEvents.map(event => ({
+        id: String(event.id),
+        title: event.title,
+        date: event.date,
+        time: event.time,
+        location: event.location,
+        category: event.category,
+        registrationDate: new Date().toISOString()
+      }));
+
+  // Filter events based on tab
+  const now = new Date();
+  const upcomingEvents = displayEvents.filter(event => new Date(event.date) >= now);
+  const pastEvents = displayEvents.filter(event => new Date(event.date) < now);
+
+  const tabs = [
+    { id: 'registered', label: 'Registered Events', icon: Bookmark, count: upcomingEvents.length },
+    { id: 'history', label: 'Event History', icon: History, count: pastEvents.length },
+  ];
+
+  if (!user) {
     return (
-      <div className="min-h-screen pt-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-center py-20">
-            <div className="loading-spinner"></div>
-          </div>
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        paddingTop: '100px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{
+          textAlign: 'center',
+          padding: '3rem',
+          background: 'rgba(255, 255, 255, 0.05)',
+          borderRadius: '20px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          <AlertCircle size={64} style={{ color: '#f59e0b', marginBottom: '1rem' }} />
+          <h2 style={{ color: '#ffffff', fontSize: '1.5rem', marginBottom: '1rem' }}>Please Login</h2>
+          <p style={{ color: '#94a3b8', marginBottom: '1.5rem' }}>You need to be logged in to view your events.</p>
+          <Link to="/login" style={{
+            padding: '0.75rem 2rem',
+            background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+            borderRadius: '10px',
+            color: 'white',
+            textDecoration: 'none',
+            fontWeight: 600
+          }}>
+            Login Now
+          </Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-20 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+      paddingTop: '80px',
+      paddingBottom: '40px'
+    }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 1.5rem' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+        <div style={{ marginBottom: '2rem' }}>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '0.5rem'
+          }}>
             My Events
           </h1>
-          <p className="text-gray-300 text-lg">
-            {user?.role === 'organizer' 
-              ? 'Manage your registered events and created events'
-              : 'View and manage your registered events'
-            }
+          <p style={{ color: '#94a3b8', fontSize: '1.1rem' }}>
+            Manage your event registrations and track your participation history
           </p>
         </div>
 
-        {/* Tabs for Organizers */}
-        {user?.role === 'organizer' && (
-          <div className="mb-8">
-            <div className="flex space-x-1 bg-gray-800/50 p-1 rounded-lg backdrop-blur-sm border border-gray-700/50">
+        {/* Tabs */}
+        <div style={{
+          display: 'flex',
+          gap: '0.5rem',
+          marginBottom: '2rem',
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '0.5rem',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
               <button
-                onClick={() => setActiveTab('registered')}
-                className={`flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 ${
-                  activeTab === 'registered'
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                }`}
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                style={{
+                  flex: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.9rem',
+                  transition: 'all 0.3s ease',
+                  background: activeTab === tab.id 
+                    ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                    : 'transparent',
+                  color: activeTab === tab.id ? '#ffffff' : '#94a3b8'
+                }}
               >
-                Registered Events
+                <Icon size={18} />
+                {tab.label}
+                <span style={{
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '20px',
+                  fontSize: '0.75rem',
+                  background: activeTab === tab.id ? 'rgba(255,255,255,0.2)' : 'rgba(16, 185, 129, 0.2)',
+                  color: activeTab === tab.id ? '#ffffff' : '#10b981'
+                }}>
+                  {tab.count}
+                </span>
               </button>
-              <button
-                onClick={() => setActiveTab('created')}
-                className={`flex-1 py-3 px-6 rounded-md font-medium transition-all duration-200 ${
-                  activeTab === 'created'
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                }`}
-              >
-                Created Events
-              </button>
-            </div>
+            );
+          })}
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '4rem'
+          }}>
+            <Loader2 size={40} style={{ color: '#10b981', animation: 'spin 1s linear infinite' }} />
           </div>
         )}
 
-        {/* Events Grid */}
-        {myEvents.length === 0 ? (
-          <div className="text-center py-20">
-            <Calendar size={64} className="mx-auto text-gray-500 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-300 mb-2">
-              No events found
-            </h3>
-            <p className="text-gray-500 mb-6">
-              {activeTab === 'registered' 
-                ? "You haven't registered for any events yet."
-                : "You haven't created any events yet."
-              }
-            </p>
-            {activeTab === 'registered' ? (
-              <Link 
-                to="/events" 
-                className="btn btn-primary"
-              >
-                Browse Events
-              </Link>
-            ) : (
-              <Link 
-                to="/create-event" 
-                className="btn btn-primary"
-              >
-                Create Event
-              </Link>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {myEvents.map((event) => (
-              <div key={event.id} className="card group hover:scale-105 transition-all duration-300">
-                {/* Event Image */}
-                <div className="relative h-48 bg-gradient-to-br from-emerald-500/20 to-teal-500/20 rounded-t-lg overflow-hidden">
-                  {event.poster ? (
-                    <img 
-                      src={event.poster} 
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <Calendar size={48} className="text-emerald-400/50" />
-                    </div>
-                  )}
-                  
-                  {/* Status Badge */}
-                  {activeTab === 'created' && (
-                    <div className="absolute top-3 right-3">
-                      <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium backdrop-blur-sm ${
-                        event.status === 'approved' ? 'bg-green-500/20 text-green-300 border border-green-500/30' :
-                        event.status === 'rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/30' :
-                        'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                      }`}>
-                        {getStatusIcon(event.status)}
-                        {getStatusText(event.status)}
-                      </div>
-                    </div>
-                  )}
-                </div>
+        {/* Events List */}
+        {!loading && (
+          <>
+            {activeTab === 'registered' && (
+              <div>
+                {upcomingEvents.length > 0 ? (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                    gap: '1.5rem'
+                  }}>
+                    {upcomingEvents.map((event, index) => (
+                      <div key={event.id} style={{
+                        background: 'rgba(255, 255, 255, 0.05)',
+                        borderRadius: '16px',
+                        padding: '1.5rem',
+                        border: '1px solid rgba(16, 185, 129, 0.2)',
+                        transition: 'all 0.3s ease'
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'start',
+                          marginBottom: '1rem'
+                        }}>
+                          <span style={{
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '20px',
+                            background: 'rgba(16, 185, 129, 0.2)',
+                            color: '#10b981',
+                            fontSize: '0.75rem',
+                            fontWeight: 600
+                          }}>
+                            {event.category || 'Event'}
+                          </span>
+                          <CheckCircle size={20} style={{ color: '#10b981' }} />
+                        </div>
+                        
+                        <h3 style={{
+                          fontSize: '1.2rem',
+                          fontWeight: 700,
+                          color: '#ffffff',
+                          marginBottom: '1rem'
+                        }}>
+                          {event.title}
+                        </h3>
 
-                {/* Event Details */}
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-white group-hover:text-emerald-400 transition-colors">
-                    {event.title}
-                  </h3>
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">
-                    {event.description}
-                  </p>
+                        <div style={{ marginBottom: '1.5rem' }}>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            color: '#94a3b8',
+                            fontSize: '0.9rem',
+                            marginBottom: '0.5rem'
+                          }}>
+                            <Calendar size={16} style={{ color: '#10b981' }} />
+                            {new Date(event.date).toLocaleDateString('en-US', { 
+                              weekday: 'short', 
+                              month: 'short', 
+                              day: 'numeric' 
+                            })}
+                          </div>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            color: '#94a3b8',
+                            fontSize: '0.9rem',
+                            marginBottom: '0.5rem'
+                          }}>
+                            <Clock size={16} style={{ color: '#10b981' }} />
+                            {event.time}
+                          </div>
+                          <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.5rem',
+                            color: '#94a3b8',
+                            fontSize: '0.9rem'
+                          }}>
+                            <MapPin size={16} style={{ color: '#10b981' }} />
+                            {event.location}
+                          </div>
+                        </div>
 
-                  {/* Event Info */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Calendar size={14} />
-                      <span>{new Date(event.date).toLocaleDateString()}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Clock size={14} />
-                      <span>{event.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <MapPin size={14} />
-                      <span>{event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <Users size={14} />
-                      <span>{event.currentParticipants}/{event.maxParticipants} participants</span>
-                    </div>
-                    {event.registrationDate && (
-                      <div className="text-xs text-gray-500">
-                        Registered on: {new Date(event.registrationDate).toLocaleDateString()}
+                        <Link to={`/events/${event.id}`} style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '0.5rem',
+                          padding: '0.75rem',
+                          borderRadius: '10px',
+                          background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                          color: 'white',
+                          textDecoration: 'none',
+                          fontWeight: 600,
+                          fontSize: '0.9rem'
+                        }}>
+                          <Eye size={16} />
+                          View Details
+                        </Link>
                       </div>
-                    )}
+                    ))}
                   </div>
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2">
-                    <Link 
-                      to={`/events/${event.id}`}
-                      className="flex-1 btn btn-secondary text-center"
-                    >
-                      <Eye size={16} />
-                      View Details
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '4rem 2rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <Bookmark size={64} style={{ color: '#64748b', marginBottom: '1rem' }} />
+                    <h3 style={{ color: '#ffffff', fontSize: '1.3rem', marginBottom: '0.5rem' }}>
+                      No Upcoming Events
+                    </h3>
+                    <p style={{ color: '#94a3b8', marginBottom: '1.5rem' }}>
+                      You haven't registered for any upcoming events yet.
+                    </p>
+                    <Link to="/events" style={{
+                      padding: '0.75rem 2rem',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                      borderRadius: '10px',
+                      color: 'white',
+                      textDecoration: 'none',
+                      fontWeight: 600
+                    }}>
+                      Browse Events
                     </Link>
-                    
-                    {activeTab === 'created' && (
-                      <>
-                        <button className="btn btn-secondary p-2">
-                          <Edit size={16} />
-                        </button>
-                        <button className="btn btn-danger p-2">
-                          <Trash2 size={16} />
-                        </button>
-                      </>
-                    )}
                   </div>
-                </div>
+                )}
               </div>
-            ))}
-          </div>
+            )}
+
+            {activeTab === 'history' && (
+              <div>
+                {pastEvents.length > 0 ? (
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
+                    gap: '1.5rem'
+                  }}>
+                    {pastEvents.map((event) => (
+                      <div key={event.id} style={{
+                        background: 'rgba(255, 255, 255, 0.03)',
+                        borderRadius: '16px',
+                        padding: '1.5rem',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        opacity: 0.8
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'start',
+                          marginBottom: '1rem'
+                        }}>
+                          <span style={{
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '20px',
+                            background: 'rgba(100, 116, 139, 0.2)',
+                            color: '#94a3b8',
+                            fontSize: '0.75rem',
+                            fontWeight: 600
+                          }}>
+                            {event.category || 'Event'}
+                          </span>
+                          <span style={{
+                            padding: '0.4rem 0.8rem',
+                            borderRadius: '20px',
+                            background: 'rgba(100, 116, 139, 0.2)',
+                            color: '#94a3b8',
+                            fontSize: '0.75rem',
+                            fontWeight: 600
+                          }}>
+                            Completed
+                          </span>
+                        </div>
+                        
+                        <h3 style={{
+                          fontSize: '1.2rem',
+                          fontWeight: 700,
+                          color: '#cbd5e1',
+                          marginBottom: '1rem'
+                        }}>
+                          {event.title}
+                        </h3>
+
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.5rem',
+                          color: '#64748b',
+                          fontSize: '0.9rem'
+                        }}>
+                          <Calendar size={16} />
+                          {new Date(event.date).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={{
+                    textAlign: 'center',
+                    padding: '4rem 2rem',
+                    background: 'rgba(255, 255, 255, 0.05)',
+                    borderRadius: '20px',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}>
+                    <History size={64} style={{ color: '#64748b', marginBottom: '1rem' }} />
+                    <h3 style={{ color: '#ffffff', fontSize: '1.3rem', marginBottom: '0.5rem' }}>
+                      No Event History
+                    </h3>
+                    <p style={{ color: '#94a3b8' }}>
+                      Your past event participations will appear here.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

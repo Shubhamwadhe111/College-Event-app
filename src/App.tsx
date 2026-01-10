@@ -13,6 +13,7 @@ import AdminRegister from './pages/AdminRegister';
 import CreateEvent from './pages/CreateEvent';
 import Profile from './pages/Profile';
 import Gallery from './pages/Gallery';
+import About from './pages/About';
 import MyEvents from './pages/MyEvents';
 import Notices from './pages/Notices';
 import NotificationsPage from './pages/NotificationsPage';
@@ -56,6 +57,7 @@ function App() {
                     <Route path="/events" element={<Events />} />
                     <Route path="/events/:id" element={<EventDetails />} />
                     <Route path="/gallery" element={<Gallery />} />
+                    <Route path="/about" element={<About />} />
                     
                     {/* My Events page */}
                     <Route path="/my-events" element={

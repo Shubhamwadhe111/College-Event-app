@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import NexusadminNavbar from './NexusadminNavbar';
-import NexusadminFooter from './NexusadminFooter';
 
 interface NexusadminMainLayoutProps {
   children: React.ReactNode;
@@ -145,7 +144,6 @@ const NexusadminMainLayout: React.FC<NexusadminMainLayoutProps> = ({ children })
       }}>
         {children}
       </main>
-      <NexusadminFooter />
     </div>
   );
 };

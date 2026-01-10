@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Megaphone, Calendar, Clock, AlertTriangle, Info, CheckCircle, Pin } from 'lucide-react';
+import { Megaphone, Calendar, Clock, AlertTriangle, Info, CheckCircle, Pin, Bell, Loader2 } from 'lucide-react';
 
 interface Notice {
   id: number;
@@ -18,11 +18,36 @@ const Notices: React.FC = () => {
   const [selectedType, setSelectedType] = useState<string>('all');
 
   useEffect(() => {
-    // Simulate loading notices
     const loadNotices = async () => {
       setLoading(true);
       
-      // Mock data - in real app, this would come from API
+      // Try to fetch from API first
+      try {
+        const response = await fetch('http://localhost:5001/api/notifications');
+        if (response.ok) {
+          const data = await response.json();
+          // Transform API data to Notice format
+          const transformedNotices = data.map((n: any, index: number) => ({
+            id: n.id || index,
+            title: n.title || n.message,
+            content: n.message,
+            type: n.type || 'general',
+            date: n.created_at || new Date().toISOString(),
+            author: 'Administration',
+            isPinned: n.priority === 'high',
+            expiryDate: n.expiry_date
+          }));
+          if (transformedNotices.length > 0) {
+            setNotices(transformedNotices);
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        console.log('Using mock notices data');
+      }
+
+      // Mock data fallback
       const mockNotices: Notice[] = [
         {
           id: 1,
@@ -77,7 +102,7 @@ const Notices: React.FC = () => {
         {
           id: 6,
           title: "Guest Lecture on Artificial Intelligence",
-          content: "The Computer Science Department is organizing a guest lecture on 'Future of Artificial Intelligence' by Dr. Sarah Johnson from MIT. Date: February 20, 2024, Time: 2:00 PM, Venue: Main Auditorium.",
+          content: "The Computer Science Department is organizing a guest lecture on 'Future of Artificial Intelligence'. Date: February 20, 2024, Time: 2:00 PM, Venue: Main Auditorium. All students are welcome.",
           type: 'general',
           date: '2024-02-04',
           author: 'CS Department',
@@ -96,30 +121,30 @@ const Notices: React.FC = () => {
   const getNoticeIcon = (type: string) => {
     switch (type) {
       case 'urgent':
-        return <AlertTriangle className="text-red-400" size={20} />;
+        return <AlertTriangle size={20} style={{ color: '#ef4444' }} />;
       case 'important':
-        return <Info className="text-yellow-400" size={20} />;
+        return <Info size={20} style={{ color: '#eab308' }} />;
       case 'exam':
-        return <CheckCircle className="text-blue-400" size={20} />;
+        return <CheckCircle size={20} style={{ color: '#3b82f6' }} />;
       case 'cultural':
-        return <Megaphone className="text-purple-400" size={20} />;
+        return <Megaphone size={20} style={{ color: '#a855f7' }} />;
       default:
-        return <Info className="text-gray-400" size={20} />;
+        return <Info size={20} style={{ color: '#64748b' }} />;
     }
   };
 
-  const getNoticeTypeColor = (type: string) => {
+  const getNoticeTypeStyle = (type: string) => {
     switch (type) {
       case 'urgent':
-        return 'bg-red-500/20 text-red-300 border-red-500/30';
+        return { background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', border: '1px solid rgba(239, 68, 68, 0.3)' };
       case 'important':
-        return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+        return { background: 'rgba(234, 179, 8, 0.2)', color: '#fde047', border: '1px solid rgba(234, 179, 8, 0.3)' };
       case 'exam':
-        return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+        return { background: 'rgba(59, 130, 246, 0.2)', color: '#93c5fd', border: '1px solid rgba(59, 130, 246, 0.3)' };
       case 'cultural':
-        return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+        return { background: 'rgba(168, 85, 247, 0.2)', color: '#d8b4fe', border: '1px solid rgba(168, 85, 247, 0.3)' };
       default:
-        return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+        return { background: 'rgba(100, 116, 139, 0.2)', color: '#cbd5e1', border: '1px solid rgba(100, 116, 139, 0.3)' };
     }
   };
 
@@ -130,98 +155,180 @@ const Notices: React.FC = () => {
   const pinnedNotices = filteredNotices.filter(notice => notice.isPinned);
   const regularNotices = filteredNotices.filter(notice => !notice.isPinned);
 
+  const filterTabs = [
+    { key: 'all', label: 'All Notices' },
+    { key: 'urgent', label: 'Urgent' },
+    { key: 'important', label: 'Important' },
+    { key: 'exam', label: 'Examinations' },
+    { key: 'cultural', label: 'Cultural' },
+    { key: 'general', label: 'General' }
+  ];
+
   if (loading) {
     return (
-      <div className="min-h-screen pt-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center py-20">
-            <div className="loading-spinner"></div>
-          </div>
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        paddingTop: '100px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <Loader2 size={48} style={{ color: '#10b981', animation: 'spin 1s linear infinite' }} />
+          <p style={{ color: '#94a3b8', marginTop: '1rem' }}>Loading notices...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen pt-20 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div style={{
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+      paddingTop: '80px',
+      paddingBottom: '40px'
+    }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 1.5rem' }}>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">
+        <div style={{ marginBottom: '2rem' }}>
+          <div style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.5rem',
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)'
+          }}>
+            <Bell size={36} color="white" />
+          </div>
+          <h1 style={{
+            fontSize: '2.5rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '0.5rem',
+            textAlign: 'center'
+          }}>
             Notices & Announcements
           </h1>
-          <p className="text-gray-300 text-lg">
+          <p style={{ color: '#94a3b8', fontSize: '1.1rem', textAlign: 'center' }}>
             Stay updated with important college announcements and notices
           </p>
         </div>
 
         {/* Filter Tabs */}
-        <div className="mb-8">
-          <div className="flex flex-wrap gap-2 bg-gray-800/50 p-2 rounded-lg backdrop-blur-sm border border-gray-700/50">
-            {[
-              { key: 'all', label: 'All Notices' },
-              { key: 'urgent', label: 'Urgent' },
-              { key: 'important', label: 'Important' },
-              { key: 'exam', label: 'Examinations' },
-              { key: 'cultural', label: 'Cultural' },
-              { key: 'general', label: 'General' }
-            ].map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => setSelectedType(filter.key)}
-                className={`px-4 py-2 rounded-md font-medium transition-all duration-200 ${
-                  selectedType === filter.key
-                    ? 'bg-emerald-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                }`}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+          marginBottom: '2rem',
+          background: 'rgba(255, 255, 255, 0.05)',
+          padding: '0.5rem',
+          borderRadius: '12px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          {filterTabs.map((filter) => (
+            <button
+              key={filter.key}
+              onClick={() => setSelectedType(filter.key)}
+              style={{
+                padding: '0.6rem 1rem',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                transition: 'all 0.2s ease',
+                background: selectedType === filter.key 
+                  ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' 
+                  : 'transparent',
+                color: selectedType === filter.key ? '#ffffff' : '#94a3b8'
+              }}
+            >
+              {filter.label}
+            </button>
+          ))}
         </div>
 
         {/* Pinned Notices */}
         {pinnedNotices.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2 text-emerald-400">
+          <div style={{ marginBottom: '2rem' }}>
+            <h2 style={{
+              fontSize: '1.2rem',
+              fontWeight: 700,
+              marginBottom: '1rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              color: '#10b981'
+            }}>
               <Pin size={20} />
               Pinned Notices
             </h2>
-            <div className="space-y-4">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               {pinnedNotices.map((notice) => (
-                <div key={notice.id} className="card border-l-4 border-emerald-500">
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-start gap-3">
-                        {getNoticeIcon(notice.type)}
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold text-white mb-2">
-                            {notice.title}
-                          </h3>
-                          <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
-                            <div className="flex items-center gap-1">
-                              <Calendar size={14} />
-                              <span>{new Date(notice.date).toLocaleDateString()}</span>
-                            </div>
-                            <span>By {notice.author}</span>
-                            {notice.expiryDate && (
-                              <div className="flex items-center gap-1">
-                                <Clock size={14} />
-                                <span>Expires: {new Date(notice.expiryDate).toLocaleDateString()}</span>
-                              </div>
-                            )}
-                          </div>
+                <div key={notice.id} style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  borderRadius: '16px',
+                  padding: '1.5rem',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderLeft: '4px solid #10b981'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    justifyContent: 'space-between',
+                    marginBottom: '1rem',
+                    flexWrap: 'wrap',
+                    gap: '0.5rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', flex: 1 }}>
+                      {getNoticeIcon(notice.type)}
+                      <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.5rem' }}>
+                          {notice.title}
+                        </h3>
+                        <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '1rem',
+                          fontSize: '0.8rem',
+                          color: '#64748b',
+                          flexWrap: 'wrap'
+                        }}>
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                            <Calendar size={14} />
+                            {new Date(notice.date).toLocaleDateString()}
+                          </span>
+                          <span>By {notice.author}</span>
+                          {notice.expiryDate && (
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              <Clock size={14} />
+                              Expires: {new Date(notice.expiryDate).toLocaleDateString()}
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getNoticeTypeColor(notice.type)}`}>
-                        {notice.type.charAt(0).toUpperCase() + notice.type.slice(1)}
-                      </div>
                     </div>
-                    <p className="text-gray-300 leading-relaxed">
-                      {notice.content}
-                    </p>
+                    <span style={{
+                      padding: '0.3rem 0.75rem',
+                      borderRadius: '20px',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      textTransform: 'capitalize',
+                      ...getNoticeTypeStyle(notice.type)
+                    }}>
+                      {notice.type}
+                    </span>
                   </div>
+                  <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                    {notice.content}
+                  </p>
                 </div>
               ))}
             </div>
@@ -229,14 +336,20 @@ const Notices: React.FC = () => {
         )}
 
         {/* Regular Notices */}
-        <div className="space-y-4">
-          {regularNotices.length === 0 ? (
-            <div className="text-center py-20">
-              <Megaphone size={64} className="mx-auto text-gray-500 mb-4" />
-              <h3 className="text-xl font-semibold text-gray-300 mb-2">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {regularNotices.length === 0 && pinnedNotices.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '4rem 2rem',
+              background: 'rgba(255, 255, 255, 0.05)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}>
+              <Megaphone size={64} style={{ color: '#64748b', marginBottom: '1rem' }} />
+              <h3 style={{ fontSize: '1.3rem', fontWeight: 600, color: '#cbd5e1', marginBottom: '0.5rem' }}>
                 No notices found
               </h3>
-              <p className="text-gray-500">
+              <p style={{ color: '#64748b' }}>
                 {selectedType === 'all' 
                   ? "No notices available at the moment."
                   : `No ${selectedType} notices available.`
@@ -245,43 +358,69 @@ const Notices: React.FC = () => {
             </div>
           ) : (
             regularNotices.map((notice) => (
-              <div key={notice.id} className="card hover:scale-[1.02] transition-all duration-300">
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-start gap-3">
-                      {getNoticeIcon(notice.type)}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-white mb-2">
-                          {notice.title}
-                        </h3>
-                        <div className="flex items-center gap-4 text-sm text-gray-400 mb-3">
-                          <div className="flex items-center gap-1">
-                            <Calendar size={14} />
-                            <span>{new Date(notice.date).toLocaleDateString()}</span>
-                          </div>
-                          <span>By {notice.author}</span>
-                          {notice.expiryDate && (
-                            <div className="flex items-center gap-1">
-                              <Clock size={14} />
-                              <span>Expires: {new Date(notice.expiryDate).toLocaleDateString()}</span>
-                            </div>
-                          )}
-                        </div>
+              <div key={notice.id} style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                borderRadius: '16px',
+                padding: '1.5rem',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                transition: 'all 0.3s ease'
+              }}>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  marginBottom: '1rem',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.75rem', flex: 1 }}>
+                    {getNoticeIcon(notice.type)}
+                    <div style={{ flex: 1 }}>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', marginBottom: '0.5rem' }}>
+                        {notice.title}
+                      </h3>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '1rem',
+                        fontSize: '0.8rem',
+                        color: '#64748b',
+                        flexWrap: 'wrap'
+                      }}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <Calendar size={14} />
+                          {new Date(notice.date).toLocaleDateString()}
+                        </span>
+                        <span>By {notice.author}</span>
                       </div>
                     </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium border ${getNoticeTypeColor(notice.type)}`}>
-                      {notice.type.charAt(0).toUpperCase() + notice.type.slice(1)}
-                    </div>
                   </div>
-                  <p className="text-gray-300 leading-relaxed">
-                    {notice.content}
-                  </p>
+                  <span style={{
+                    padding: '0.3rem 0.75rem',
+                    borderRadius: '20px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    textTransform: 'capitalize',
+                    ...getNoticeTypeStyle(notice.type)
+                  }}>
+                    {notice.type}
+                  </span>
                 </div>
+                <p style={{ color: '#cbd5e1', lineHeight: '1.7', margin: 0 }}>
+                  {notice.content}
+                </p>
               </div>
             ))
           )}
         </div>
       </div>
+
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

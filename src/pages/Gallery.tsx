@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEvents } from '../contexts/EventContext';
-import { X, Calendar, MapPin, Users, Camera, Filter } from 'lucide-react';
+import { X, Calendar, MapPin, Users, Camera, Filter, Image, Sparkles } from 'lucide-react';
 
 const Gallery: React.FC = () => {
   const { events } = useEvents();
   const [selectedImage, setSelectedImage] = useState<{ url: string; title: string; event: any } | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get completed events with images
   const completedEvents = events.filter(e => e.status === 'completed' && (e.images?.length || e.image));
@@ -17,59 +24,87 @@ const Gallery: React.FC = () => {
       images.push({ url: event.image, title: event.title, event });
     }
     if (event.images) {
-      event.images.forEach(img => {
+      event.images.forEach((img: string) => {
         images.push({ url: img, title: event.title, event });
       });
     }
     return images;
   });
 
-  const categories = ['all', 'Technology', 'Cultural', 'Sports', 'Academic', 'Workshop', 'Competition'];
+  // Sample gallery images for demo
+  const sampleImages = [
+    { url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800', title: 'Tech Conference 2024', event: { category: 'Technology', date: '2024-01-15', location: 'Main Auditorium', registered: 250 } },
+    { url: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800', title: 'Cultural Night', event: { category: 'Cultural', date: '2024-01-20', location: 'Open Air Theatre', registered: 500 } },
+    { url: 'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=800', title: 'Sports Day', event: { category: 'Sports', date: '2024-02-01', location: 'Sports Ground', registered: 300 } },
+    { url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800', title: 'Hackathon 2024', event: { category: 'Technology', date: '2024-02-10', location: 'Computer Lab', registered: 150 } },
+    { url: 'https://images.unsplash.com/photo-1511578314322-379afb476865?w=800', title: 'Music Festival', event: { category: 'Cultural', date: '2024-02-15', location: 'College Ground', registered: 800 } },
+    { url: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800', title: 'Workshop Series', event: { category: 'Workshop', date: '2024-02-20', location: 'Seminar Hall', registered: 100 } },
+  ];
+
+  const displayImages = allImages.length > 0 ? allImages : sampleImages;
+
+  const categories = ['all', 'Technology', 'Cultural', 'Sports', 'Workshop', 'Academic'];
 
   const filteredImages = selectedCategory === 'all' 
-    ? allImages 
-    : allImages.filter(img => img.event.category === selectedCategory);
+    ? displayImages 
+    : displayImages.filter(img => img.event.category === selectedCategory);
+
+  if (loading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <Camera size={48} style={{ color: '#10b981', marginBottom: '1rem', animation: 'pulse 2s infinite' }} />
+          <p style={{ color: '#94a3b8' }}>Loading gallery...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      padding: '2rem 0'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+      paddingTop: '80px',
+      paddingBottom: '40px'
     }}>
-      <div className="container">
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
         {/* Header */}
         <div style={{
           textAlign: 'center',
-          marginBottom: '3rem',
-          animation: 'fadeIn 1s ease-out'
+          marginBottom: '3rem'
         }}>
           <div style={{
             width: '80px',
             height: '80px',
-            borderRadius: '50%',
-            background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
+            borderRadius: '20px',
+            background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 1.5rem',
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            color: 'white'
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)'
           }}>
-            <Camera size={32} />
+            <Camera size={36} color="white" />
           </div>
           <h1 style={{
-            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
-            fontWeight: 900,
-            color: 'white',
-            marginBottom: '1rem',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+            fontSize: '2.5rem',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '1rem'
           }}>
             Event Gallery
           </h1>
           <p style={{
-            fontSize: '1.2rem',
-            color: 'rgba(255, 255, 255, 0.8)',
+            fontSize: '1.1rem',
+            color: '#94a3b8',
             maxWidth: '600px',
             margin: '0 auto'
           }}>
@@ -80,45 +115,45 @@ const Gallery: React.FC = () => {
         {/* Category Filter */}
         <div style={{
           display: 'flex',
-          gap: '1rem',
+          gap: '0.75rem',
           justifyContent: 'center',
           flexWrap: 'wrap',
           marginBottom: '3rem',
-          animation: 'fadeIn 1s ease-out 0.2s both'
+          padding: '1rem',
+          background: 'rgba(255, 255, 255, 0.05)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
         }}>
           <div style={{
             display: 'flex',
             alignItems: 'center',
             gap: '0.5rem',
-            color: 'white',
-            marginRight: '1rem'
+            color: '#94a3b8',
+            marginRight: '1rem',
+            padding: '0.5rem'
           }}>
-            <Filter size={20} />
-            <span style={{ fontWeight: 600 }}>Filter by:</span>
+            <Filter size={18} />
+            <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>Filter:</span>
           </div>
           {categories.map(category => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
               style={{
-                padding: '0.75rem 1.5rem',
-                borderRadius: '50px',
-                border: selectedCategory === category ? '2px solid #ff6b6b' : '2px solid rgba(255,255,255,0.3)',
-                background: selectedCategory === category ? 'rgba(255,107,107,0.2)' : 'rgba(255,255,255,0.1)',
-                color: selectedCategory === category ? '#ff6b6b' : 'white',
+                padding: '0.6rem 1.25rem',
+                borderRadius: '25px',
+                border: selectedCategory === category 
+                  ? '2px solid #10b981' 
+                  : '2px solid rgba(255,255,255,0.15)',
+                background: selectedCategory === category 
+                  ? 'rgba(16, 185, 129, 0.2)' 
+                  : 'rgba(255,255,255,0.05)',
+                color: selectedCategory === category ? '#10b981' : '#cbd5e1',
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 textTransform: 'capitalize',
-                backdropFilter: 'blur(10px)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 10px 20px rgba(255,107,107,0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                fontSize: '0.85rem'
               }}
             >
               {category}
@@ -130,9 +165,8 @@ const Gallery: React.FC = () => {
         {filteredImages.length > 0 ? (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-            gap: '1.5rem',
-            animation: 'fadeIn 1s ease-out 0.4s both'
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '1.5rem'
           }}>
             {filteredImages.map((img, index) => (
               <div
@@ -144,21 +178,19 @@ const Gallery: React.FC = () => {
                   overflow: 'hidden',
                   cursor: 'pointer',
                   aspectRatio: '4/3',
-                  background: 'rgba(255,255,255,0.1)',
-                  border: '1px solid rgba(255,255,255,0.2)',
-                  transition: 'all 0.3s ease',
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.05}s both`,
-                  backdropFilter: 'blur(10px)'
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  transition: 'all 0.3s ease'
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = 'translateY(-8px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,107,107,0.3)';
-                  e.currentTarget.style.borderColor = 'rgba(255,107,107,0.5)';
+                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(16, 185, 129, 0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.4)';
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)';
+                  e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
                 }}
               >
                 <img
@@ -170,11 +202,8 @@ const Gallery: React.FC = () => {
                     objectFit: 'cover',
                     transition: 'transform 0.3s ease'
                   }}
-                  onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.transform = 'scale(1.1)';
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.transform = 'scale(1)';
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Event+Photo';
                   }}
                 />
                 <div style={{
@@ -183,7 +212,7 @@ const Gallery: React.FC = () => {
                   left: 0,
                   right: 0,
                   padding: '1.5rem',
-                  background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+                  background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)',
                   color: 'white'
                 }}>
                   <h3 style={{
@@ -193,23 +222,16 @@ const Gallery: React.FC = () => {
                   }}>
                     {img.title}
                   </h3>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem',
-                    fontSize: '0.85rem',
-                    color: 'rgba(255, 255, 255, 0.8)'
+                  <span style={{
+                    padding: '0.3rem 0.75rem',
+                    background: 'rgba(16, 185, 129, 0.3)',
+                    borderRadius: '20px',
+                    fontSize: '0.75rem',
+                    fontWeight: 600,
+                    color: '#10b981'
                   }}>
-                    <span style={{
-                      padding: '0.25rem 0.75rem',
-                      background: 'rgba(255,107,107,0.3)',
-                      borderRadius: '50px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600
-                    }}>
-                      {img.event.category}
-                    </span>
-                  </div>
+                    {img.event.category}
+                  </span>
                 </div>
               </div>
             ))}
@@ -218,35 +240,21 @@ const Gallery: React.FC = () => {
           <div style={{
             textAlign: 'center',
             padding: '4rem 2rem',
-            animation: 'fadeIn 1s ease-out',
-            background: 'rgba(255,255,255,0.1)',
+            background: 'rgba(255,255,255,0.05)',
             borderRadius: '20px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.2)'
+            border: '1px solid rgba(255,255,255,0.1)'
           }}>
-            <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              margin: '0 auto 1.5rem',
-              fontSize: '2rem'
-            }}>
-              <Camera size={32} style={{ color: 'white' }} />
-            </div>
+            <Image size={64} style={{ color: '#64748b', marginBottom: '1rem' }} />
             <h3 style={{
               fontSize: '1.5rem',
               fontWeight: 700,
-              color: 'white',
+              color: '#ffffff',
               marginBottom: '0.5rem'
             }}>
               No photos yet
             </h3>
-            <p style={{ color: 'rgba(255, 255, 255, 0.6)' }}>
-              Photos from completed college events will appear here
+            <p style={{ color: '#94a3b8' }}>
+              Photos from completed events will appear here
             </p>
           </div>
         )}
@@ -263,12 +271,11 @@ const Gallery: React.FC = () => {
             right: 0,
             bottom: 0,
             background: 'rgba(0, 0, 0, 0.95)',
-            zIndex: 9999,
+            zIndex: 10000,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '2rem',
-            animation: 'fadeIn 0.3s ease-out'
+            padding: '2rem'
           }}
         >
           <button
@@ -286,36 +293,19 @@ const Gallery: React.FC = () => {
               alignItems: 'center',
               justifyContent: 'center',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              color: 'white',
-              backdropFilter: 'blur(10px)'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
-              e.currentTarget.style.transform = 'scale(1.1)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
-              e.currentTarget.style.transform = 'scale(1)';
+              color: 'white'
             }}
           >
             <X size={24} />
           </button>
 
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              maxWidth: '90vw',
-              maxHeight: '90vh',
-              animation: 'scaleIn 0.3s ease-out'
-            }}
-          >
+          <div onClick={(e) => e.stopPropagation()} style={{ maxWidth: '90vw', maxHeight: '90vh' }}>
             <img
               src={selectedImage.url}
               alt={selectedImage.title}
               style={{
                 maxWidth: '100%',
-                maxHeight: '80vh',
+                maxHeight: '75vh',
                 objectFit: 'contain',
                 borderRadius: '12px',
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)'
@@ -326,8 +316,7 @@ const Gallery: React.FC = () => {
               padding: '1.5rem',
               background: 'rgba(255,255,255,0.1)',
               border: '1px solid rgba(255,255,255,0.2)',
-              borderRadius: '12px',
-              backdropFilter: 'blur(10px)'
+              borderRadius: '12px'
             }}>
               <h3 style={{
                 fontSize: '1.5rem',
@@ -345,15 +334,15 @@ const Gallery: React.FC = () => {
                 color: 'rgba(255, 255, 255, 0.8)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Calendar size={18} style={{ color: '#ff6b6b' }} />
+                  <Calendar size={18} style={{ color: '#10b981' }} />
                   {new Date(selectedImage.event.date).toLocaleDateString()}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <MapPin size={18} style={{ color: '#ff6b6b' }} />
+                  <MapPin size={18} style={{ color: '#10b981' }} />
                   {selectedImage.event.location}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Users size={18} style={{ color: '#ff6b6b' }} />
+                  <Users size={18} style={{ color: '#10b981' }} />
                   {selectedImage.event.registered} participants
                 </div>
               </div>
@@ -361,24 +350,11 @@ const Gallery: React.FC = () => {
           </div>
         </div>
       )}
+
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        @keyframes scaleIn {
-          from { transform: scale(0.9); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
         }
       `}</style>
     </div>

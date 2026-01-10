@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEvents } from '../contexts/EventContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Calendar, Search, Filter, MapPin, Users, Eye } from 'lucide-react';
+import { Calendar, Search, Filter, MapPin, Users, Eye, Clock, Sparkles, Tag } from 'lucide-react';
 
 const Events: React.FC = () => {
   const { events } = useEvents();
@@ -19,75 +19,83 @@ const Events: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      'Technology': '#3b82f6',
+      'Cultural': '#ec4899',
+      'Sports': '#22c55e',
+      'Academic': '#8b5cf6',
+      'Career': '#f59e0b',
+      'Workshop': '#14b8a6',
+      'Competition': '#ef4444',
+      'Seminar': '#6366f1',
+      'Conference': '#0ea5e9',
+      'Hackathon': '#10b981'
+    };
+    return colors[category] || '#10b981';
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#000000',
-      padding: '2rem 0'
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+      paddingTop: '80px',
+      paddingBottom: '3rem'
     }}>
-      <div className="container">
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 1.5rem' }}>
         {/* Header */}
         <div style={{
           textAlign: 'center',
-          marginBottom: '3rem',
-          animation: 'fadeIn 1s ease-out'
+          marginBottom: '2.5rem',
+          paddingTop: '1.5rem'
         }}>
           <div style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-            display: 'flex',
+            display: 'inline-flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 1.5rem',
-            fontSize: '2rem',
-            fontWeight: 'bold',
-            color: 'white'
+            gap: '0.5rem',
+            padding: '0.5rem 1rem',
+            background: 'rgba(16, 185, 129, 0.1)',
+            borderRadius: '25px',
+            border: '1px solid rgba(16, 185, 129, 0.2)',
+            marginBottom: '1rem'
           }}>
-            <Calendar size={32} />
+            <Sparkles size={16} style={{ color: '#10b981' }} />
+            <span style={{ color: '#10b981', fontSize: '0.85rem', fontWeight: 600 }}>
+              Discover Amazing Events
+            </span>
           </div>
           <h1 style={{
-            fontSize: 'clamp(2.5rem, 6vw, 4rem)',
-            fontWeight: 900,
-            color: 'white',
-            marginBottom: '1rem',
-            textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
+            fontWeight: 800,
+            background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            marginBottom: '0.75rem'
           }}>
-            Discover Events
+            Campus Events
           </h1>
           <p style={{
-            fontSize: '1.2rem',
-            color: 'rgba(255, 255, 255, 0.8)',
-            maxWidth: '600px',
+            fontSize: '1rem',
+            color: '#94a3b8',
+            maxWidth: '500px',
             margin: '0 auto'
           }}>
-            Find and register for amazing college events happening around campus
+            Find and register for exciting events happening around campus
           </p>
         </div>
 
         {/* Search and Filters */}
         <div style={{
-          background: 'rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '20px',
-          padding: '2rem',
-          border: '1px solid rgba(255,255,255,0.2)',
-          marginBottom: '3rem',
-          animation: 'fadeIn 1s ease-out 0.2s both'
+          background: 'rgba(255, 255, 255, 0.03)',
+          backdropFilter: 'blur(10px)',
+          borderRadius: '16px',
+          padding: '1.25rem',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          marginBottom: '2rem'
         }}>
           <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '1rem',
-            marginBottom: '1.5rem'
-          }}>
-            <Search size={20} style={{ color: 'white' }} />
-            <span style={{ color: 'white', fontWeight: 600, fontSize: '1.1rem' }}>Search & Filter Events</span>
-          </div>
-          <div style={{
             display: 'grid',
-            gridTemplateColumns: '2fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
             gap: '1rem'
           }}>
             <div style={{ position: 'relative' }}>
@@ -98,22 +106,29 @@ const Events: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '1rem 1rem 1rem 3rem',
-                  borderRadius: '50px',
-                  border: '2px solid rgba(255,255,255,0.2)',
-                  background: 'rgba(255,255,255,0.1)',
+                  padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  background: 'rgba(30, 41, 59, 0.6)',
                   color: 'white',
-                  fontSize: '1rem',
+                  fontSize: '0.9rem',
                   outline: 'none',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                 }}
               />
-              <Search size={20} style={{
+              <Search size={16} style={{
                 position: 'absolute',
-                left: '1rem',
+                left: '0.85rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'rgba(255,255,255,0.7)'
+                color: 'rgba(16, 185, 129, 0.6)'
               }} />
             </div>
             <div style={{ position: 'relative' }}>
@@ -122,173 +137,293 @@ const Events: React.FC = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 style={{
                   width: '100%',
-                  padding: '1rem 1rem 1rem 3rem',
-                  borderRadius: '50px',
-                  border: '2px solid rgba(255,255,255,0.2)',
-                  background: 'rgba(255,255,255,0.1)',
+                  padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(16, 185, 129, 0.2)',
+                  background: 'rgba(30, 41, 59, 0.6)',
                   color: 'white',
-                  fontSize: '1rem',
+                  fontSize: '0.9rem',
                   outline: 'none',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box',
+                  cursor: 'pointer'
                 }}
               >
-                <option value="" style={{ background: '#667eea', color: 'white' }}>All Categories</option>
+                <option value="" style={{ background: '#1e293b' }}>All Categories</option>
                 {categories.map(category => (
-                  <option key={category} value={category} style={{ background: '#667eea', color: 'white' }}>{category}</option>
+                  <option key={category} value={category} style={{ background: '#1e293b' }}>{category}</option>
                 ))}
               </select>
-              <Filter size={20} style={{
+              <Filter size={16} style={{
                 position: 'absolute',
-                left: '1rem',
+                left: '0.85rem',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: 'rgba(255,255,255,0.7)'
+                color: 'rgba(16, 185, 129, 0.6)'
               }} />
             </div>
           </div>
+
+          {/* Category Pills */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            marginTop: '1rem'
+          }}>
+            <button
+              onClick={() => setSelectedCategory('')}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: '20px',
+                border: 'none',
+                background: !selectedCategory ? 'linear-gradient(135deg, #10b981, #059669)' : 'rgba(255, 255, 255, 0.08)',
+                color: !selectedCategory ? 'white' : '#94a3b8',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'all 0.2s ease'
+              }}
+            >
+              All
+            </button>
+            {categories.slice(0, 6).map(category => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                style={{
+                  padding: '0.4rem 0.85rem',
+                  borderRadius: '20px',
+                  border: 'none',
+                  background: selectedCategory === category 
+                    ? `linear-gradient(135deg, ${getCategoryColor(category)}, ${getCategoryColor(category)}dd)` 
+                    : 'rgba(255, 255, 255, 0.08)',
+                  color: selectedCategory === category ? 'white' : '#94a3b8',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '1.5rem'
+        }}>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+            Showing <span style={{ color: '#10b981', fontWeight: 600 }}>{filteredEvents.length}</span> events
+          </p>
         </div>
 
         {/* Events Grid */}
         {filteredEvents.length > 0 ? (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-            gap: '1.5rem',
-            animation: 'fadeIn 1s ease-out 0.4s both'
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '1.5rem'
           }}>
-            {filteredEvents.map((event, index) => (
+            {filteredEvents.map((event) => (
               <div key={event.id} style={{
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(20px)',
-                borderRadius: '15px',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: '16px',
                 overflow: 'hidden',
-                border: '1px solid rgba(255,255,255,0.2)',
-                transition: 'all 0.3s ease',
-                animation: `fadeInUp 0.6s ease-out ${index * 0.05}s both`
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                transition: 'all 0.3s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-10px)';
-                e.currentTarget.style.boxShadow = '0 20px 40px rgba(255,107,107,0.2)';
+                e.currentTarget.style.transform = 'translateY(-5px)';
+                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.3)';
+                e.currentTarget.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.3)';
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
               >
-                <img
-                  src={event.image || 'https://via.placeholder.com/400x200?text=Event'}
-                  alt={event.title}
-                  style={{
-                    width: '100%',
-                    height: '200px',
-                    objectFit: 'cover'
-                  }}
-                />
-
-                <div style={{ padding: '1.5rem' }}>
+                {/* Event Image */}
+                <div style={{ position: 'relative', height: '160px', overflow: 'hidden' }}>
+                  <img
+                    src={event.image || `https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop`}
+                    alt={event.title}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
                   <div style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(to bottom, transparent 50%, rgba(15, 23, 42, 0.9) 100%)'
+                  }} />
+                  
+                  {/* Category Badge */}
+                  <div style={{
+                    position: 'absolute',
+                    top: '0.75rem',
+                    left: '0.75rem',
                     display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'start',
-                    marginBottom: '1rem'
+                    alignItems: 'center',
+                    gap: '0.3rem',
+                    padding: '0.35rem 0.75rem',
+                    borderRadius: '20px',
+                    background: getCategoryColor(event.category),
+                    color: 'white',
+                    fontSize: '0.7rem',
+                    fontWeight: 600
                   }}>
-                    <span style={{
-                      padding: '0.5rem 1rem',
-                      borderRadius: '50px',
-                      background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
-                      color: 'white',
-                      fontSize: '0.8rem',
-                      fontWeight: 600
-                    }}>
-                      {event.category}
-                    </span>
-                    {event.isPaid && (
-                      <span style={{
-                        padding: '0.5rem 1rem',
-                        borderRadius: '50px',
-                        background: 'linear-gradient(45deg, #eab308, #f59e0b)',
-                        color: 'white',
-                        fontSize: '0.8rem',
-                        fontWeight: 600
-                      }}>
-                        ₹{event.price}
-                      </span>
-                    )}
+                    <Tag size={10} />
+                    {event.category}
                   </div>
 
+                  {/* Price Badge */}
+                  {event.isPaid && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '0.75rem',
+                      right: '0.75rem',
+                      padding: '0.35rem 0.75rem',
+                      borderRadius: '20px',
+                      background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                      color: 'white',
+                      fontSize: '0.75rem',
+                      fontWeight: 700
+                    }}>
+                      ₹{event.price}
+                    </div>
+                  )}
+                </div>
+
+                {/* Event Content */}
+                <div style={{ padding: '1.25rem' }}>
                   <h3 style={{
-                    fontSize: '1.3rem',
+                    fontSize: '1.1rem',
                     fontWeight: 700,
-                    color: 'white',
-                    marginBottom: '1rem'
+                    color: '#ffffff',
+                    marginBottom: '0.75rem',
+                    lineHeight: 1.3,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
                   }}>
                     {event.title}
                   </h3>
 
                   <p style={{
-                    color: 'rgba(255,255,255,0.8)',
+                    color: '#94a3b8',
                     marginBottom: '1rem',
-                    fontSize: '0.9rem',
-                    lineHeight: 1.5
+                    fontSize: '0.85rem',
+                    lineHeight: 1.5,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
                   }}>
-                    {event.shortDescription || event.description.substring(0, 100) + '...'}
+                    {event.shortDescription || event.description.substring(0, 80) + '...'}
                   </p>
 
+                  {/* Event Details */}
                   <div style={{
-                    fontSize: '0.85rem',
-                    color: 'rgba(255,255,255,0.7)',
-                    marginBottom: '1.5rem'
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.5rem',
+                    marginBottom: '1rem',
+                    fontSize: '0.8rem',
+                    color: '#64748b'
                   }}>
-                    <p style={{
-                      marginBottom: '0.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      <Calendar size={16} style={{ color: '#ff6b6b' }} />
-                      {new Date(event.date).toLocaleDateString()} at {event.time}
-                    </p>
-                    <p style={{
-                      marginBottom: '0.5rem',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      <MapPin size={16} style={{ color: '#ff6b6b' }} />
-                      {event.location}
-                    </p>
-                    <p style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.5rem'
-                    }}>
-                      <Users size={16} style={{ color: '#ff6b6b' }} />
-                      {event.registered}/{event.capacity} registered
-                    </p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Calendar size={14} style={{ color: '#10b981' }} />
+                      <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <Clock size={14} style={{ color: '#10b981' }} />
+                      <span>{event.time}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <MapPin size={14} style={{ color: '#10b981' }} />
+                      <span style={{ 
+                        overflow: 'hidden', 
+                        textOverflow: 'ellipsis', 
+                        whiteSpace: 'nowrap' 
+                      }}>{event.location}</span>
+                    </div>
                   </div>
 
+                  {/* Registration Progress */}
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '0.4rem'
+                    }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <Users size={14} style={{ color: '#10b981' }} />
+                        <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                          {event.registered}/{event.capacity} spots
+                        </span>
+                      </div>
+                      <span style={{ 
+                        fontSize: '0.7rem', 
+                        color: event.registered >= event.capacity ? '#ef4444' : '#10b981',
+                        fontWeight: 600
+                      }}>
+                        {event.registered >= event.capacity ? 'Full' : `${Math.round((event.registered / event.capacity) * 100)}%`}
+                      </span>
+                    </div>
+                    <div style={{
+                      height: '4px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      borderRadius: '2px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        height: '100%',
+                        width: `${Math.min((event.registered / event.capacity) * 100, 100)}%`,
+                        background: event.registered >= event.capacity 
+                          ? 'linear-gradient(90deg, #ef4444, #dc2626)' 
+                          : 'linear-gradient(90deg, #10b981, #14b8a6)',
+                        borderRadius: '2px',
+                        transition: 'width 0.3s ease'
+                      }} />
+                    </div>
+                  </div>
+
+                  {/* View Button */}
                   <Link to={`/events/${event.id}`} style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    borderRadius: '50px',
-                    background: 'linear-gradient(45deg, #667eea, #764ba2)',
-                    border: 'none',
-                    color: 'white',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                    display: 'inline-flex',
+                    display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '0.5rem',
+                    width: '100%',
+                    padding: '0.75rem',
+                    borderRadius: '10px',
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    border: 'none',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
                     transition: 'all 0.3s ease'
                   }}
                   onMouseEnter={(e) => {
-                    (e.target as HTMLElement).style.transform = 'scale(1.05)';
-                    (e.target as HTMLElement).style.boxShadow = '0 10px 20px rgba(102, 126, 234, 0.3)';
+                    e.currentTarget.style.boxShadow = '0 5px 15px rgba(16, 185, 129, 0.4)';
                   }}
                   onMouseLeave={(e) => {
-                    (e.target as HTMLElement).style.transform = 'scale(1)';
-                    (e.target as HTMLElement).style.boxShadow = 'none';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                   >
                     <Eye size={16} />
@@ -302,27 +437,24 @@ const Events: React.FC = () => {
           <div style={{
             textAlign: 'center',
             padding: '4rem 2rem',
-            background: 'rgba(255,255,255,0.1)',
+            background: 'rgba(255, 255, 255, 0.03)',
             borderRadius: '20px',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            animation: 'fadeIn 1s ease-out'
+            border: '1px solid rgba(255, 255, 255, 0.08)'
           }}>
             <div style={{
-              width: '80px',
-              height: '80px',
+              width: '70px',
+              height: '70px',
               borderRadius: '50%',
-              background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
+              background: 'rgba(16, 185, 129, 0.1)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1.5rem',
-              fontSize: '2rem'
+              margin: '0 auto 1.5rem'
             }}>
-              📅
+              <Calendar size={32} style={{ color: '#10b981' }} />
             </div>
             <h3 style={{
-              fontSize: '1.5rem',
+              fontSize: '1.3rem',
               fontWeight: 700,
               color: 'white',
               marginBottom: '0.5rem'
@@ -330,8 +462,9 @@ const Events: React.FC = () => {
               No events found
             </h3>
             <p style={{
-              color: 'rgba(255,255,255,0.6)',
-              marginBottom: '2rem'
+              color: '#94a3b8',
+              marginBottom: '2rem',
+              fontSize: '0.95rem'
             }}>
               {events.length === 0
                 ? "No events have been created yet."
@@ -340,51 +473,25 @@ const Events: React.FC = () => {
             </p>
             {user?.role === 'organizer' && (
               <Link to="/create-event" style={{
-                padding: '1rem 2rem',
-                borderRadius: '50px',
-                background: 'linear-gradient(45deg, #ff6b6b, #ee5a24)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.85rem 1.5rem',
+                borderRadius: '10px',
+                background: 'linear-gradient(135deg, #10b981, #059669)',
                 border: 'none',
                 color: 'white',
                 fontWeight: 600,
                 textDecoration: 'none',
-                display: 'inline-block',
                 transition: 'all 0.3s ease'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.transform = 'scale(1.05)';
-                (e.target as HTMLElement).style.boxShadow = '0 10px 20px rgba(255,107,107,0.3)';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.transform = 'scale(1)';
-                (e.target as HTMLElement).style.boxShadow = 'none';
-              }}
-              >
+              }}>
+                <Sparkles size={16} />
                 Create First Event
               </Link>
             )}
           </div>
         )}
       </div>
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        input:focus, select:focus {
-          border-color: #ff6b6b !important;
-          box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1) !important;
-        }
-      `}</style>
     </div>
   );
 };

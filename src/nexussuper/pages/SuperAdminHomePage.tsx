@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Calendar, Users, Trophy, Crown, BarChart3, Activity, TrendingUp, ArrowRight, Sparkles, Database, Globe, Shield, Settings } from 'lucide-react';
+import { Calendar, Users, Trophy, Crown, BarChart3, Activity, TrendingUp, ArrowRight, Sparkles, Database, Globe, Shield, Settings, Instagram, Mail } from 'lucide-react';
 import PortalLink from '../../components/PortalLink';
 
 const SuperAdminHomePage: React.FC = () => {
@@ -126,7 +126,7 @@ const SuperAdminHomePage: React.FC = () => {
                 {/* Animated Title */}
                 <div style={{ position: 'relative', marginBottom: isMobile ? '0.5rem' : '1rem' }}>
                   <h1 style={{
-                    fontSize: isMobile ? '1.8rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
+                    fontSize: isMobile ? '1.6rem' : 'clamp(1.8rem, 4vw, 3rem)',
                     fontWeight: 900,
                     color: 'white',
                     marginBottom: '0',
@@ -135,12 +135,13 @@ const SuperAdminHomePage: React.FC = () => {
                     backgroundSize: '200% 200%',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    animation: 'gradientShift 3s ease infinite'
+                    animation: 'gradientShift 3s ease infinite',
+                    lineHeight: '1.1'
                   }}>
                     NEXUS MASTER
                   </h1>
                   <h1 style={{
-                    fontSize: isMobile ? '1.8rem' : 'clamp(2.5rem, 5vw, 4.5rem)',
+                    fontSize: isMobile ? '1.6rem' : 'clamp(1.8rem, 4vw, 3rem)',
                     fontWeight: 900,
                     color: 'white',
                     margin: '0',
@@ -149,7 +150,8 @@ const SuperAdminHomePage: React.FC = () => {
                     backgroundSize: '200% 200%',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
-                    animation: 'gradientShift 3s ease infinite reverse'
+                    animation: 'gradientShift 3s ease infinite reverse',
+                    lineHeight: '1.1'
                   }}>
                     CONTROL
                   </h1>
@@ -161,26 +163,26 @@ const SuperAdminHomePage: React.FC = () => {
                     right: '20px',
                     color: '#10b981',
                     animation: 'sparkle 2s ease-in-out infinite'
-                  }} size={isMobile ? 18 : 24} />
+                  }} size={isMobile ? 16 : 20} />
                 </div>
                 
                 <h2 style={{
-                  fontSize: isMobile ? '1.1rem' : '1.8rem',
+                  fontSize: isMobile ? '1rem' : '1.4rem',
                   fontWeight: 700,
                   color: '#10b981',
-                  marginBottom: isMobile ? '1rem' : '1.5rem',
+                  marginBottom: isMobile ? '0.8rem' : '1.2rem',
                   textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
                   animation: 'slideInLeft 1s ease-out 0.5s both'
                 }}>
-                  <Trophy style={{ display: 'inline', marginRight: '10px', color: '#f59e0b' }} size={isMobile ? 18 : 24} />
+                  <Trophy style={{ display: 'inline', marginRight: '8px', color: '#f59e0b' }} size={isMobile ? 16 : 20} />
                   Ultimate System Administration
                 </h2>
                 
                 <p style={{
-                  fontSize: isMobile ? '0.95rem' : '1.3rem',
+                  fontSize: isMobile ? '0.9rem' : '1.05rem',
                   color: 'rgba(255,255,255,0.9)',
-                  marginBottom: isMobile ? '1.5rem' : '2.5rem',
-                  lineHeight: 1.7,
+                  marginBottom: isMobile ? '1.2rem' : '2rem',
+                  lineHeight: 1.6,
                   animation: 'slideInLeft 1s ease-out 0.7s both'
                 }}>
                   Master control over all college portals, system-wide analytics, global user management,
@@ -189,7 +191,7 @@ const SuperAdminHomePage: React.FC = () => {
                 
                 <div style={{ 
                   display: 'flex', 
-                  gap: '1.5rem', 
+                  gap: '1rem', 
                   flexWrap: 'wrap',
                   animation: 'slideInUp 1s ease-out 0.9s both'
                 }}>
@@ -199,14 +201,15 @@ const SuperAdminHomePage: React.FC = () => {
                         background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                         backgroundSize: '200% 200%',
                         border: 'none',
-                        padding: '15px 35px',
+                        padding: '12px 28px',
                         borderRadius: '50px',
                         fontWeight: 700,
+                        fontSize: '0.95rem',
                         textDecoration: 'none',
                         color: 'white',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        gap: '8px',
                         boxShadow: '0 10px 30px rgba(16, 185, 129, 0.4)',
                         animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                         transform: 'translateY(0)',
@@ -221,23 +224,24 @@ const SuperAdminHomePage: React.FC = () => {
                         e.currentTarget.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.4)';
                       }}
                       >
-                        <Crown size={24} />
+                        <Crown size={20} />
                         Master Login
-                        <ArrowRight size={20} />
+                        <ArrowRight size={16} />
                       </PortalLink>
                       
                       <PortalLink to="/register" className="btn btn-outline-light btn-lg" style={{
-                        border: '3px solid rgba(255,255,255,0.3)',
+                        border: '2px solid rgba(255,255,255,0.3)',
                         color: 'white',
-                        padding: '15px 35px',
+                        padding: '12px 28px',
                         borderRadius: '50px',
                         fontWeight: 700,
+                        fontSize: '0.95rem',
                         textDecoration: 'none',
                         background: 'rgba(255,255,255,0.1)',
                         backdropFilter: 'blur(10px)',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        gap: '8px',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
@@ -253,7 +257,7 @@ const SuperAdminHomePage: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
                       >
-                        <Users size={20} />
+                        <Users size={18} />
                         Master Register
                       </PortalLink>
                     </>
@@ -263,14 +267,15 @@ const SuperAdminHomePage: React.FC = () => {
                         background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4)',
                         backgroundSize: '200% 200%',
                         border: 'none',
-                        padding: '15px 35px',
+                        padding: '12px 28px',
                         borderRadius: '50px',
                         fontWeight: 700,
+                        fontSize: '0.95rem',
                         textDecoration: 'none',
                         color: 'white',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        gap: '8px',
                         boxShadow: '0 10px 30px rgba(16, 185, 129, 0.4)',
                         animation: 'gradientShift 3s ease infinite, pulse 2s ease-in-out infinite',
                         transform: 'translateY(0)',
@@ -285,23 +290,24 @@ const SuperAdminHomePage: React.FC = () => {
                         e.currentTarget.style.boxShadow = '0 10px 30px rgba(16, 185, 129, 0.4)';
                       }}
                       >
-                        <BarChart3 size={24} />
+                        <BarChart3 size={20} />
                         Master Dashboard
-                        <ArrowRight size={20} />
+                        <ArrowRight size={16} />
                       </PortalLink>
                       
                       <PortalLink to="/system" className="btn btn-outline-light btn-lg" style={{
-                        border: '3px solid rgba(255,255,255,0.3)',
+                        border: '2px solid rgba(255,255,255,0.3)',
                         color: 'white',
-                        padding: '15px 35px',
+                        padding: '12px 28px',
                         borderRadius: '50px',
                         fontWeight: 700,
+                        fontSize: '0.95rem',
                         textDecoration: 'none',
                         background: 'rgba(255,255,255,0.1)',
                         backdropFilter: 'blur(10px)',
                         display: 'inline-flex',
                         alignItems: 'center',
-                        gap: '10px',
+                        gap: '8px',
                         transition: 'all 0.3s ease'
                       }}
                       onMouseEnter={(e) => {
@@ -317,7 +323,7 @@ const SuperAdminHomePage: React.FC = () => {
                         e.currentTarget.style.transform = 'translateY(0)';
                       }}
                       >
-                        <Calendar size={20} />
+                        <Calendar size={18} />
                         System Control
                       </PortalLink>
                     </>
@@ -329,8 +335,8 @@ const SuperAdminHomePage: React.FC = () => {
               <div style={{
                 background: 'rgba(255,255,255,0.05)',
                 backdropFilter: 'blur(20px)',
-                borderRadius: '30px',
-                padding: '3rem',
+                borderRadius: '25px',
+                padding: '2rem',
                 border: '2px solid rgba(16, 185, 129, 0.2)',
                 transform: isVisible ? 'translateY(0) rotateY(0deg)' : 'translateY(50px) rotateY(10deg)',
                 opacity: isVisible ? 1 : 0,
@@ -346,7 +352,7 @@ const SuperAdminHomePage: React.FC = () => {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  borderRadius: '30px',
+                  borderRadius: '25px',
                   background: 'linear-gradient(45deg, #10b981, #14b8a6, #06b6d4, #10b981)',
                   backgroundSize: '300% 300%',
                   animation: 'gradientShift 4s ease infinite',
@@ -357,7 +363,7 @@ const SuperAdminHomePage: React.FC = () => {
                     width: '100%',
                     height: '100%',
                     background: 'rgba(15, 23, 42, 0.95)',
-                    borderRadius: '28px'
+                    borderRadius: '23px'
                   }} />
                 </div>
                 
@@ -367,26 +373,26 @@ const SuperAdminHomePage: React.FC = () => {
                     <div style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '15px',
-                      marginBottom: '20px'
+                      gap: '12px',
+                      marginBottom: '15px'
                     }}>
                       <div style={{
-                        width: '70px',
-                        height: '70px',
+                        width: '55px',
+                        height: '55px',
                         background: 'linear-gradient(45deg, #10b981, #14b8a6)',
-                        borderRadius: '18px',
+                        borderRadius: '14px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         animation: 'pulse 2s ease-in-out infinite',
-                        boxShadow: '0 0 30px rgba(16, 185, 129, 0.5)'
+                        boxShadow: '0 0 25px rgba(16, 185, 129, 0.5)'
                       }}>
-                        <Crown size={35} color="white" />
+                        <Crown size={28} color="white" />
                       </div>
                       <h3 style={{ 
                         color: 'white', 
                         margin: 0,
-                        fontSize: '1.8rem',
+                        fontSize: '1.4rem',
                         fontWeight: 800
                       }}>
                         Master {user.name}
@@ -396,14 +402,14 @@ const SuperAdminHomePage: React.FC = () => {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '15px', 
-                      marginBottom: '15px',
-                      padding: '10px',
+                      gap: '12px', 
+                      marginBottom: '12px',
+                      padding: '8px',
                       background: 'rgba(16, 185, 129, 0.1)',
-                      borderRadius: '15px'
+                      borderRadius: '12px'
                     }}>
-                      <Globe size={24} style={{ color: '#10b981' }} />
-                      <span style={{ color: 'white', fontSize: '1.1rem' }}>
+                      <Globe size={20} style={{ color: '#10b981' }} />
+                      <span style={{ color: 'white', fontSize: '0.95rem' }}>
                         System-Wide Control Active
                       </span>
                     </div>
@@ -411,14 +417,14 @@ const SuperAdminHomePage: React.FC = () => {
                     <div style={{ 
                       display: 'flex', 
                       alignItems: 'center', 
-                      gap: '15px', 
-                      marginBottom: '30px',
-                      padding: '10px',
+                      gap: '12px', 
+                      marginBottom: '20px',
+                      padding: '8px',
                       background: 'rgba(16, 185, 129, 0.1)',
-                      borderRadius: '15px'
+                      borderRadius: '12px'
                     }}>
-                      <Database size={24} style={{ color: '#10b981' }} />
-                      <span style={{ color: 'white', fontSize: '1.1rem' }}>
+                      <Database size={20} style={{ color: '#10b981' }} />
+                      <span style={{ color: 'white', fontSize: '0.95rem' }}>
                         All Portals Monitored
                       </span>
                     </div>
@@ -426,16 +432,16 @@ const SuperAdminHomePage: React.FC = () => {
                     <PortalLink to="/dashboard" style={{
                       background: 'linear-gradient(45deg, #10b981, #14b8a6)',
                       border: 'none',
-                      borderRadius: '25px',
+                      borderRadius: '20px',
                       fontWeight: 700,
                       textDecoration: 'none',
                       color: 'white',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      gap: '12px',
-                      padding: '18px',
-                      fontSize: '1.1rem',
+                      gap: '10px',
+                      padding: '14px',
+                      fontSize: '0.95rem',
                       boxShadow: '0 10px 25px rgba(16, 185, 129, 0.4)',
                       transition: 'all 0.3s ease',
                       animation: 'pulse 3s ease-in-out infinite'
@@ -449,9 +455,9 @@ const SuperAdminHomePage: React.FC = () => {
                       e.currentTarget.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.4)';
                     }}
                     >
-                      <Crown size={24} />
+                      <Crown size={20} />
                       Master Control
-                      <ArrowRight size={20} />
+                      <ArrowRight size={16} />
                     </PortalLink>
                   </>
                 ) : (
@@ -459,23 +465,23 @@ const SuperAdminHomePage: React.FC = () => {
                   <>
                     <div style={{ textAlign: 'center' }}>
                       <div style={{
-                        width: isMobile ? '60px' : '80px',
-                        height: isMobile ? '60px' : '80px',
+                        width: isMobile ? '50px' : '60px',
+                        height: isMobile ? '50px' : '60px',
                         background: 'linear-gradient(45deg, #10b981, #14b8a6)',
                         borderRadius: '50%',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        margin: '0 auto 20px auto',
+                        margin: '0 auto 15px auto',
                         animation: 'bounce 2s ease-in-out infinite'
                       }}>
-                        <Shield size={isMobile ? 30 : 40} color="white" />
+                        <Shield size={isMobile ? 24 : 30} color="white" />
                       </div>
                       
                       <h3 style={{ 
                         color: 'white', 
-                        marginBottom: '20px',
-                        fontSize: isMobile ? '1.3rem' : '2rem',
+                        marginBottom: '15px',
+                        fontSize: isMobile ? '1.1rem' : '1.5rem',
                         fontWeight: 800,
                         background: 'linear-gradient(45deg, #10b981, #14b8a6)',
                         WebkitBackgroundClip: 'text',
@@ -486,9 +492,9 @@ const SuperAdminHomePage: React.FC = () => {
                       
                       <p style={{ 
                         color: 'rgba(255,255,255,0.8)', 
-                        marginBottom: '30px', 
-                        lineHeight: 1.7,
-                        fontSize: '1.1rem'
+                        marginBottom: '20px', 
+                        lineHeight: 1.6,
+                        fontSize: '0.95rem'
                       }}>
                         🔐 Master login required for ultimate system control. Access global analytics,
                         manage all college portals, and oversee the entire platform ecosystem.
@@ -497,16 +503,16 @@ const SuperAdminHomePage: React.FC = () => {
                       <PortalLink to="/login" style={{
                         background: 'linear-gradient(45deg, #10b981, #14b8a6)',
                         border: 'none',
-                        borderRadius: '25px',
+                        borderRadius: '20px',
                         fontWeight: 700,
                         textDecoration: 'none',
                         color: 'white',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        gap: '12px',
-                        padding: '18px',
-                        fontSize: '1.1rem',
+                        gap: '10px',
+                        padding: '14px',
+                        fontSize: '0.95rem',
                         boxShadow: '0 10px 25px rgba(16, 185, 129, 0.4)',
                         transition: 'all 0.3s ease',
                         animation: 'pulse 3s ease-in-out infinite'
@@ -520,7 +526,7 @@ const SuperAdminHomePage: React.FC = () => {
                         e.currentTarget.style.boxShadow = '0 10px 25px rgba(16, 185, 129, 0.4)';
                       }}
                       >
-                        <Crown size={24} />
+                        <Crown size={20} />
                         Master Login
                         <ArrowRight size={20} />
                       </PortalLink>
@@ -692,6 +698,387 @@ const SuperAdminHomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Footer Section */}
+      <footer style={{
+        background: 'linear-gradient(180deg, #0a0a1a 0%, #0d0d20 100%)',
+        color: '#ffffff',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.03) 0%, transparent 70%)',
+          pointerEvents: 'none'
+        }} />
+
+        <div style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '60px 24px 40px',
+          position: 'relative',
+          zIndex: 1
+        }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '40px'
+          }} className="super-home-footer-grid">
+            
+            {/* Column 1 - Brand */}
+            <div>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '20px'
+              }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  background: 'linear-gradient(135deg, #10b981, #14b8a6)',
+                  borderRadius: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Crown size={22} color="white" />
+                </div>
+                <span style={{
+                  fontSize: '1.4rem',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #ffffff, #10b981)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent'
+                }}>NEXUS MASTER</span>
+              </div>
+              <p style={{
+                color: 'rgba(255,255,255,0.6)',
+                fontSize: '0.9rem',
+                lineHeight: 1.7,
+                marginBottom: '20px'
+              }}>
+                Master control center for the Nexus platform. Oversee all colleges, manage system-wide settings, and monitor platform health.
+              </p>
+              
+              {/* Social Icons */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                marginTop: '20px'
+              }}>
+                <a
+                  href="https://instagram.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Instagram"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none',
+                    color: '#10b981'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#E4405F';
+                    e.currentTarget.style.borderColor = '#E4405F';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.color = '#10b981';
+                  }}
+                >
+                  <Instagram size={18} />
+                </a>
+                <a
+                  href="https://x.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="X (Twitter)"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none',
+                    color: '#10b981'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#000000';
+                    e.currentTarget.style.borderColor = '#000000';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.color = '#10b981';
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </a>
+                <a
+                  href="https://wa.me/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="WhatsApp"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none',
+                    color: '#10b981'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#25D366';
+                    e.currentTarget.style.borderColor = '#25D366';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.color = '#10b981';
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                  </svg>
+                </a>
+                <a
+                  href="mailto:master@nexusevents.com"
+                  title="Gmail"
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    transition: 'all 0.3s ease',
+                    textDecoration: 'none',
+                    color: '#10b981'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#EA4335';
+                    e.currentTarget.style.borderColor = '#EA4335';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.color = '#10b981';
+                  }}
+                >
+                  <Mail size={18} />
+                </a>
+              </div>
+            </div>
+
+            {/* Column 2 - Quick Links */}
+            <div>
+              <h4 style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                color: '#10b981',
+                marginBottom: '24px',
+                letterSpacing: '0.5px'
+              }}>Quick Links</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  { label: 'Home', path: '/' },
+                  { label: 'Dashboard', path: '/dashboard' },
+                  { label: 'Events', path: '/events' },
+                  { label: 'Analytics', path: '/analytics' }
+                ].map((link, index) => (
+                  <li key={index} style={{ marginBottom: '14px' }}>
+                    <PortalLink
+                      to={link.path}
+                      style={{
+                        color: 'rgba(255,255,255,0.7)',
+                        textDecoration: 'none',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s ease',
+                        display: 'inline-block'
+                      }}
+                    >
+                      {link.label}
+                    </PortalLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 3 - Resources */}
+            <div>
+              <h4 style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                color: '#10b981',
+                marginBottom: '24px',
+                letterSpacing: '0.5px'
+              }}>Resources</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {[
+                  { label: 'Colleges', path: '/colleges' },
+                  { label: 'Admins', path: '/admins' },
+                  { label: 'System Settings', path: '/settings' },
+                  { label: 'Command Center', path: '/command-center' }
+                ].map((link, index) => (
+                  <li key={index} style={{ marginBottom: '14px' }}>
+                    <PortalLink
+                      to={link.path}
+                      style={{
+                        color: 'rgba(255,255,255,0.7)',
+                        textDecoration: 'none',
+                        fontSize: '0.9rem',
+                        transition: 'all 0.3s ease',
+                        display: 'inline-block'
+                      }}
+                    >
+                      {link.label}
+                    </PortalLink>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Column 4 - Contact */}
+            <div>
+              <h4 style={{
+                fontSize: '1rem',
+                fontWeight: 700,
+                color: '#10b981',
+                marginBottom: '24px',
+                letterSpacing: '0.5px'
+              }}>Contact Us</h4>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                <li style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '16px',
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '0.9rem'
+                }}>
+                  <span style={{ color: '#10b981' }}>✉️</span>
+                  <span>master@nexusevents.com</span>
+                </li>
+                <li style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  marginBottom: '16px',
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '0.9rem'
+                }}>
+                  <span style={{ color: '#10b981' }}>📞</span>
+                  <span>+91 123 456 7890</span>
+                </li>
+                <li style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: '12px',
+                  color: 'rgba(255,255,255,0.7)',
+                  fontSize: '0.9rem'
+                }}>
+                  <span style={{ color: '#10b981' }}>📍</span>
+                  <span>Headquarters,<br />Mumbai, India</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div style={{
+          borderTop: '1px solid rgba(16, 185, 129, 0.15)',
+          background: 'rgba(0,0,0,0.3)'
+        }}>
+          <div style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            padding: '20px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: '16px'
+          }}>
+            <p style={{
+              color: 'rgba(255,255,255,0.5)',
+              fontSize: '0.85rem',
+              margin: 0
+            }}>
+              © 2025 Nexus Master Portal. All rights reserved.
+            </p>
+            <div style={{
+              display: 'flex',
+              gap: '24px'
+            }}>
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                Privacy Policy
+              </span>
+              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem' }}>
+                Terms of Service
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <style>{`
+          @media (max-width: 992px) {
+            .super-home-footer-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+            }
+          }
+          @media (max-width: 576px) {
+            .super-home-footer-grid {
+              grid-template-columns: 1fr !important;
+              text-align: center;
+            }
+            .super-home-footer-grid > div {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+            }
+          }
+        `}</style>
+      </footer>
     </div>
   );
 };

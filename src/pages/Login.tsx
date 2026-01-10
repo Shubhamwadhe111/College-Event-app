@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Mail, Lock, User, Sparkles, GraduationCap } from 'lucide-react';
+import { ArrowRight, Mail, Lock, GraduationCap, Briefcase, Zap } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<'student' | 'organizer' | 'admin'>('student');
+  const [userType, setUserType] = useState<'student' | 'organizer'>('student');
   const [error, setError] = useState('');
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -25,13 +25,7 @@ const Login: React.FC = () => {
       if (result.redirectTo) {
         navigate(result.redirectTo);
       } else {
-        if (userType === 'admin') {
-          navigate('/nexusadmin/dashboard');
-        } else if (userType === 'organizer') {
-          navigate('/dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        navigate('/dashboard');
       }
     } else {
       setError(result.message);
@@ -41,12 +35,12 @@ const Login: React.FC = () => {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 50%, #2d1b4e 100%)',
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem 1rem',
-      paddingTop: '100px',
+      padding: '1.5rem 1rem',
+      paddingTop: '80px',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -57,153 +51,171 @@ const Login: React.FC = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
+        background: 'radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(20, 184, 166, 0.08) 0%, transparent 50%)',
         pointerEvents: 'none'
       }} />
-      
-      {/* Floating Particles */}
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: Math.random() * 6 + 2 + 'px',
-            height: Math.random() * 6 + 2 + 'px',
-            background: `rgba(${Math.random() > 0.5 ? '99, 102, 241' : '168, 85, 247'}, ${Math.random() * 0.4 + 0.2})`,
-            borderRadius: '50%',
-            left: Math.random() * 100 + '%',
-            top: Math.random() * 100 + '%',
-            animation: `float ${Math.random() * 4 + 3}s ease-in-out infinite`,
-            animationDelay: Math.random() * 2 + 's'
-          }}
-        />
-      ))}
 
-      <div className="container" style={{ maxWidth: '450px', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: '380px', width: '100%', position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: 'rgba(15, 15, 35, 0.9)',
-          backdropFilter: 'blur(25px)',
-          borderRadius: '24px',
-          padding: '3rem 2rem',
-          border: '2px solid rgba(99, 102, 241, 0.2)',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.4), 0 0 80px rgba(99, 102, 241, 0.1)'
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '2rem 1.5rem',
+          border: '1px solid rgba(16, 185, 129, 0.2)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.3), 0 0 60px rgba(16, 185, 129, 0.08)'
         }}>
           {/* Header */}
-          <div className="text-center mb-5">
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <div style={{
-              width: '90px',
-              height: '90px',
-              borderRadius: '24px',
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+              width: '60px',
+              height: '60px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1.5rem',
-              boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4), 0 0 60px rgba(139, 92, 246, 0.2)',
-              position: 'relative'
+              margin: '0 auto 1rem',
+              boxShadow: '0 8px 25px rgba(16, 185, 129, 0.35)'
             }}>
-              <GraduationCap size={42} color="white" strokeWidth={2} />
-              <Sparkles size={18} style={{
-                position: 'absolute',
-                top: '-6px',
-                right: '-6px',
-                color: '#fbbf24'
-              }} />
+              <Zap size={28} color="white" strokeWidth={2.5} />
             </div>
             <h2 style={{
-              fontSize: '2.2rem',
+              fontSize: '1.6rem',
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #ffffff 0%, #6366f1 50%, #a855f7 100%)',
+              background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              marginBottom: '0.5rem',
-              letterSpacing: '0.5px'
+              marginBottom: '0.3rem'
             }}>
               Welcome Back
             </h2>
             <p style={{
-              color: 'rgba(139, 92, 246, 0.9)',
-              fontSize: '1rem',
-              fontWeight: 600
+              color: 'rgba(16, 185, 129, 0.8)',
+              fontSize: '0.85rem',
+              fontWeight: 500
             }}>
               Sign in to Nexus Events
             </p>
+          </div>
+
+          {/* User Type Selection - Cards */}
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            marginBottom: '1.5rem'
+          }}>
+            <button
+              type="button"
+              onClick={() => setUserType('student')}
+              style={{
+                flex: 1,
+                padding: '1rem 0.75rem',
+                borderRadius: '12px',
+                border: userType === 'student' 
+                  ? '2px solid #10b981' 
+                  : '2px solid rgba(255, 255, 255, 0.1)',
+                background: userType === 'student' 
+                  ? 'rgba(16, 185, 129, 0.15)' 
+                  : 'rgba(30, 41, 59, 0.5)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: userType === 'student' 
+                  ? 'linear-gradient(135deg, #10b981, #14b8a6)' 
+                  : 'rgba(100, 116, 139, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <GraduationCap size={20} color={userType === 'student' ? 'white' : '#94a3b8'} />
+              </div>
+              <span style={{
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: userType === 'student' ? '#10b981' : '#94a3b8'
+              }}>
+                Student
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setUserType('organizer')}
+              style={{
+                flex: 1,
+                padding: '1rem 0.75rem',
+                borderRadius: '12px',
+                border: userType === 'organizer' 
+                  ? '2px solid #f59e0b' 
+                  : '2px solid rgba(255, 255, 255, 0.1)',
+                background: userType === 'organizer' 
+                  ? 'rgba(245, 158, 11, 0.15)' 
+                  : 'rgba(30, 41, 59, 0.5)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}
+            >
+              <div style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '10px',
+                background: userType === 'organizer' 
+                  ? 'linear-gradient(135deg, #f59e0b, #d97706)' 
+                  : 'rgba(100, 116, 139, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Briefcase size={20} color={userType === 'organizer' ? 'white' : '#94a3b8'} />
+              </div>
+              <span style={{
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                color: userType === 'organizer' ? '#f59e0b' : '#94a3b8'
+              }}>
+                Organizer
+              </span>
+            </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
             {error && (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))',
-                border: '2px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
                 color: '#fca5a5',
-                padding: '1rem',
-                borderRadius: '12px',
-                marginBottom: '1.5rem',
+                padding: '0.75rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
                 textAlign: 'center',
-                fontWeight: 600
+                fontSize: '0.85rem',
+                fontWeight: 500
               }}>
                 {error}
               </div>
             )}
 
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '1rem' }}>
               <label style={{
-                color: '#f1f5f9',
+                color: '#e2e8f0',
                 fontWeight: 600,
-                marginBottom: '0.75rem',
+                marginBottom: '0.5rem',
                 display: 'block',
-                fontSize: '0.9rem'
-              }}>
-                Login As
-              </label>
-              <div style={{ position: 'relative' }}>
-                <select
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value as 'student' | 'organizer' | 'admin')}
-                  style={{
-                    width: '100%',
-                    padding: '1rem 1rem 1rem 3.5rem',
-                    borderRadius: '12px',
-                    border: '2px solid rgba(99, 102, 241, 0.2)',
-                    background: 'rgba(30, 30, 60, 0.8)',
-                    color: 'white',
-                    fontSize: '1rem',
-                    fontWeight: 500,
-                    outline: 'none',
-                    transition: 'all 0.3s ease',
-                    cursor: 'pointer'
-                  }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="student" style={{ background: '#1e1e3e', color: 'white' }}>Student</option>
-                  <option value="organizer" style={{ background: '#1e1e3e', color: 'white' }}>Organizer</option>
-                  <option value="admin" style={{ background: '#1e1e3e', color: 'white' }}>Admin</option>
-                </select>
-                <User size={20} style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
-                }} />
-              </div>
-            </div>
-
-            <div className="form-group" style={{ marginBottom: '1.5rem' }}>
-              <label style={{
-                color: '#f1f5f9',
-                fontWeight: 600,
-                marginBottom: '0.75rem',
-                display: 'block',
-                fontSize: '0.9rem'
+                fontSize: '0.8rem'
               }}>
                 Email Address
               </label>
@@ -214,44 +226,44 @@ const Login: React.FC = () => {
                   onChange={(e) => setEmail(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '1rem 1rem 1rem 3.5rem',
-                    borderRadius: '12px',
-                    border: '2px solid rgba(99, 102, 241, 0.2)',
-                    background: 'rgba(30, 30, 60, 0.8)',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    background: 'rgba(30, 41, 59, 0.6)',
                     color: 'white',
-                    fontSize: '1rem',
-                    fontWeight: 500,
+                    fontSize: '0.9rem',
                     outline: 'none',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
                   }}
                   placeholder="Enter your email"
                   required
                   onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
+                    e.target.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
+                    e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                     e.target.style.boxShadow = 'none';
                   }}
                 />
-                <Mail size={20} style={{
+                <Mail size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: 'rgba(16, 185, 129, 0.6)'
                 }} />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
+            <div style={{ marginBottom: '1.5rem' }}>
               <label style={{
-                color: '#f1f5f9',
+                color: '#e2e8f0',
                 fontWeight: 600,
-                marginBottom: '0.75rem',
+                marginBottom: '0.5rem',
                 display: 'block',
-                fontSize: '0.9rem'
+                fontSize: '0.8rem'
               }}>
                 Password
               </label>
@@ -262,33 +274,33 @@ const Login: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   style={{
                     width: '100%',
-                    padding: '1rem 1rem 1rem 3.5rem',
-                    borderRadius: '12px',
-                    border: '2px solid rgba(99, 102, 241, 0.2)',
-                    background: 'rgba(30, 30, 60, 0.8)',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: '1px solid rgba(16, 185, 129, 0.2)',
+                    background: 'rgba(30, 41, 59, 0.6)',
                     color: 'white',
-                    fontSize: '1rem',
-                    fontWeight: 500,
+                    fontSize: '0.9rem',
                     outline: 'none',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
                   }}
                   placeholder="Enter your password"
                   required
                   onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
+                    e.target.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)';
                   }}
                   onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
+                    e.target.style.borderColor = 'rgba(16, 185, 129, 0.2)';
                     e.target.style.boxShadow = 'none';
                   }}
                 />
-                <Lock size={20} style={{
+                <Lock size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: 'rgba(16, 185, 129, 0.6)'
                 }} />
               </div>
             </div>
@@ -298,44 +310,46 @@ const Login: React.FC = () => {
               disabled={isLoading}
               style={{
                 width: '100%',
-                padding: '1rem',
-                borderRadius: '12px',
+                padding: '0.85rem',
+                borderRadius: '10px',
                 background: isLoading 
-                  ? 'rgba(99, 102, 241, 0.5)' 
-                  : 'linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)',
+                  ? 'rgba(16, 185, 129, 0.4)' 
+                  : userType === 'student'
+                    ? 'linear-gradient(135deg, #10b981, #059669)'
+                    : 'linear-gradient(135deg, #f59e0b, #d97706)',
                 border: 'none',
                 color: 'white',
-                fontSize: '1.1rem',
+                fontSize: '0.95rem',
                 fontWeight: 700,
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.75rem',
+                gap: '0.5rem',
                 transition: 'all 0.3s ease',
-                marginBottom: '1.5rem',
-                boxShadow: isLoading ? 'none' : '0 8px 25px rgba(99, 102, 241, 0.4)',
+                marginBottom: '1.25rem',
+                boxShadow: isLoading ? 'none' : userType === 'student' 
+                  ? '0 6px 20px rgba(16, 185, 129, 0.35)' 
+                  : '0 6px 20px rgba(245, 158, 11, 0.35)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
               }}
               onMouseEnter={(e) => {
                 if (!isLoading) {
                   e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.5)';
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isLoading) {
                   e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.4)';
                 }
               }}
             >
               {isLoading ? (
                 <>
                   <div style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '16px',
+                    height: '16px',
                     border: '2px solid rgba(255,255,255,0.3)',
                     borderTop: '2px solid white',
                     borderRadius: '50%',
@@ -345,28 +359,25 @@ const Login: React.FC = () => {
                 </>
               ) : (
                 <>
-                  Sign In
-                  <ArrowRight size={18} />
+                  Sign In as {userType === 'student' ? 'Student' : 'Organizer'}
+                  <ArrowRight size={16} />
                 </>
               )}
             </button>
 
-            <div className="text-center">
-              <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '1rem', fontSize: '0.95rem' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
                 Don't have an account?{' '}
                 <Link 
                   to="/register" 
                   style={{ 
-                    color: '#a855f7', 
+                    color: '#10b981', 
                     textDecoration: 'none',
-                    fontWeight: 700
+                    fontWeight: 600
                   }}
                 >
                   Sign Up
                 </Link>
-              </p>
-              <p style={{ color: 'rgba(139, 92, 246, 0.6)', fontSize: '0.85rem', fontWeight: 500 }}>
-                🎓 Nexus College Events Platform
               </p>
             </div>
           </form>
@@ -376,10 +387,6 @@ const Login: React.FC = () => {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
         }
       `}</style>
     </div>

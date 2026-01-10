@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { ArrowRight, Mail, Lock, User, Phone, School, Sparkles, GraduationCap, UserPlus } from 'lucide-react';
+import { ArrowRight, Mail, Lock, User, Phone, School, Zap, GraduationCap, Briefcase, Building } from 'lucide-react';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,8 +9,10 @@ const Register: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    studentId: '',
     phone: '',
     college: '',
+    clubName: '',
     userType: 'student' as 'student' | 'organizer'
   });
   const [error, setError] = useState('');
@@ -46,12 +48,20 @@ const Register: React.FC = () => {
     let result;
 
     if (formData.userType === 'organizer') {
+      if (!formData.clubName) {
+        setError('Please enter your Club/Organization name');
+        return;
+      }
+      if (!formData.phone) {
+        setError('Please enter your phone number');
+        return;
+      }
       result = await registerOrganizer({
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        phone: formData.phone || '',
-        department: formData.college || 'Not specified',
+        phone: formData.phone,
+        department: formData.clubName,
         designation: 'Event Organizer'
       });
     } else {
@@ -59,7 +69,7 @@ const Register: React.FC = () => {
         name: formData.name,
         email: formData.email,
         password: formData.password,
-        studentId: formData.phone || 'auto-generated',
+        studentId: formData.studentId || 'auto-generated',
         college: formData.college || 'Not specified',
         role: 'student'
       });
@@ -78,36 +88,18 @@ const Register: React.FC = () => {
     }
   };
 
-  const inputStyle = {
-    width: '100%',
-    padding: '0.9rem 1rem 0.9rem 3.5rem',
-    borderRadius: '12px',
-    border: '2px solid rgba(99, 102, 241, 0.2)',
-    background: 'rgba(30, 30, 60, 0.8)',
-    color: 'white',
-    fontSize: '0.95rem',
-    fontWeight: 500,
-    outline: 'none',
-    transition: 'all 0.3s ease'
-  };
-
-  const labelStyle = {
-    color: '#f1f5f9',
-    fontWeight: 600,
-    marginBottom: '0.6rem',
-    display: 'block',
-    fontSize: '0.85rem'
-  };
+  const isOrganizer = formData.userType === 'organizer';
+  const themeColor = isOrganizer ? '#f59e0b' : '#10b981';
 
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 50%, #2d1b4e 100%)',
+      background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '2rem 1rem',
-      paddingTop: '100px',
+      padding: '1.5rem 1rem',
+      paddingTop: '80px',
       position: 'relative',
       overflow: 'hidden'
     }}>
@@ -118,301 +110,482 @@ const Register: React.FC = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12) 0%, transparent 50%)',
+        background: `radial-gradient(circle at 20% 30%, rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(${isOrganizer ? '217, 119, 6' : '20, 184, 166'}, 0.08) 0%, transparent 50%)`,
         pointerEvents: 'none'
       }} />
-      
-      {/* Floating Particles */}
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: Math.random() * 6 + 2 + 'px',
-            height: Math.random() * 6 + 2 + 'px',
-            background: `rgba(${Math.random() > 0.5 ? '99, 102, 241' : '168, 85, 247'}, ${Math.random() * 0.4 + 0.2})`,
-            borderRadius: '50%',
-            left: Math.random() * 100 + '%',
-            top: Math.random() * 100 + '%',
-            animation: `float ${Math.random() * 4 + 3}s ease-in-out infinite`,
-            animationDelay: Math.random() * 2 + 's'
-          }}
-        />
-      ))}
 
-      <div className="container" style={{ maxWidth: '480px', position: 'relative', zIndex: 1 }}>
+      <div style={{ maxWidth: '420px', width: '100%', position: 'relative', zIndex: 1 }}>
         <div style={{
-          background: 'rgba(15, 15, 35, 0.9)',
-          backdropFilter: 'blur(25px)',
-          borderRadius: '24px',
-          padding: '2.5rem 2rem',
-          border: '2px solid rgba(99, 102, 241, 0.2)',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.4), 0 0 80px rgba(99, 102, 241, 0.1)'
+          background: 'rgba(15, 23, 42, 0.9)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '2rem 1.5rem',
+          border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`,
+          boxShadow: `0 20px 40px rgba(0,0,0,0.3), 0 0 60px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.08)`
         }}>
           {/* Header */}
-          <div className="text-center mb-4">
+          <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
             <div style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '20px',
-              background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
+              width: '60px',
+              height: '60px',
+              borderRadius: '16px',
+              background: isOrganizer 
+                ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                : 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1.25rem',
-              boxShadow: '0 10px 40px rgba(99, 102, 241, 0.4), 0 0 60px rgba(139, 92, 246, 0.2)',
-              position: 'relative'
+              margin: '0 auto 1rem',
+              boxShadow: `0 8px 25px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.35)`
             }}>
-              <UserPlus size={38} color="white" strokeWidth={2} />
-              <Sparkles size={16} style={{
-                position: 'absolute',
-                top: '-5px',
-                right: '-5px',
-                color: '#fbbf24'
-              }} />
+              {isOrganizer ? <Briefcase size={28} color="white" strokeWidth={2.5} /> : <Zap size={28} color="white" strokeWidth={2.5} />}
             </div>
             <h2 style={{
-              fontSize: '2rem',
+              fontSize: '1.6rem',
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #ffffff 0%, #6366f1 50%, #a855f7 100%)',
+              background: isOrganizer 
+                ? 'linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #d97706 100%)'
+                : 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              marginBottom: '0.5rem',
-              letterSpacing: '0.5px'
+              marginBottom: '0.3rem'
             }}>
               Join Nexus
             </h2>
             <p style={{
-              color: 'rgba(139, 92, 246, 0.9)',
-              fontSize: '0.95rem',
-              fontWeight: 600
+              color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.8)`,
+              fontSize: '0.85rem',
+              fontWeight: 500
             }}>
-              Create your college event account
+              {isOrganizer ? 'Register as Event Organizer' : 'Create your student account'}
             </p>
+          </div>
+
+          {/* User Type Selection */}
+          <div style={{
+            display: 'flex',
+            gap: '0.75rem',
+            marginBottom: '1.5rem'
+          }}>
+            <button
+              type="button"
+              onClick={() => setFormData({...formData, userType: 'student'})}
+              style={{
+                flex: 1,
+                padding: '0.85rem 0.5rem',
+                borderRadius: '12px',
+                border: formData.userType === 'student' 
+                  ? '2px solid #10b981' 
+                  : '2px solid rgba(255, 255, 255, 0.1)',
+                background: formData.userType === 'student' 
+                  ? 'rgba(16, 185, 129, 0.15)' 
+                  : 'rgba(30, 41, 59, 0.5)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
+            >
+              <GraduationCap size={22} color={formData.userType === 'student' ? '#10b981' : '#94a3b8'} />
+              <span style={{
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: formData.userType === 'student' ? '#10b981' : '#94a3b8'
+              }}>
+                Student
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setFormData({...formData, userType: 'organizer'})}
+              style={{
+                flex: 1,
+                padding: '0.85rem 0.5rem',
+                borderRadius: '12px',
+                border: formData.userType === 'organizer' 
+                  ? '2px solid #f59e0b' 
+                  : '2px solid rgba(255, 255, 255, 0.1)',
+                background: formData.userType === 'organizer' 
+                  ? 'rgba(245, 158, 11, 0.15)' 
+                  : 'rgba(30, 41, 59, 0.5)',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '0.4rem'
+              }}
+            >
+              <Briefcase size={22} color={formData.userType === 'organizer' ? '#f59e0b' : '#94a3b8'} />
+              <span style={{
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: formData.userType === 'organizer' ? '#f59e0b' : '#94a3b8'
+              }}>
+                Organizer
+              </span>
+            </button>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit}>
             {error && (
               <div style={{
-                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1))',
-                border: '2px solid rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
                 color: '#fca5a5',
-                padding: '1rem',
-                borderRadius: '12px',
-                marginBottom: '1.25rem',
+                padding: '0.75rem',
+                borderRadius: '10px',
+                marginBottom: '1rem',
                 textAlign: 'center',
-                fontWeight: 600,
-                fontSize: '0.9rem'
+                fontSize: '0.85rem',
+                fontWeight: 500
               }}>
                 {error}
               </div>
             )}
 
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>Account Type</label>
-              <div style={{ position: 'relative' }}>
-                <select
-                  name="userType"
-                  value={formData.userType}
-                  onChange={handleChange}
-                  style={{...inputStyle, cursor: 'pointer'}}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                >
-                  <option value="student" style={{ background: '#1e1e3e', color: 'white' }}>Student</option>
-                  <option value="organizer" style={{ background: '#1e1e3e', color: 'white' }}>Event Organizer</option>
-                </select>
-                <User size={18} style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
-                }} />
-              </div>
-            </div>
-
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>Full Name *</label>
+            {/* Full Name */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{
+                color: '#e2e8f0',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block',
+                fontSize: '0.8rem'
+              }}>
+                Full Name *
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`,
+                    background: 'rgba(30, 41, 59, 0.6)',
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
+                  }}
                   placeholder="Enter your full name"
                   required
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
-                <User size={18} style={{
+                <User size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)`
                 }} />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>Email Address *</label>
+            {/* Organizer: Club/Organization Name */}
+            {isOrganizer && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{
+                  color: '#e2e8f0',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                  display: 'block',
+                  fontSize: '0.8rem'
+                }}>
+                  Club/Organization Name *
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    name="clubName"
+                    value={formData.clubName}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(245, 158, 11, 0.2)',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      color: 'white',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Enter club or organization name"
+                    required={isOrganizer}
+                  />
+                  <Building size={16} style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(245, 158, 11, 0.6)'
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {/* Email */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{
+                color: '#e2e8f0',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block',
+                fontSize: '0.8rem'
+              }}>
+                Email Address *
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`,
+                    background: 'rgba(30, 41, 59, 0.6)',
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
+                  }}
                   placeholder="Enter your email"
                   required
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
-                <Mail size={18} style={{
+                <Mail size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)`
                 }} />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>Student ID / Phone Number</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  style={inputStyle}
-                  placeholder="Enter your student ID or phone"
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-                <Phone size={18} style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
-                }} />
+            {/* Student: Student ID */}
+            {!isOrganizer && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{
+                  color: '#e2e8f0',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                  display: 'block',
+                  fontSize: '0.8rem'
+                }}>
+                  Student ID
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    name="studentId"
+                    value={formData.studentId}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(16, 185, 129, 0.2)',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      color: 'white',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Enter your student ID"
+                  />
+                  <GraduationCap size={16} style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(16, 185, 129, 0.6)'
+                  }} />
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>College/Institution</label>
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="text"
-                  name="college"
-                  value={formData.college}
-                  onChange={handleChange}
-                  style={inputStyle}
-                  placeholder="Enter your college name"
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
-                />
-                <School size={18} style={{
-                  position: 'absolute',
-                  left: '1rem',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
-                }} />
+            {/* Organizer: Phone Number */}
+            {isOrganizer && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{
+                  color: '#e2e8f0',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                  display: 'block',
+                  fontSize: '0.8rem'
+                }}>
+                  Phone Number *
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(245, 158, 11, 0.2)',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      color: 'white',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Enter your phone number"
+                    required={isOrganizer}
+                  />
+                  <Phone size={16} style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(245, 158, 11, 0.6)'
+                  }} />
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="form-group" style={{ marginBottom: '1.25rem' }}>
-              <label style={labelStyle}>Password *</label>
+            {/* Student: College */}
+            {!isOrganizer && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{
+                  color: '#e2e8f0',
+                  fontWeight: 600,
+                  marginBottom: '0.5rem',
+                  display: 'block',
+                  fontSize: '0.8rem'
+                }}>
+                  College/Institution
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type="text"
+                    name="college"
+                    value={formData.college}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(16, 185, 129, 0.2)',
+                      background: 'rgba(30, 41, 59, 0.6)',
+                      color: 'white',
+                      fontSize: '0.9rem',
+                      outline: 'none',
+                      transition: 'all 0.3s ease',
+                      boxSizing: 'border-box'
+                    }}
+                    placeholder="Enter your college name"
+                  />
+                  <School size={16} style={{
+                    position: 'absolute',
+                    left: '0.85rem',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: 'rgba(16, 185, 129, 0.6)'
+                  }} />
+                </div>
+              </div>
+            )}
+
+            {/* Password */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{
+                color: '#e2e8f0',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block',
+                fontSize: '0.8rem'
+              }}>
+                Password *
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`,
+                    background: 'rgba(30, 41, 59, 0.6)',
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
+                  }}
                   placeholder="Create a password"
                   required
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
-                <Lock size={18} style={{
+                <Lock size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)`
                 }} />
               </div>
             </div>
 
-            <div className="form-group" style={{ marginBottom: '1.75rem' }}>
-              <label style={labelStyle}>Confirm Password *</label>
+            {/* Confirm Password */}
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{
+                color: '#e2e8f0',
+                fontWeight: 600,
+                marginBottom: '0.5rem',
+                display: 'block',
+                fontSize: '0.8rem'
+              }}>
+                Confirm Password *
+              </label>
               <div style={{ position: 'relative' }}>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  style={inputStyle}
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 0.85rem 0.85rem 2.75rem',
+                    borderRadius: '10px',
+                    border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`,
+                    background: 'rgba(30, 41, 59, 0.6)',
+                    color: 'white',
+                    fontSize: '0.9rem',
+                    outline: 'none',
+                    transition: 'all 0.3s ease',
+                    boxSizing: 'border-box'
+                  }}
                   placeholder="Confirm your password"
                   required
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.6)';
-                    e.target.style.boxShadow = '0 0 0 4px rgba(99, 102, 241, 0.1)';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'rgba(99, 102, 241, 0.2)';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
-                <Lock size={18} style={{
+                <Lock size={16} style={{
                   position: 'absolute',
-                  left: '1rem',
+                  left: '0.85rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(139, 92, 246, 0.7)'
+                  color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)`
                 }} />
               </div>
             </div>
@@ -422,44 +595,34 @@ const Register: React.FC = () => {
               disabled={isLoading}
               style={{
                 width: '100%',
-                padding: '1rem',
-                borderRadius: '12px',
+                padding: '0.85rem',
+                borderRadius: '10px',
                 background: isLoading 
-                  ? 'rgba(99, 102, 241, 0.5)' 
-                  : 'linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7)',
+                  ? `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.4)` 
+                  : isOrganizer
+                    ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                    : 'linear-gradient(135deg, #10b981, #059669)',
                 border: 'none',
                 color: 'white',
-                fontSize: '1rem',
+                fontSize: '0.95rem',
                 fontWeight: 700,
                 cursor: isLoading ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '0.75rem',
+                gap: '0.5rem',
                 transition: 'all 0.3s ease',
-                marginBottom: '1.5rem',
-                boxShadow: isLoading ? 'none' : '0 8px 25px rgba(99, 102, 241, 0.4)',
+                marginBottom: '1.25rem',
+                boxShadow: isLoading ? 'none' : `0 6px 20px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.35)`,
                 textTransform: 'uppercase',
                 letterSpacing: '0.5px'
-              }}
-              onMouseEnter={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                  e.currentTarget.style.boxShadow = '0 12px 35px rgba(99, 102, 241, 0.5)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isLoading) {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.4)';
-                }
               }}
             >
               {isLoading ? (
                 <>
                   <div style={{
-                    width: '20px',
-                    height: '20px',
+                    width: '16px',
+                    height: '16px',
                     border: '2px solid rgba(255,255,255,0.3)',
                     borderTop: '2px solid white',
                     borderRadius: '50%',
@@ -469,21 +632,21 @@ const Register: React.FC = () => {
                 </>
               ) : (
                 <>
-                  Create Account
-                  <ArrowRight size={18} />
+                  Create {isOrganizer ? 'Organizer' : 'Student'} Account
+                  <ArrowRight size={16} />
                 </>
               )}
             </button>
 
-            <div className="text-center">
-              <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '0.75rem', fontSize: '0.95rem' }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem' }}>
                 Already have an account?{' '}
                 <Link 
                   to="/login" 
                   style={{ 
-                    color: '#a855f7', 
+                    color: themeColor, 
                     textDecoration: 'none',
-                    fontWeight: 700
+                    fontWeight: 600
                   }}
                 >
                   Sign In
@@ -497,10 +660,6 @@ const Register: React.FC = () => {
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
-        }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-20px); }
         }
       `}</style>
     </div>

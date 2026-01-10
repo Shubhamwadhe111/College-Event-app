@@ -47,15 +47,20 @@ const NexusSuperNavbar: React.FC = () => {
     };
   }, [isMenuOpen, isMobile]);
 
+  // Main navigation items (visible in navbar)
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/nexussuper/' || location.pathname === '/nexussuper' },
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/nexussuper/dashboard' },
-    { name: 'Colleges', href: '/colleges', current: location.pathname === '/nexussuper/colleges' },
     { name: 'Admins', href: '/admins', current: location.pathname === '/nexussuper/admins' },
-    { name: 'Events', href: '/events', current: location.pathname === '/nexussuper/events' },
     { name: 'Analytics', href: '/analytics', current: location.pathname === '/nexussuper/analytics' },
     { name: 'Command Center', href: '/command-center', current: location.pathname === '/nexussuper/command-center' },
     { name: 'System Settings', href: '/system-settings', current: location.pathname === '/nexussuper/system-settings' },
+  ];
+  
+  // Hidden items (only in mobile menu)
+  const moreNavigation = [
+    { name: 'Colleges', href: '/colleges', current: location.pathname === '/nexussuper/colleges' },
+    { name: 'Events', href: '/events', current: location.pathname === '/nexussuper/events' },
     { name: 'Notifications', href: '/notifications', current: location.pathname === '/nexussuper/notifications' },
   ];
 
@@ -118,9 +123,7 @@ const NexusSuperNavbar: React.FC = () => {
               <span style={{
                 fontSize: '1rem',
                 fontWeight: 900,
-                background: 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: '#10b981',
                 letterSpacing: '1px',
                 textTransform: 'uppercase',
                 lineHeight: '1.1'
@@ -139,10 +142,10 @@ const NexusSuperNavbar: React.FC = () => {
           <div style={{
             display: isMobile ? 'none' : 'flex',
             alignItems: 'center',
-            gap: '0.25rem',
+            gap: '0.5rem',
             flex: 1,
             justifyContent: 'center',
-            maxWidth: '1000px',
+            maxWidth: '800px',
             overflow: 'hidden'
           }}>
             {navigation.map((item) => (
@@ -153,10 +156,10 @@ const NexusSuperNavbar: React.FC = () => {
                   textDecoration: 'none',
                   color: item.current ? '#ffffff' : '#cbd5e1',
                   fontWeight: item.current ? 700 : 600,
-                  padding: '0.25rem 0.4rem',
-                  borderRadius: '6px',
+                  padding: '0.5rem 0.7rem',
+                  borderRadius: '10px',
                   transition: 'all 0.3s ease',
-                  fontSize: '0.55rem',
+                  fontSize: '0.75rem',
                   background: item.current 
                     ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(20, 184, 166, 0.2))' 
                     : 'transparent',
@@ -164,7 +167,7 @@ const NexusSuperNavbar: React.FC = () => {
                     ? '1px solid rgba(16, 185, 129, 0.5)' 
                     : '1px solid transparent',
                   backdropFilter: 'blur(10px)',
-                  letterSpacing: '0.2px',
+                  letterSpacing: '0.3px',
                   textTransform: 'uppercase',
                   whiteSpace: 'nowrap',
                   minWidth: 'fit-content',
@@ -230,43 +233,71 @@ const NexusSuperNavbar: React.FC = () => {
               </div>
             )}
 
-            {/* Auth Buttons - Desktop Only */}
+            {/* Auth Buttons - Desktop Only - Modern Pill Design */}
             {!user && !isMobile && (
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {/* Sign Up Button - Compact gradient pill */}
                 <PortalLink
                   to="/register"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '0.6rem 1.2rem',
+                    padding: '5px 12px',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                     border: 'none',
-                    borderRadius: '10px',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    fontSize: '0.8rem',
-                    background: 'linear-gradient(135deg, #10b981, #34d399)',
+                    borderRadius: '20px',
                     color: 'white',
-                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.3)'
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 2px 8px rgba(16, 185, 129, 0.35)',
+                    transition: 'all 0.25s ease',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px',
+                    minWidth: '70px'
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                    e.currentTarget.style.boxShadow = '0 4px 12px rgba(16, 185, 129, 0.5)';
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 2px 8px rgba(16, 185, 129, 0.35)';
                   }}
                 >
                   Sign Up
                 </PortalLink>
+                
+                {/* Login Button - Glass pill style */}
                 <PortalLink
                   to="/login"
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    padding: '0.6rem 1.2rem',
-                    border: '2px solid rgba(16, 185, 129, 0.3)',
-                    borderRadius: '10px',
+                    padding: '5px 12px',
+                    background: 'rgba(16, 185, 129, 0.08)',
+                    border: '1.5px solid rgba(16, 185, 129, 0.4)',
+                    borderRadius: '20px',
+                    color: '#10b981',
                     fontWeight: 600,
+                    fontSize: '0.7rem',
                     textDecoration: 'none',
-                    fontSize: '0.8rem',
-                    background: 'rgba(16, 185, 129, 0.1)',
-                    color: '#ffffff',
-                    backdropFilter: 'blur(15px)'
+                    transition: 'all 0.25s ease',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.3px',
+                    minWidth: '60px'
+                  }}
+                  onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.15)';
+                    e.currentTarget.style.borderColor = '#10b981';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.08)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   Login
@@ -511,6 +542,58 @@ const NexusSuperNavbar: React.FC = () => {
                 </PortalLink>
               ))}
 
+              {/* More Section Divider */}
+              <div style={{
+                padding: '0.5rem 1rem',
+                marginTop: '0.5rem',
+                borderTop: '1px solid rgba(16, 185, 129, 0.3)'
+              }}>
+                <span style={{
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  color: 'rgba(16, 185, 129, 0.8)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '1px'
+                }}>More Options</span>
+              </div>
+              
+              {/* Hidden Navigation Items */}
+              {moreNavigation.map((item) => (
+                <PortalLink
+                  key={item.name}
+                  to={item.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '0.8rem 1.25rem',
+                    borderRadius: '10px',
+                    textDecoration: 'none',
+                    color: item.current ? '#ffffff' : '#94a3b8',
+                    background: item.current 
+                      ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(20, 184, 166, 0.15))' 
+                      : 'rgba(255, 255, 255, 0.04)',
+                    border: item.current 
+                      ? '1px solid rgba(16, 185, 129, 0.4)' 
+                      : '1px solid rgba(255, 255, 255, 0.1)',
+                    fontWeight: item.current ? 600 : 500,
+                    fontSize: '0.85rem',
+                    transition: 'all 0.3s ease',
+                    letterSpacing: '0.3px',
+                    textTransform: 'uppercase',
+                    minHeight: '45px',
+                    touchAction: 'manipulation'
+                  }}
+                >
+                  <span style={{ 
+                    flex: 1,
+                    textAlign: 'left'
+                  }}>
+                    {item.name}
+                  </span>
+                </PortalLink>
+              ))}
+
               {/* User Section */}
               {user && (
                 <div style={{
@@ -620,7 +703,6 @@ const NexusSuperNavbar: React.FC = () => {
                   left: '1rem',
                   right: '1rem',
                   display: 'flex',
-                  flexDirection: 'column',
                   gap: '0.75rem',
                   background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%)',
                   padding: '1rem',
@@ -631,18 +713,21 @@ const NexusSuperNavbar: React.FC = () => {
                     to="/register"
                     onClick={() => setIsMenuOpen(false)}
                     style={{
+                      flex: 1,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '1rem',
+                      padding: '0.6rem',
                       border: 'none',
-                      borderRadius: '12px',
-                      fontWeight: 700,
+                      borderRadius: '20px',
+                      fontWeight: 600,
                       textDecoration: 'none',
-                      fontSize: '1rem',
-                      background: 'linear-gradient(135deg, #10b981, #34d399)',
+                      fontSize: '0.75rem',
+                      background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
                       color: 'white',
-                      boxShadow: '0 6px 20px rgba(16, 185, 129, 0.3)'
+                      boxShadow: '0 2px 8px rgba(16, 185, 129, 0.35)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px'
                     }}
                   >
                     Sign Up
@@ -651,18 +736,20 @@ const NexusSuperNavbar: React.FC = () => {
                     to="/login"
                     onClick={() => setIsMenuOpen(false)}
                     style={{
+                      flex: 1,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '1rem',
-                      border: '2px solid rgba(16, 185, 129, 0.4)',
-                      borderRadius: '12px',
+                      padding: '0.6rem',
+                      border: '1.5px solid rgba(16, 185, 129, 0.4)',
+                      borderRadius: '20px',
                       fontWeight: 600,
                       textDecoration: 'none',
-                      fontSize: '1rem',
-                      background: 'rgba(16, 185, 129, 0.1)',
-                      color: '#ffffff',
-                      backdropFilter: 'blur(15px)'
+                      fontSize: '0.75rem',
+                      background: 'rgba(16, 185, 129, 0.08)',
+                      color: '#10b981',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.3px'
                     }}
                   >
                     Login
@@ -685,7 +772,7 @@ const NexusSuperNavbar: React.FC = () => {
                 fontWeight: 600,
                 marginBottom: '0.5rem'
               }}>
-                All {navigation.length} Options Available
+                All {navigation.length + moreNavigation.length} Options Available
               </div>
               <div style={{
                 color: 'rgba(16, 185, 129, 0.9)',

@@ -1,309 +1,567 @@
-import React, { useState } from 'react';
+// Main Website Navbar Component - Simple Navigation with Role-Based Menu
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-  Zap, 
-  Home, 
-  Calendar, 
-  BookOpen, 
-  Plus, 
-  Bell, 
-  Megaphone, 
-  HelpCircle, 
-  User, 
-  ChevronDown,
-  Menu,
-  X,
-  UserPlus,
-  LogIn,
-  Sparkles
-} from 'lucide-react';
+import { Zap, Menu, X, LogOut, User, Sparkles, Briefcase } from 'lucide-react';
 import NotificationCenter from '../NotificationCenter';
+
+interface NavItem {
+  name: string;
+  href: string;
+  current: boolean;
+}
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      if (!mobile) setIsMenuOpen(false);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (isMenuOpen && isMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [isMenuOpen, isMobile]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
-    setIsProfileDropdownOpen(false);
-    setIsMobileMenuOpen(false);
-  };
-
-  const isActive = (path: string) => {
-    return location.pathname === path || location.pathname.startsWith(path + '/');
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const toggleProfileDropdown = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
+    setIsMenuOpen(false);
   };
 
   // Navigation items based on user role
-  const getNavigationItems = () => {
-    const baseItems = [
-      { path: '/', label: 'Home', icon: Home },
-      { path: '/events', label: 'Events', icon: Calendar },
+  const getNavigationItems = (): NavItem[] => {
+    // Base items for all users (logged out)
+    const baseItems: NavItem[] = [
+      { name: 'Home', href: '/', current: location.pathname === '/' },
+      { name: 'Events', href: '/events', current: location.pathname === '/events' || location.pathname.startsWith('/events/') },
+      { name: 'Gallery', href: '/gallery', current: location.pathname === '/gallery' },
+      { name: 'About', href: '/about', current: location.pathname === '/about' },
     ];
 
-    if (user) {
-      baseItems.push({ path: '/my-events', label: 'My Events', icon: BookOpen });
-      
-      // Add Create Event for organizers only
-      if (user.role === 'organizer') {
-        baseItems.push({ path: '/create-event', label: 'Create Event', icon: Plus });
-      }
-      
-      baseItems.push(
-        { path: '/notices', label: 'Notices', icon: Megaphone },
-        { path: '/notifications', label: 'Notifications', icon: Bell },
-        { path: '/help', label: 'Help', icon: HelpCircle }
-      );
+    if (!user) {
+      return baseItems;
+    }
+
+    // Student navigation
+    if (user.role === 'student') {
+      return [
+        ...baseItems,
+        { name: 'My Events', href: '/my-events', current: location.pathname === '/my-events' },
+        { name: 'Notices', href: '/notices', current: location.pathname === '/notices' },
+        { name: 'Help', href: '/help', current: location.pathname === '/help' },
+      ];
+    }
+
+    // Organizer navigation - Event management focused
+    if (user.role === 'organizer') {
+      return [
+        { name: 'Home', href: '/', current: location.pathname === '/' },
+        { name: 'My Events', href: '/my-events', current: location.pathname === '/my-events' },
+        { name: 'Create Event', href: '/create-event', current: location.pathname === '/create-event' },
+        { name: 'All Events', href: '/events', current: location.pathname === '/events' || location.pathname.startsWith('/events/') },
+        { name: 'Notices', href: '/notices', current: location.pathname === '/notices' },
+        { name: 'Help', href: '/help', current: location.pathname === '/help' },
+      ];
     }
 
     return baseItems;
   };
 
-  const navigationItems = getNavigationItems();
+  const navigation = getNavigationItems();
+  const isOrganizer = user?.role === 'organizer';
+
+  // Theme colors based on role
+  const themeColor = isOrganizer ? '#f59e0b' : '#10b981';
+  const themeGradient = isOrganizer 
+    ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' 
+    : 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
 
   return (
-    <nav className="navbar">
-      <div className="navbar-content">
-        {/* Brand */}
-        <Link to="/" className="navbar-brand" onClick={closeMobileMenu}>
-          <div className="navbar-logo">
-            <Zap size={24} strokeWidth={3} />
+    <>
+      <nav style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%)',
+        backdropFilter: 'blur(25px) saturate(180%)',
+        borderBottom: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3)`,
+        boxShadow: `0 8px 32px rgba(0, 0, 0, 0.2), 0 0 60px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.1)`,
+        zIndex: 9999,
+        height: '65px',
+        WebkitBackdropFilter: 'blur(25px) saturate(180%)'
+      }}>
+        <div style={{
+          maxWidth: '1600px',
+          margin: '0 auto',
+          padding: '0 1.5rem',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between'
+        }}>
+          {/* Brand */}
+          <Link 
+            to="/" 
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              textDecoration: 'none',
+              color: '#e2e8f0',
+              flexShrink: 0
+            }}
+            onClick={() => setIsMenuOpen(false)}
+          >
+            <div style={{
+              width: '42px',
+              height: '42px',
+              background: themeGradient,
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#ffffff',
+              fontWeight: 800,
+              boxShadow: `0 4px 15px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.4)`
+            }}>
+              {isOrganizer ? <Briefcase size={22} strokeWidth={2.5} /> : <Zap size={22} strokeWidth={2.5} />}
+            </div>
+            <div style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column' }}>
+              <span style={{
+                fontSize: '1.1rem',
+                fontWeight: 900,
+                background: isOrganizer 
+                  ? 'linear-gradient(135deg, #ffffff 0%, #f59e0b 50%, #d97706 100%)'
+                  : 'linear-gradient(135deg, #ffffff 0%, #10b981 50%, #14b8a6 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                lineHeight: '1.1'
+              }}>NEXUS</span>
+              <span style={{
+                fontSize: '0.6rem',
+                fontWeight: 700,
+                color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.9)`,
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase'
+              }}>{isOrganizer ? 'Organizer Portal' : 'Event Portal'}</span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div style={{
+            display: isMobile ? 'none' : 'flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            flex: 1,
+            justifyContent: 'center',
+            maxWidth: '750px'
+          }}>
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                style={{
+                  textDecoration: 'none',
+                  color: item.current ? '#ffffff' : '#cbd5e1',
+                  fontWeight: item.current ? 700 : 600,
+                  padding: '0.5rem 0.85rem',
+                  borderRadius: '10px',
+                  transition: 'all 0.3s ease',
+                  fontSize: '0.78rem',
+                  background: item.current 
+                    ? `linear-gradient(135deg, rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.25), rgba(${isOrganizer ? '217, 119, 6' : '20, 184, 166'}, 0.2))` 
+                    : 'transparent',
+                  border: item.current 
+                    ? `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.5)` 
+                    : '1px solid transparent',
+                  backdropFilter: 'blur(10px)',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                  whiteSpace: 'nowrap',
+                  boxShadow: item.current ? `0 2px 8px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)` : 'none'
+                }}
+                onMouseEnter={(e) => {
+                  if (!item.current) {
+                    e.currentTarget.style.background = `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.1)`;
+                    e.currentTarget.style.color = themeColor;
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!item.current) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = '#cbd5e1';
+                  }
+                }}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
-          <span className="navbar-title">NEXUS</span>
-        </Link>
 
-        {/* Mobile Menu Button */}
-        <button 
-          className="mobile-menu-button"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle mobile menu"
-        >
-          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-
-        {/* Navigation Links */}
-        <ul className={`navbar-nav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
-          {navigationItems.map((item) => {
-            const IconComponent = item.icon;
-            return (
-              <li key={item.path}>
-                <Link 
-                  to={item.path} 
-                  className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
-                  onClick={closeMobileMenu}
-                >
-                  <IconComponent size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        {/* User Section */}
-        <div className="navbar-user">
-          {user ? (
-            <>
-              {/* Notification Center - Desktop only */}
-              <div className="desktop-only">
+          {/* User Section & Mobile Menu Button */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            flexShrink: 0
+          }}>
+            {/* User Info - Desktop Only */}
+            {user && !isMobile && (
+              <>
                 <NotificationCenter />
-              </div>
-              
-              {/* User Profile Dropdown */}
-              <div className="user-profile-dropdown">
-                <button 
-                  className="user-profile-button"
-                  onClick={toggleProfileDropdown}
-                  aria-label="User menu"
-                >
-                  <div className="user-avatar">
+                
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                  padding: '0.5rem 1rem',
+                  background: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.1)`,
+                  borderRadius: '25px',
+                  border: `1px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.2)`
+                }}>
+                  <div style={{
+                    width: '34px',
+                    height: '34px',
+                    borderRadius: '50%',
+                    background: themeGradient,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                    fontWeight: 700,
+                    fontSize: '1rem',
+                    boxShadow: `0 2px 8px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3)`
+                  }}>
                     {user.avatar ? (
-                      <img 
-                        src={user.avatar} 
-                        alt={user.name} 
-                        style={{
-                          width: '100%', 
-                          height: '100%', 
-                          borderRadius: '50%', 
-                          objectFit: 'cover'
-                        }} 
-                      />
+                      <img src={user.avatar} alt={user.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
                     ) : (
                       <span>{user.name.charAt(0).toUpperCase()}</span>
                     )}
                   </div>
-                  <div className="user-info desktop-only">
-                    <span className="user-name">{user.name}</span>
-                    <span className="user-role">{user.role}</span>
+                  <div>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#ffffff' }}>{user.name}</div>
+                    <div style={{ 
+                      fontSize: '0.6rem', 
+                      fontWeight: 500, 
+                      color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.9)`, 
+                      textTransform: 'uppercase' 
+                    }}>{user.role}</div>
                   </div>
-                  <ChevronDown size={16} className="dropdown-arrow" />
-                </button>
+                  <button
+                    onClick={handleLogout}
+                    style={{
+                      padding: '0.4rem 0.8rem',
+                      border: '1px solid rgba(239, 68, 68, 0.4)',
+                      borderRadius: '8px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontSize: '0.65rem',
+                      background: 'rgba(239, 68, 68, 0.15)',
+                      color: '#ffffff',
+                      backdropFilter: 'blur(10px)',
+                      textTransform: 'uppercase',
+                      marginLeft: '0.5rem',
+                      transition: 'all 0.2s ease',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '4px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)';
+                    }}
+                  >
+                    <LogOut size={12} />
+                    Logout
+                  </button>
+                </div>
+              </>
+            )}
 
-                {/* Dropdown Menu */}
-                {isProfileDropdownOpen && (
-                  <div className="profile-dropdown-menu">
-                    <div className="dropdown-header">
-                      <div className="user-avatar-large">
-                        {user.avatar ? (
-                          <img 
-                            src={user.avatar} 
-                            alt={user.name} 
-                            style={{
-                              width: '100%', 
-                              height: '100%', 
-                              borderRadius: '50%', 
-                              objectFit: 'cover'
-                            }} 
-                          />
-                        ) : (
-                          <span>{user.name.charAt(0).toUpperCase()}</span>
-                        )}
-                      </div>
-                      <div className="user-details">
-                        <div className="user-name">{user.name}</div>
-                        <div className="user-email">{user.email}</div>
-                        <div className="user-role-badge">{user.role}</div>
-                      </div>
-                    </div>
-                    
-                    <div className="dropdown-divider"></div>
-                    
-                    <Link 
-                      to="/profile" 
-                      className="dropdown-item"
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                    >
-                      <User size={16} />
-                      <span>Profile Settings</span>
-                    </Link>
-                    
-                    {/* Mobile-only notification link */}
-                    <Link 
-                      to="/notifications" 
-                      className="dropdown-item mobile-only"
-                      onClick={() => setIsProfileDropdownOpen(false)}
-                    >
-                      <Bell size={16} />
-                      <span>Notifications</span>
-                    </Link>
-                    
-                    <div className="dropdown-divider"></div>
-                    
-                    <button 
-                      onClick={handleLogout} 
-                      className="dropdown-item logout-button"
-                    >
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                )}
+            {/* Auth Buttons - Desktop Only */}
+            {!user && !isMobile && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Link
+                  to="/register"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '8px 18px',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    border: 'none',
+                    borderRadius: '25px',
+                    color: 'white',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    textDecoration: 'none',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                    transition: 'all 0.3s ease',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 20px rgba(16, 185, 129, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = '0 4px 15px rgba(16, 185, 129, 0.4)';
+                  }}
+                >
+                  <Sparkles size={14} style={{ marginRight: '6px' }} />
+                  Sign Up
+                </Link>
+                
+                <Link
+                  to="/login"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '8px 18px',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    border: '2px solid rgba(16, 185, 129, 0.4)',
+                    borderRadius: '25px',
+                    color: '#10b981',
+                    fontWeight: 700,
+                    fontSize: '0.75rem',
+                    textDecoration: 'none',
+                    transition: 'all 0.3s ease',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.2)';
+                    e.currentTarget.style.borderColor = '#10b981';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(16, 185, 129, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <User size={14} style={{ marginRight: '6px' }} />
+                  Login
+                </Link>
               </div>
-            </>
-          ) : (
-            <div className="auth-buttons" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              {/* Sign Up Button - Gradient filled */}
-              <Link 
-                to="/register" 
+            )}
+
+            {/* Mobile Menu Button */}
+            {isMobile && (
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 style={{
-                  display: 'inline-flex',
+                  display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 20px',
-                  background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)',
-                  backgroundSize: '200% 200%',
-                  border: 'none',
+                  justifyContent: 'center',
+                  width: '45px',
+                  height: '45px',
+                  color: isMenuOpen ? '#ffffff' : themeColor,
+                  background: isMenuOpen 
+                    ? `linear-gradient(135deg, rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.4), rgba(${isOrganizer ? '217, 119, 6' : '20, 184, 166'}, 0.3))` 
+                    : `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.15)`,
+                  border: `2px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)`,
                   borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease',
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: isMenuOpen 
+                    ? `0 6px 20px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.5)` 
+                    : `0 4px 15px rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3)`,
+                  zIndex: 10001
+                }}
+              >
+                {isMenuOpen ? <X size={28} strokeWidth={2.5} /> : <Menu size={28} strokeWidth={2.5} />}
+              </button>
+            )}
+          </div>
+        </div>
+      </nav>
+
+      {/* Mobile Navigation Menu */}
+      {isMobile && isMenuOpen && (
+        <div style={{
+          position: 'fixed',
+          top: '65px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.95) 100%)',
+          backdropFilter: 'blur(25px)',
+          zIndex: 9998,
+          display: 'flex',
+          flexDirection: 'column',
+          overflowY: 'auto',
+          borderTop: `2px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.4)`
+        }}>
+          <div style={{ flex: 1, padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                to={item.href}
+                onClick={() => setIsMenuOpen(false)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '1rem 1.25rem',
+                  borderRadius: '12px',
+                  textDecoration: 'none',
+                  color: item.current ? '#ffffff' : '#cbd5e1',
+                  background: item.current 
+                    ? `linear-gradient(135deg, rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3), rgba(${isOrganizer ? '217, 119, 6' : '20, 184, 166'}, 0.25))` 
+                    : 'rgba(255, 255, 255, 0.08)',
+                  border: item.current 
+                    ? `2px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.6)` 
+                    : '1px solid rgba(255, 255, 255, 0.15)',
+                  fontWeight: item.current ? 700 : 600,
+                  fontSize: '0.95rem',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px'
+                }}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile User/Auth Section */}
+          <div style={{
+            padding: '1rem',
+            borderTop: `2px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3)`,
+            background: 'rgba(0, 0, 0, 0.3)'
+          }}>
+            {user ? (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '1rem',
+                background: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.1)`,
+                borderRadius: '12px',
+                border: `2px solid rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.3)`
+              }}>
+                <div style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  background: themeGradient,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                   color: 'white',
                   fontWeight: 700,
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4), 0 0 20px rgba(139, 92, 246, 0.2)',
-                  transition: 'all 0.3s ease',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-2px) scale(1.02)';
-                  e.currentTarget.style.boxShadow = '0 8px 25px rgba(99, 102, 241, 0.5), 0 0 30px rgba(139, 92, 246, 0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                  e.currentTarget.style.boxShadow = '0 4px 15px rgba(99, 102, 241, 0.4), 0 0 20px rgba(139, 92, 246, 0.2)';
-                }}
-              >
-                <UserPlus size={16} />
-                <span>Sign Up</span>
-                <Sparkles size={14} style={{ opacity: 0.8 }} />
-              </Link>
-              
-              {/* Login Button - Outlined with glow */}
-              <Link 
-                to="/login" 
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 20px',
-                  background: 'transparent',
-                  border: '2px solid rgba(139, 92, 246, 0.5)',
-                  borderRadius: '12px',
-                  color: '#a855f7',
-                  fontWeight: 700,
-                  fontSize: '0.9rem',
-                  textDecoration: 'none',
-                  transition: 'all 0.3s ease',
-                  position: 'relative',
-                  overflow: 'hidden',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = 'rgba(139, 92, 246, 0.15)';
-                  e.currentTarget.style.borderColor = '#a855f7';
-                  e.currentTarget.style.boxShadow = '0 4px 20px rgba(139, 92, 246, 0.3), inset 0 0 20px rgba(139, 92, 246, 0.1)';
-                  e.currentTarget.style.transform = 'translateY(-2px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = 'transparent';
-                  e.currentTarget.style.borderColor = 'rgba(139, 92, 246, 0.5)';
-                  e.currentTarget.style.boxShadow = 'none';
-                  e.currentTarget.style.transform = 'translateY(0)';
-                }}
-              >
-                <LogIn size={16} />
-                <span>Login</span>
-              </Link>
-            </div>
-          )}
+                  fontSize: '1.1rem'
+                }}>
+                  {user.avatar ? (
+                    <img src={user.avatar} alt={user.name} style={{width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover'}} />
+                  ) : (
+                    <span>{user.name.charAt(0).toUpperCase()}</span>
+                  )}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 700, color: '#ffffff' }}>{user.name}</div>
+                  <div style={{ 
+                    fontSize: '0.7rem', 
+                    fontWeight: 500, 
+                    color: `rgba(${isOrganizer ? '245, 158, 11' : '16, 185, 129'}, 0.9)`, 
+                    textTransform: 'uppercase' 
+                  }}>{user.role}</div>
+                </div>
+                <button
+                  onClick={handleLogout}
+                  style={{
+                    padding: '0.5rem 1rem',
+                    border: '1px solid rgba(239, 68, 68, 0.4)',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    fontSize: '0.7rem',
+                    background: 'rgba(239, 68, 68, 0.15)',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                  }}
+                >
+                  <LogOut size={14} />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <Link
+                  to="/register"
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.75rem',
+                    border: 'none',
+                    borderRadius: '25px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    fontSize: '0.8rem',
+                    background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                    color: 'white',
+                    boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  <Sparkles size={14} style={{ marginRight: '6px' }} />
+                  Sign Up
+                </Link>
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    flex: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '0.75rem',
+                    border: '2px solid rgba(16, 185, 129, 0.4)',
+                    borderRadius: '25px',
+                    fontWeight: 700,
+                    textDecoration: 'none',
+                    fontSize: '0.8rem',
+                    background: 'rgba(16, 185, 129, 0.1)',
+                    color: '#10b981',
+                    textTransform: 'uppercase'
+                  }}
+                >
+                  <User size={14} style={{ marginRight: '6px' }} />
+                  Login
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="mobile-menu-overlay"
-          onClick={closeMobileMenu}
-        ></div>
       )}
-    </nav>
+    </>
   );
 };
 

@@ -38,45 +38,61 @@ function NexusadminApp() {
           </NexusadminMainLayout>
         } />
         
-        {/* Protected admin routes with enhanced pages */}
+        {/* Protected admin routes with enhanced pages - wrapped with layout for navbar */}
         <Route path="/dashboard" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedAdminDashboard />
+            <NexusadminMainLayout>
+              <EnhancedAdminDashboard />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/events" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedEventsPage />
+            <NexusadminMainLayout>
+              <EnhancedEventsPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/organizers" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedOrganizersPage />
+            <NexusadminMainLayout>
+              <EnhancedOrganizersPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/approvals" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedApprovalsPage />
+            <NexusadminMainLayout>
+              <EnhancedApprovalsPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/analytics" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedAnalyticsPage />
+            <NexusadminMainLayout>
+              <EnhancedAnalyticsPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/notifications" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedNotificationsPage />
+            <NexusadminMainLayout>
+              <EnhancedNotificationsPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/settings" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedSettingsPage />
+            <NexusadminMainLayout>
+              <EnhancedSettingsPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
         <Route path="/help" element={
           <ProtectedRoute requiredRole="admin">
-            <EnhancedHelpPage />
+            <NexusadminMainLayout>
+              <EnhancedHelpPage />
+            </NexusadminMainLayout>
           </ProtectedRoute>
         } />
       </Routes>
