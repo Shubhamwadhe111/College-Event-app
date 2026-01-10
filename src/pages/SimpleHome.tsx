@@ -99,8 +99,9 @@ const SimpleHome: React.FC = () => {
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
-        paddingTop: '80px',
-        marginTop: '50px'
+        paddingTop: '40px',
+        marginTop: '65px',
+        paddingBottom: '40px'
       }}>
         {/* Animated Background Elements */}
         <div style={{
