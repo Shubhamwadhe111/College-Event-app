@@ -1,9 +1,15 @@
 // API Configuration for Frontend
+// For production, you need to deploy your backend to a cloud service like Render, Railway, or Heroku
+// Then update REACT_APP_API_URL in your environment or replace the URL below
 export const API_CONFIG = {
   // Backend API Base URL
-  BASE_URL: process.env.NODE_ENV === 'production' 
-    ? 'https://your-production-backend.com/api'
-    : 'http://localhost:5001/api',
+  // In production (GitHub Pages), this will try to connect to the production backend
+  // If no production backend is available, the app will fall back to localStorage (demo mode)
+  BASE_URL: process.env.REACT_APP_API_URL || (
+    process.env.NODE_ENV === 'production' 
+      ? 'https://nexus-event-backend.onrender.com/api'  // Update this when you deploy backend
+      : 'http://localhost:5001/api'
+  ),
   
   // Request timeout (30 seconds)
   TIMEOUT: 30000,

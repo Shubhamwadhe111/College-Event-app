@@ -375,14 +375,20 @@ export const getStorageService = (): StorageService => {
   
   console.debug('Storage service selection - Backend status:', status);
   
-  // If backend is available OR still checking, try database service first
-  // This ensures we don't fall back to localStorage prematurely
-  if (status === 'available' || status === 'checking') {
-    console.debug('Using DatabaseStorageService');
+  // If backend is available, always use database service
+  if (status === 'available') {
+    console.debug('Using DatabaseStorageService (backend available)');
     return new DatabaseStorageService();
-  } else {
-    // Only use localStorage if backend is confirmed unavailable
-    console.debug('Using LocalStorageService (backend unavailable)');
-    return new LocalStorageService();
   }
+  
+  // If still checking, try database service first (it will fail gracefully if backend is down)
+  if (status === 'checking') {
+    console.debug('Using DatabaseStorageService (checking backend...)');
+    return new DatabaseStorageService();
+  }
+  
+  // Backend is unavailable - use localStorage for demo mode
+  console.debug('Using LocalStorageService (demo mode - backend unavailable)');
+  console.info('📱 Running in DEMO MODE - Data is stored locally in your browser');
+  return new LocalStorageService();
 };
