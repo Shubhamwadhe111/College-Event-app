@@ -6,3 +6,9 @@ export { default as EnhancedMasterNotificationsPage } from './EnhancedMasterNoti
 export { default as EnhancedMasterEventsPage } from './EnhancedMasterEventsPage';
 export { default as EnhancedCommandCenterPage } from './EnhancedCommandCenterPage';
 export { default as EnhancedMasterAnalyticsPage } from './EnhancedMasterAnalyticsPageTemp';
+
+// Function pages
+export { default as FunctionsPage } from './FunctionsPage';
+export { default as AddCollegePage } from './AddCollegePage';
+export { default as AddAdminPage } from './AddAdminPage';
+export { default as BroadcastPage } from './BroadcastPage';

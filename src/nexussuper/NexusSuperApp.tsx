@@ -13,7 +13,11 @@ import {
   EnhancedMasterAnalyticsPage,
   EnhancedCommandCenterPage,
   EnhancedSystemSettingsPage,
-  EnhancedMasterNotificationsPage
+  EnhancedMasterNotificationsPage,
+  FunctionsPage,
+  AddCollegePage,
+  AddAdminPage,
+  BroadcastPage
 } from './pages';
 
 // New Profile and Settings Pages
@@ -106,6 +110,36 @@ function NexusSuperApp() {
           <ProtectedRoute requiredRole="master">
             <NexusSuperMainLayout>
               <MasterSettingsPage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        
+        {/* Functions Routes */}
+        <Route path="/functions" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <FunctionsPage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/add-college" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <AddCollegePage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/add-admin" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <AddAdminPage />
+            </NexusSuperMainLayout>
+          </ProtectedRoute>
+        } />
+        <Route path="/broadcast" element={
+          <ProtectedRoute requiredRole="master">
+            <NexusSuperMainLayout>
+              <BroadcastPage />
             </NexusSuperMainLayout>
           </ProtectedRoute>
         } />

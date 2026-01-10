@@ -69,14 +69,15 @@ const NexusSuperNavbar: React.FC = () => {
   const navigation = [
     { name: 'Home', href: '/', current: location.pathname === '/nexussuper/' || location.pathname === '/nexussuper' },
     { name: 'Dashboard', href: '/dashboard', current: location.pathname === '/nexussuper/dashboard' },
+    { name: 'Functions', href: '/functions', current: location.pathname === '/nexussuper/functions' },
     { name: 'Admins', href: '/admins', current: location.pathname === '/nexussuper/admins' },
     { name: 'Analytics', href: '/analytics', current: location.pathname === '/nexussuper/analytics' },
     { name: 'Command Center', href: '/command-center', current: location.pathname === '/nexussuper/command-center' },
-    { name: 'System Settings', href: '/system-settings', current: location.pathname === '/nexussuper/system-settings' },
   ];
   
   // Hidden items (only in mobile menu)
   const moreNavigation = [
+    { name: 'System Settings', href: '/system-settings', current: location.pathname === '/nexussuper/system-settings' },
     { name: 'Colleges', href: '/colleges', current: location.pathname === '/nexussuper/colleges' },
     { name: 'Events', href: '/events', current: location.pathname === '/nexussuper/events' },
     { name: 'Notifications', href: '/notifications', current: location.pathname === '/nexussuper/notifications' },
