@@ -1,16 +1,27 @@
 /**
  * Authentication Service
  * Handles all authentication API calls to the backend
- * Falls back to localStorage if backend is unavailable
+ * Falls back to localStorage if backend is unavailable or disabled
  */
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
 const REQUEST_TIMEOUT = 60000; // 60 seconds for backend cold start
 
+// Check if localStorage mode is forced (BASE_URL is empty)
+const isLocalStorageMode = () => {
+  const { API_CONFIG } = require('../config/api.config');
+  return !API_CONFIG.BASE_URL || API_CONFIG.BASE_URL === '';
+};
+
 /**
  * Helper function to make fetch requests with timeout
  */
 const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = REQUEST_TIMEOUT): Promise<Response> => {
+  // If localStorage mode is forced, throw error to trigger fallback
+  if (isLocalStorageMode()) {
+    throw new Error('localStorage mode enabled - skipping backend');
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 

@@ -1,15 +1,18 @@
 // API Configuration for Frontend
-// For production, you need to deploy your backend to a cloud service like Render, Railway, or Heroku
-// Then update REACT_APP_API_URL in your environment or replace the URL below
+// FORCE LOCALSTORAGE MODE: Set to empty string to skip backend and use localStorage immediately
+// This avoids the 30-60 second cold start delay from Render free tier
 export const API_CONFIG = {
   // Backend API Base URL
-  // In production (GitHub Pages), this will try to connect to the production backend
-  // If no production backend is available, the app will fall back to localStorage (demo mode)
-  BASE_URL: process.env.REACT_APP_API_URL || (
-    process.env.NODE_ENV === 'production' 
-      ? 'https://nexus-event-backend.onrender.com/api'  // Update this when you deploy backend
-      : 'http://localhost:5001/api'
-  ),
+  // Set to empty string to force localStorage mode (instant loading, no backend delays)
+  // Set to backend URL to use live database (with 30-60s cold start on Render free tier)
+  BASE_URL: '',  // FORCED LOCALSTORAGE MODE - Instant loading, no backend delays
+  
+  // To re-enable backend, uncomment below and comment out the line above:
+  // BASE_URL: process.env.REACT_APP_API_URL || (
+  //   process.env.NODE_ENV === 'production' 
+  //     ? 'https://nexus-event-backend.onrender.com/api'
+  //     : 'http://localhost:5001/api'
+  // ),
   
   // Request timeout (30 seconds)
   TIMEOUT: 30000,
