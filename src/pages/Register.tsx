@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, Mail, Lock, User, Phone, School, Zap, GraduationCap, Briefcase, Building } from 'lucide-react';
+import * as authService from '../services/authService';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +16,7 @@ const Register: React.FC = () => {
     userType: 'student' as 'student' | 'organizer'
   });
   const [error, setError] = useState('');
-  const { register, registerOrganizer, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -45,46 +45,61 @@ const Register: React.FC = () => {
       return;
     }
 
+    setIsLoading(true);
     let result;
 
-    if (formData.userType === 'organizer') {
-      if (!formData.clubName) {
-        setError('Please enter your Club/Organization name');
-        return;
-      }
-      if (!formData.phone) {
-        setError('Please enter your phone number');
-        return;
-      }
-      result = await registerOrganizer({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        phone: formData.phone,
-        department: formData.clubName,
-        designation: 'Event Organizer'
-      });
-    } else {
-      result = await register({
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-        studentId: formData.studentId || 'auto-generated',
-        college: formData.college || 'Not specified',
-        role: 'student'
-      });
-    }
-
-    if (result.success) {
+    try {
       if (formData.userType === 'organizer') {
-        setError('');
-        alert('Organizer registration submitted! Please wait for admin approval before you can login.');
-        navigate('/login');
+        if (!formData.clubName) {
+          setError('Please enter your Club/Organization name');
+          setIsLoading(false);
+          return;
+        }
+        if (!formData.phone) {
+          setError('Please enter your phone number');
+          setIsLoading(false);
+          return;
+        }
+        
+        console.log('[Register] Registering organizer via authService...');
+        result = await authService.registerOrganizer({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          department: formData.clubName,
+          designation: 'Event Organizer'
+        });
       } else {
-        navigate('/dashboard');
+        console.log('[Register] Registering student via authService...');
+        result = await authService.registerStudent({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone || '',
+          studentId: formData.studentId || undefined,
+          college: formData.college || undefined,
+          year: '1'
+        });
       }
-    } else {
-      setError(result.message);
+
+      if (result.success) {
+        if (formData.userType === 'organizer') {
+          setError('');
+          alert('✅ Organizer registration submitted successfully!\n\nYour request has been sent to the admin for approval.\nYou will be able to login once approved.\n\nPlease check back later or contact the admin.');
+          navigate('/login');
+        } else {
+          alert('✅ Student registration successful!\n\nYou can now login with your credentials.');
+          navigate('/login');
+        }
+      } else {
+        setError(result.message || 'Registration failed. Please try again.');
+      }
+    } catch (error: any) {
+      console.error('[Register] Error:', error);
+      setError(error.message || 'Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 

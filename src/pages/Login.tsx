@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { ArrowRight, Mail, Lock, GraduationCap, Briefcase, Zap } from 'lucide-react';
+import * as authService from '../services/authService';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState<'student' | 'organizer'>('student');
   const [error, setError] = useState('');
-  const { login, isLoading } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,15 +20,42 @@ const Login: React.FC = () => {
       return;
     }
 
-    const result = await login(email, password, userType);
-    if (result.success) {
-      if (result.redirectTo) {
-        navigate(result.redirectTo);
+    setIsLoading(true);
+
+    try {
+      let result;
+      
+      if (userType === 'organizer') {
+        console.log('[Login] Logging in organizer via authService...');
+        result = await authService.loginOrganizer({ email, password });
       } else {
-        navigate('/dashboard');
+        console.log('[Login] Logging in student via authService...');
+        result = await authService.loginStudent({ email, password });
       }
-    } else {
-      setError(result.message);
+
+      if (result.success) {
+        // Store user data in localStorage for the app to use
+        if (result.user) {
+          localStorage.setItem('nexus_user', JSON.stringify({
+            ...result.user,
+            role: userType
+          }));
+        }
+        
+        // Navigate to appropriate page
+        if (result.redirectTo) {
+          navigate(result.redirectTo);
+        } else {
+          navigate(userType === 'organizer' ? '/create-event' : '/events');
+        }
+      } else {
+        setError(result.message || 'Invalid credentials');
+      }
+    } catch (error: any) {
+      console.error('[Login] Error:', error);
+      setError(error.message || 'Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
