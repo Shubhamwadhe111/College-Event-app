@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Mail, Lock, GraduationCap, Briefcase, Zap } from 'lucide-react';
-import * as authService from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [userType, setUserType] = useState<'student' | 'organizer'>('student');
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('Signing in...');
+  const { login, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,60 +20,17 @@ const Login: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-    setLoadingMessage('Signing in...');
-
-    // Set timeout for backend cold start (60 seconds)
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        setLoadingMessage('⏳ Waking up backend server... This may take 30-60 seconds on first request');
-      }
-    }, 3000);
-
-    try {
-      let result;
-      
-      if (userType === 'organizer') {
-        console.log('[Login] Logging in organizer via authService...');
-        result = await authService.loginOrganizer({ email, password });
+    const result = await login(email, password, userType);
+    
+    if (result.success) {
+      // Navigate to appropriate page
+      if (result.redirectTo) {
+        navigate(result.redirectTo);
       } else {
-        console.log('[Login] Logging in student via authService...');
-        result = await authService.loginStudent({ email, password });
+        navigate(userType === 'organizer' ? '/create-event' : '/events');
       }
-
-      clearTimeout(timeoutId);
-
-      if (result.success) {
-        // Store user data in localStorage for the app to use
-        if (result.user) {
-          localStorage.setItem('nexus_user', JSON.stringify({
-            ...result.user,
-            role: userType
-          }));
-        }
-        
-        // Navigate to appropriate page
-        if (result.redirectTo) {
-          navigate(result.redirectTo);
-        } else {
-          navigate(userType === 'organizer' ? '/create-event' : '/events');
-        }
-      } else {
-        setError(result.message || 'Invalid credentials');
-      }
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      console.error('[Login] Error:', error);
-      
-      // Check if it's a timeout error
-      if (error.name === 'AbortError' || error.message.includes('timeout')) {
-        setError('⏱️ Request timed out. The backend server is waking up (takes 30-60 seconds on first request). Please try again in a moment.');
-      } else {
-        setError(error.message || 'Network error. Please check your connection and try again.');
-      }
-    } finally {
-      setIsLoading(false);
-      setLoadingMessage('Signing in...');
+    } else {
+      setError(result.message || 'Invalid credentials');
     }
   };
 
@@ -401,7 +357,7 @@ const Login: React.FC = () => {
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
-                  {loadingMessage}
+                  Signing in...
                 </>
               ) : (
                 <>

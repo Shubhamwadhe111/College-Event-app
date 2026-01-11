@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowRight, Mail, Lock, User, Phone, School, Zap, GraduationCap, Briefcase, Building } from 'lucide-react';
-import * as authService from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -16,8 +16,7 @@ const Register: React.FC = () => {
     userType: 'student' as 'student' | 'organizer'
   });
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingMessage, setLoadingMessage] = useState('Creating account...');
+  const { register, registerOrganizer, isLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -46,81 +45,49 @@ const Register: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-    setLoadingMessage('Creating account...');
     let result;
 
-    // Set timeout for backend cold start (60 seconds)
-    const timeoutId = setTimeout(() => {
-      if (isLoading) {
-        setLoadingMessage('⏳ Waking up backend server... This may take 30-60 seconds on first request');
+    if (formData.userType === 'organizer') {
+      if (!formData.clubName) {
+        setError('Please enter your Club/Organization name');
+        return;
       }
-    }, 3000);
-
-    try {
-      if (formData.userType === 'organizer') {
-        if (!formData.clubName) {
-          setError('Please enter your Club/Organization name');
-          setIsLoading(false);
-          clearTimeout(timeoutId);
-          return;
-        }
-        if (!formData.phone) {
-          setError('Please enter your phone number');
-          setIsLoading(false);
-          clearTimeout(timeoutId);
-          return;
-        }
-        
-        console.log('[Register] Registering organizer via authService...');
-        result = await authService.registerOrganizer({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone,
-          department: formData.clubName,
-          designation: 'Event Organizer'
-        });
-      } else {
-        console.log('[Register] Registering student via authService...');
-        result = await authService.registerStudent({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          phone: formData.phone || '',
-          studentId: formData.studentId || undefined,
-          college: formData.college || undefined,
-          year: '1'
-        });
+      if (!formData.phone) {
+        setError('Please enter your phone number');
+        return;
       }
-
-      clearTimeout(timeoutId);
-
-      if (result.success) {
-        if (formData.userType === 'organizer') {
-          setError('');
-          alert('✅ Organizer registration submitted successfully!\n\nYour request has been sent to the admin for approval.\nYou will be able to login once approved.\n\nPlease check back later or contact the admin.');
-          navigate('/login');
-        } else {
-          alert('✅ Student registration successful!\n\nYou can now login with your credentials.');
-          navigate('/login');
-        }
-      } else {
-        setError(result.message || 'Registration failed. Please try again.');
-      }
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      console.error('[Register] Error:', error);
       
-      // Check if it's a timeout error
-      if (error.name === 'AbortError' || error.message.includes('timeout')) {
-        setError('⏱️ Request timed out. The backend server is waking up (takes 30-60 seconds on first request). Please try again in a moment.');
+      result = await registerOrganizer({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone,
+        department: formData.clubName,
+        designation: 'Event Organizer'
+      });
+    } else {
+      result = await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        phone: formData.phone || '',
+        role: 'student',
+        studentId: formData.studentId || '',
+        college: formData.college || '',
+        year: '1'
+      });
+    }
+
+    if (result.success) {
+      if (formData.userType === 'organizer') {
+        alert('✅ Organizer registration submitted successfully!\n\nYour request has been sent to the admin for approval.\nYou will be able to login once approved.\n\nPlease check back later or contact the admin.');
+        navigate('/login');
       } else {
-        setError(error.message || 'Network error. Please check your connection and try again.');
+        alert('✅ Student registration successful!\n\nYou can now login with your credentials.');
+        navigate('/login');
       }
-    } finally {
-      setIsLoading(false);
-      setLoadingMessage('Creating account...');
+    } else {
+      setError(result.message || 'Registration failed. Please try again.');
     }
   };
 
@@ -663,7 +630,7 @@ const Register: React.FC = () => {
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
-                  {loadingMessage}
+                  Creating account...
                 </>
               ) : (
                 <>
