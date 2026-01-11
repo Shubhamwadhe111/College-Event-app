@@ -58,20 +58,28 @@ const EnhancedOrganizersPage: React.FC = () => {
     designation: 'Event Organizer'
   });
 
-  // Load organizers from backend API
+  // Load organizers from backend API with timeout
   const loadOrganizers = async () => {
     setIsLoading(true);
     try {
       console.log('=== LOADING ORGANIZERS FROM BACKEND ===');
       
-      // Try to fetch from backend first
+      // Try to fetch from backend first with timeout
       const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+      
+      // Create abort controller for timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(`${API_URL}/admin/pending-organizers`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (response.ok) {
         const backendOrganizers = await response.json();
@@ -714,7 +722,10 @@ const EnhancedOrganizersPage: React.FC = () => {
             border: '1px solid rgba(255,255,255,0.1)'
           }}>
             <RefreshCw size={32} style={{ color: '#10b981', marginBottom: '1rem', animation: 'spin 1s linear infinite' }} />
-            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0 }}>Loading organizers...</p>
+            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0, marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 600 }}>Loading organizers from cloud database...</p>
+            <p style={{ color: 'rgba(255,255,255,0.5)', margin: 0, fontSize: '0.85rem' }}>
+              This may take 30-60 seconds if the backend is waking up
+            </p>
           </div>
         )}
 
