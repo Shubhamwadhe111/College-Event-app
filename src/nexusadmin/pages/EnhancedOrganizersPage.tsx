@@ -58,34 +58,72 @@ const EnhancedOrganizersPage: React.FC = () => {
     designation: 'Event Organizer'
   });
 
-  // Load organizers from localStorage
-  const loadOrganizers = () => {
+  // Load organizers from backend API
+  const loadOrganizers = async () => {
     setIsLoading(true);
     try {
-      console.log('=== ORGANIZERS PAGE DEBUG ===');
-      console.log('All localStorage keys:', Object.keys(localStorage));
+      console.log('=== LOADING ORGANIZERS FROM BACKEND ===');
       
+      // Try to fetch from backend first
+      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+      const response = await fetch(`${API_URL}/admin/pending-organizers`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const backendOrganizers = await response.json();
+        console.log('Fetched organizers from backend:', backendOrganizers);
+        
+        // Transform backend data to match our interface
+        const organizersList: Organizer[] = backendOrganizers.map((org: any) => ({
+          id: org.organizer_id?.toString() || org.id?.toString(),
+          name: org.full_name || org.name,
+          email: org.email,
+          phone: org.phone || 'Not provided',
+          department: org.department || 'Not specified',
+          designation: org.designation || 'Event Organizer',
+          status: org.account_status === 'approved' ? 'active' : org.account_status === 'rejected' ? 'inactive' : 'pending',
+          eventsCreated: org.events_created || 0,
+          totalParticipants: 0,
+          joinedDate: org.created_at ? new Date(org.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+          lastActive: org.created_at ? new Date(org.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
+          approvalStatus: org.account_status || 'pending',
+          rating: 0,
+          isApproved: org.account_status === 'approved'
+        }));
+        
+        console.log('Transformed organizers:', organizersList);
+        setOrganizers(organizersList);
+      } else {
+        console.log('Backend not available, falling back to localStorage');
+        // Fallback to localStorage if backend is not available
+        loadOrganizersFromLocalStorage();
+      }
+    } catch (error) {
+      console.error('Error loading organizers from backend:', error);
+      console.log('Falling back to localStorage');
+      // Fallback to localStorage on error
+      loadOrganizersFromLocalStorage();
+    }
+    setIsLoading(false);
+  };
+
+  // Fallback: Load organizers from localStorage
+  const loadOrganizersFromLocalStorage = () => {
+    try {
+      console.log('Loading from localStorage...');
       const usersData = localStorage.getItem(STORAGE_KEY);
-      console.log('Raw localStorage data for', STORAGE_KEY, ':', usersData);
       
       if (usersData) {
         const users = JSON.parse(usersData);
-        console.log('Parsed users object:', users);
-        console.log('Total users count:', Object.keys(users).length);
-        
         const organizersList: Organizer[] = [];
         
         Object.entries(users).forEach(([key, user]: [string, any]) => {
-          console.log(`Checking user ${key}:`, { 
-            role: user.role, 
-            name: user.name, 
-            isApproved: user.isApproved,
-            isOrganizerRole: user.role === 'organizer'
-          });
-          
           if (user.role === 'organizer') {
             const isApproved = user.isApproved === true;
-            console.log(`  -> Adding organizer: ${user.name}, isApproved: ${isApproved}`);
             
             organizersList.push({
               id: user.id || key,
@@ -106,18 +144,16 @@ const EnhancedOrganizersPage: React.FC = () => {
           }
         });
         
-        console.log('Final organizers list:', organizersList);
-        console.log('Found organizers count:', organizersList.length);
+        console.log('Found organizers in localStorage:', organizersList.length);
         setOrganizers(organizersList);
       } else {
-        console.log('No users data found in localStorage key:', STORAGE_KEY);
+        console.log('No localStorage data found');
         setOrganizers([]);
       }
     } catch (error) {
-      console.error('Error loading organizers:', error);
+      console.error('Error loading from localStorage:', error);
       setOrganizers([]);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -141,18 +177,37 @@ const EnhancedOrganizersPage: React.FC = () => {
     return matchesTab && matchesSearch;
   });
 
-  const handleApprove = (organizerId: string) => {
+  const handleApprove = async (organizerId: string) => {
     try {
-      const usersData = localStorage.getItem(STORAGE_KEY);
-      if (usersData) {
-        const users = JSON.parse(usersData);
-        if (users[organizerId]) {
-          users[organizerId].isApproved = true;
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-          loadOrganizers();
-          alert('Organizer approved successfully!');
-        } else {
-          alert('Organizer not found');
+      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+      const response = await fetch(`${API_URL}/admin/organizers/${organizerId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: 'approve',
+          admin_id: 1, // TODO: Get from logged-in admin
+          remarks: 'Approved by admin' 
+        })
+      });
+
+      if (response.ok) {
+        alert('Organizer approved successfully!');
+        loadOrganizers();
+      } else {
+        // Fallback to localStorage
+        const usersData = localStorage.getItem(STORAGE_KEY);
+        if (usersData) {
+          const users = JSON.parse(usersData);
+          if (users[organizerId]) {
+            users[organizerId].isApproved = true;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+            loadOrganizers();
+            alert('Organizer approved successfully (localStorage)!');
+          } else {
+            alert('Organizer not found');
+          }
         }
       }
     } catch (error) {
@@ -161,17 +216,36 @@ const EnhancedOrganizersPage: React.FC = () => {
     }
   };
 
-  const handleReject = (organizerId: string) => {
-    if (!window.confirm('Are you sure you want to reject and remove this organizer?')) return;
+  const handleReject = async (organizerId: string) => {
+    if (!window.confirm('Are you sure you want to reject this organizer?')) return;
     try {
-      const usersData = localStorage.getItem(STORAGE_KEY);
-      if (usersData) {
-        const users = JSON.parse(usersData);
-        if (users[organizerId]) {
-          delete users[organizerId];
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-          loadOrganizers();
-          alert('Organizer rejected and removed');
+      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+      const response = await fetch(`${API_URL}/admin/organizers/${organizerId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          action: 'reject',
+          admin_id: 1, // TODO: Get from logged-in admin
+          remarks: 'Rejected by admin' 
+        })
+      });
+
+      if (response.ok) {
+        alert('Organizer rejected successfully!');
+        loadOrganizers();
+      } else {
+        // Fallback to localStorage
+        const usersData = localStorage.getItem(STORAGE_KEY);
+        if (usersData) {
+          const users = JSON.parse(usersData);
+          if (users[organizerId]) {
+            delete users[organizerId];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+            loadOrganizers();
+            alert('Organizer rejected and removed (localStorage)');
+          }
         }
       }
     } catch (error) {

@@ -17,24 +17,26 @@
 
 ---
 
-## 🎯 Next Step: Deploy Backend for Persistent Data
+## 🎯 Current Step: Import Database Schema
 
-### What You Need to Do
+### Where You Are Now
 
-**Time Required**: 15-20 minutes  
-**Cost**: $0 (Free tier)  
-**Difficulty**: Easy (step-by-step guide provided)
+✅ **Step 1 Complete**: Aiven MySQL database created  
+🔄 **Step 2 In Progress**: Importing database schema  
+⏳ **Step 3 Pending**: Deploy to Render  
+⏳ **Step 4 Pending**: Configure environment variables  
+⏳ **Step 5 Pending**: Test deployment  
 
-### Quick Start
+### What You Need to Do RIGHT NOW
 
-1. **Read the guide**: Open `DEPLOY_BACKEND_GUIDE.md`
-2. **Follow 6 simple steps**:
-   - Create free MySQL database (Aiven recommended)
-   - Import database schema
-   - Deploy to Render.com
-   - Set environment variables
-   - Update frontend config
-   - Deploy updated frontend
+**Follow this guide**: Open `SIMPLE_IMPORT_STEPS.md`
+
+**Quick Steps**:
+1. Test your Aiven connection: `node test-aiven-connection.js`
+2. Import the schema: `node import-schema-node.js`
+3. Verify import worked: `node test-aiven-connection.js` (should show 17 tables)
+4. Update backend config: Edit `server/.env` with Aiven details
+5. Deploy to Render (next step after import)
 
 ### After Deployment
 
