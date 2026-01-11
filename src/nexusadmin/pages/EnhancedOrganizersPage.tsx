@@ -243,37 +243,73 @@ const EnhancedOrganizersPage: React.FC = () => {
 
   const handleExport = () => {
     try {
-      const exportData = organizers.map(org => ({
-        Name: org.name,
-        Email: org.email,
-        Phone: org.phone,
-        Department: org.department,
-        Designation: org.designation,
-        Status: org.status,
-        'Approval Status': org.approvalStatus,
-        'Joined Date': org.joinedDate
-      }));
+      if (organizers.length === 0) {
+        alert('No organizers to export');
+        return;
+      }
+
+      // Define column headers in desired order
+      const headers = [
+        'Name',
+        'Email', 
+        'Phone',
+        'Department',
+        'Designation',
+        'Status',
+        'Approval Status',
+        'Joined Date'
+      ];
       
-      // Create CSV content
-      const headers = Object.keys(exportData[0] || {}).join(',');
-      const rows = exportData.map(row => Object.values(row).map(v => `"${v}"`).join(','));
-      const csv = [headers, ...rows].join('\n');
+      // Helper function to escape CSV values
+      const escapeCSV = (value: any): string => {
+        if (value === null || value === undefined) return '';
+        const str = String(value);
+        // Escape quotes and wrap in quotes if contains comma, quote, or newline
+        if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
       
-      // Download file
-      const blob = new Blob([csv], { type: 'text/csv' });
+      // Create CSV rows
+      const csvRows: string[] = [];
+      
+      // Add header row
+      csvRows.push(headers.map(h => escapeCSV(h)).join(','));
+      
+      // Add data rows
+      organizers.forEach(org => {
+        const row = [
+          org.name,
+          org.email,
+          org.phone,
+          org.department,
+          org.designation,
+          org.status.charAt(0).toUpperCase() + org.status.slice(1),
+          org.approvalStatus.charAt(0).toUpperCase() + org.approvalStatus.slice(1),
+          org.joinedDate
+        ];
+        csvRows.push(row.map(v => escapeCSV(v)).join(','));
+      });
+      
+      // Join all rows with newline
+      const csv = csvRows.join('\n');
+      
+      // Create and download file
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `organizers_${new Date().toISOString().split('T')[0]}.csv`;
+      a.download = `organizers_export_${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
       
-      alert('Organizers exported successfully!');
+      alert(`Successfully exported ${organizers.length} organizer(s) to CSV!`);
     } catch (error) {
       console.error('Export error:', error);
-      alert('Failed to export organizers');
+      alert('Failed to export organizers. Please try again.');
     }
   };
 
