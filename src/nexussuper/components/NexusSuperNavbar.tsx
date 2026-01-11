@@ -118,15 +118,15 @@ const NexusSuperNavbar: React.FC = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
+              gap: isMobile ? '0.5rem' : '0.75rem',
               textDecoration: 'none',
               color: '#e2e8f0',
               flexShrink: 0
             }}
           >
             <div style={{
-              width: '32px',
-              height: '32px',
+              width: isMobile ? '30px' : '32px',
+              height: isMobile ? '30px' : '32px',
               background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
               borderRadius: '12px',
               display: 'flex',
@@ -136,19 +136,19 @@ const NexusSuperNavbar: React.FC = () => {
               fontWeight: 800,
               boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
             }}>
-              <Crown size={16} strokeWidth={2.5} />
+              <Crown size={isMobile ? 14 : 16} strokeWidth={2.5} />
             </div>
-            <div style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{
-                fontSize: '1rem',
+                fontSize: isMobile ? '0.8rem' : '1rem',
                 fontWeight: 900,
                 color: '#10b981',
-                letterSpacing: '1px',
+                letterSpacing: isMobile ? '0.5px' : '1px',
                 textTransform: 'uppercase',
                 lineHeight: '1.1'
               }}>NEXUS MASTER</span>
               <span style={{
-                fontSize: '0.6rem',
+                fontSize: isMobile ? '0.45rem' : '0.6rem',
                 fontWeight: 700,
                 color: 'rgba(16, 185, 129, 0.9)',
                 letterSpacing: '0.5px',
