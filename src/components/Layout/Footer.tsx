@@ -174,6 +174,7 @@ const Footer: React.FC = () => {
               {[
                 { label: 'Help Center', path: '/help' },
                 { label: 'Notices', path: '/notices' },
+                { label: 'Migration Status', path: '/migration-status' },
                 { label: 'Create Event', path: '/create-event' },
                 { label: 'My Events', path: '/my-events' }
               ].map((link, index) => (

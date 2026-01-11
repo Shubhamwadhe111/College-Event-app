@@ -18,6 +18,7 @@ import MyEvents from './pages/MyEvents';
 import Notices from './pages/Notices';
 import NotificationsPage from './pages/NotificationsPage';
 import Help from './pages/Help';
+import MigrationStatus from './pages/MigrationStatus';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Import admin portal components
@@ -78,6 +79,9 @@ function App() {
                     
                     {/* Help and Support */}
                     <Route path="/help" element={<Help />} />
+                    
+                    {/* Migration Status */}
+                    <Route path="/migration-status" element={<MigrationStatus />} />
                     
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
