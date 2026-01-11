@@ -5,6 +5,30 @@
  */
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+const REQUEST_TIMEOUT = 60000; // 60 seconds for backend cold start
+
+/**
+ * Helper function to make fetch requests with timeout
+ */
+const fetchWithTimeout = async (url: string, options: RequestInit, timeout: number = REQUEST_TIMEOUT): Promise<Response> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error: any) {
+    clearTimeout(timeoutId);
+    if (error.name === 'AbortError') {
+      throw new Error('Request timeout - backend server is waking up. Please try again.');
+    }
+    throw error;
+  }
+};
 
 interface LoginResponse {
   success: boolean;
@@ -36,7 +60,7 @@ export const registerStudent = async (data: {
   try {
     console.log('[AuthService] Registering student:', data.email);
     
-    const response = await fetch(`${API_URL}/users/register`, {
+    const response = await fetchWithTimeout(`${API_URL}/users/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +103,7 @@ export const loginStudent = async (data: {
   try {
     console.log('[AuthService] Logging in student:', data.email);
     
-    const response = await fetch(`${API_URL}/users/login`, {
+    const response = await fetchWithTimeout(`${API_URL}/users/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -127,7 +151,7 @@ export const registerOrganizer = async (data: {
   try {
     console.log('[AuthService] Registering organizer:', data.email);
     
-    const response = await fetch(`${API_URL}/organizers/register`, {
+    const response = await fetchWithTimeout(`${API_URL}/organizers/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -170,7 +194,7 @@ export const loginOrganizer = async (data: {
   try {
     console.log('[AuthService] Logging in organizer:', data.email);
     
-    const response = await fetch(`${API_URL}/organizers/login`, {
+    const response = await fetchWithTimeout(`${API_URL}/organizers/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -218,7 +242,7 @@ export const registerAdmin = async (data: {
   try {
     console.log('[AuthService] Registering admin:', data.email);
     
-    const response = await fetch(`${API_URL}/admin/register`, {
+    const response = await fetchWithTimeout(`${API_URL}/admin/register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -261,7 +285,7 @@ export const loginAdmin = async (data: {
   try {
     console.log('[AuthService] Logging in admin:', data.email);
     
-    const response = await fetch(`${API_URL}/admin/login`, {
+    const response = await fetchWithTimeout(`${API_URL}/admin/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

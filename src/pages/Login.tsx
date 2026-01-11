@@ -9,6 +9,7 @@ const Login: React.FC = () => {
   const [userType, setUserType] = useState<'student' | 'organizer'>('student');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Signing in...');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,6 +22,14 @@ const Login: React.FC = () => {
     }
 
     setIsLoading(true);
+    setLoadingMessage('Signing in...');
+
+    // Set timeout for backend cold start (60 seconds)
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        setLoadingMessage('⏳ Waking up backend server... This may take 30-60 seconds on first request');
+      }
+    }, 3000);
 
     try {
       let result;
@@ -32,6 +41,8 @@ const Login: React.FC = () => {
         console.log('[Login] Logging in student via authService...');
         result = await authService.loginStudent({ email, password });
       }
+
+      clearTimeout(timeoutId);
 
       if (result.success) {
         // Store user data in localStorage for the app to use
@@ -52,10 +63,18 @@ const Login: React.FC = () => {
         setError(result.message || 'Invalid credentials');
       }
     } catch (error: any) {
+      clearTimeout(timeoutId);
       console.error('[Login] Error:', error);
-      setError(error.message || 'Network error. Please check your connection and try again.');
+      
+      // Check if it's a timeout error
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        setError('⏱️ Request timed out. The backend server is waking up (takes 30-60 seconds on first request). Please try again in a moment.');
+      } else {
+        setError(error.message || 'Network error. Please check your connection and try again.');
+      }
     } finally {
       setIsLoading(false);
+      setLoadingMessage('Signing in...');
     }
   };
 
@@ -382,7 +401,7 @@ const Login: React.FC = () => {
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
-                  Signing in...
+                  {loadingMessage}
                 </>
               ) : (
                 <>

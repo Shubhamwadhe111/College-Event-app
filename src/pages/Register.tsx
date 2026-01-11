@@ -17,6 +17,7 @@ const Register: React.FC = () => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Creating account...');
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -46,18 +47,28 @@ const Register: React.FC = () => {
     }
 
     setIsLoading(true);
+    setLoadingMessage('Creating account...');
     let result;
+
+    // Set timeout for backend cold start (60 seconds)
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        setLoadingMessage('⏳ Waking up backend server... This may take 30-60 seconds on first request');
+      }
+    }, 3000);
 
     try {
       if (formData.userType === 'organizer') {
         if (!formData.clubName) {
           setError('Please enter your Club/Organization name');
           setIsLoading(false);
+          clearTimeout(timeoutId);
           return;
         }
         if (!formData.phone) {
           setError('Please enter your phone number');
           setIsLoading(false);
+          clearTimeout(timeoutId);
           return;
         }
         
@@ -83,6 +94,8 @@ const Register: React.FC = () => {
         });
       }
 
+      clearTimeout(timeoutId);
+
       if (result.success) {
         if (formData.userType === 'organizer') {
           setError('');
@@ -96,10 +109,18 @@ const Register: React.FC = () => {
         setError(result.message || 'Registration failed. Please try again.');
       }
     } catch (error: any) {
+      clearTimeout(timeoutId);
       console.error('[Register] Error:', error);
-      setError(error.message || 'Network error. Please check your connection and try again.');
+      
+      // Check if it's a timeout error
+      if (error.name === 'AbortError' || error.message.includes('timeout')) {
+        setError('⏱️ Request timed out. The backend server is waking up (takes 30-60 seconds on first request). Please try again in a moment.');
+      } else {
+        setError(error.message || 'Network error. Please check your connection and try again.');
+      }
     } finally {
       setIsLoading(false);
+      setLoadingMessage('Creating account...');
     }
   };
 
@@ -642,7 +663,7 @@ const Register: React.FC = () => {
                     borderRadius: '50%',
                     animation: 'spin 1s linear infinite'
                   }} />
-                  Creating Account...
+                  {loadingMessage}
                 </>
               ) : (
                 <>
