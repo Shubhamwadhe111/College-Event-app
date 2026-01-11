@@ -108,15 +108,15 @@ const NexusadminNavbar: React.FC = () => {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.75rem',
+              gap: isMobile ? '0.5rem' : '0.75rem',
               textDecoration: 'none',
               color: '#e2e8f0',
               flexShrink: 0
             }}
           >
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: isMobile ? '36px' : '40px',
+              height: isMobile ? '36px' : '40px',
               background: 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)',
               borderRadius: '12px',
               display: 'flex',
@@ -126,19 +126,19 @@ const NexusadminNavbar: React.FC = () => {
               fontWeight: 800,
               boxShadow: '0 4px 15px rgba(16, 185, 129, 0.4)'
             }}>
-              <Shield size={20} strokeWidth={2.5} />
+              <Shield size={isMobile ? 18 : 20} strokeWidth={2.5} />
             </div>
-            <div style={{ display: isMobile ? 'none' : 'flex', flexDirection: 'column' }}>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span style={{
-                fontSize: '1rem',
+                fontSize: isMobile ? '0.85rem' : '1rem',
                 fontWeight: 900,
                 color: '#10b981',
-                letterSpacing: '1px',
+                letterSpacing: isMobile ? '0.5px' : '1px',
                 textTransform: 'uppercase',
                 lineHeight: '1.1'
               }}>NEXUS ADMIN</span>
               <span style={{
-                fontSize: '0.6rem',
+                fontSize: isMobile ? '0.5rem' : '0.6rem',
                 fontWeight: 700,
                 color: 'rgba(16, 185, 129, 0.9)',
                 letterSpacing: '0.5px',
