@@ -187,78 +187,41 @@ const EnhancedOrganizersPage: React.FC = () => {
 
   const handleApprove = async (organizerId: string) => {
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
-      const response = await fetch(`${API_URL}/admin/organizers/${organizerId}/approve`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          action: 'approve',
-          admin_id: 1, // TODO: Get from logged-in admin
-          remarks: 'Approved by admin' 
-        })
-      });
-
-      if (response.ok) {
-        alert('Organizer approved successfully!');
-        loadOrganizers();
-      } else {
-        // Fallback to localStorage
-        const usersData = localStorage.getItem(STORAGE_KEY);
-        if (usersData) {
-          const users = JSON.parse(usersData);
-          if (users[organizerId]) {
-            users[organizerId].isApproved = true;
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-            loadOrganizers();
-            alert('Organizer approved successfully (localStorage)!');
-          } else {
-            alert('Organizer not found');
-          }
-        }
-      }
+      console.log('Approving organizer:', organizerId);
+      
+      // Use storage service abstraction (works with both backend and localStorage)
+      const { getStorageService } = await import('../../services/storageAbstraction');
+      const storageService = getStorageService();
+      
+      await storageService.approveOrganizer(organizerId, 'approve');
+      
+      console.log('Organizer approved successfully');
+      alert('Organizer approved successfully!');
+      await loadOrganizers();
     } catch (error) {
       console.error('Error approving organizer:', error);
-      alert('Failed to approve organizer');
+      alert('Failed to approve organizer. Please try again.');
     }
   };
 
   const handleReject = async (organizerId: string) => {
     if (!window.confirm('Are you sure you want to reject this organizer?')) return;
+    
     try {
-      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
-      const response = await fetch(`${API_URL}/admin/organizers/${organizerId}/approve`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-          action: 'reject',
-          admin_id: 1, // TODO: Get from logged-in admin
-          remarks: 'Rejected by admin' 
-        })
-      });
-
-      if (response.ok) {
-        alert('Organizer rejected successfully!');
-        loadOrganizers();
-      } else {
-        // Fallback to localStorage
-        const usersData = localStorage.getItem(STORAGE_KEY);
-        if (usersData) {
-          const users = JSON.parse(usersData);
-          if (users[organizerId]) {
-            delete users[organizerId];
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-            loadOrganizers();
-            alert('Organizer rejected and removed (localStorage)');
-          }
-        }
-      }
+      console.log('Rejecting organizer:', organizerId);
+      
+      // Use storage service abstraction (works with both backend and localStorage)
+      const { getStorageService } = await import('../../services/storageAbstraction');
+      const storageService = getStorageService();
+      
+      await storageService.approveOrganizer(organizerId, 'reject');
+      
+      console.log('Organizer rejected successfully');
+      alert('Organizer rejected successfully!');
+      await loadOrganizers();
     } catch (error) {
       console.error('Error rejecting organizer:', error);
-      alert('Failed to reject organizer');
+      alert('Failed to reject organizer. Please try again.');
     }
   };
 
