@@ -55,7 +55,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const storageService = await getStorageServiceAsync();
       console.debug('Using storage service:', storageService.constructor.name);
       
-      const result = await storageService.loginUser({ email, password });
+      const result = await storageService.loginUser({ email, password }, userType);
       console.debug('Login result:', result);
       
       if (result.success && result.user) {

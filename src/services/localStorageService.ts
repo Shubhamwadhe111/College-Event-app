@@ -239,7 +239,7 @@ export class LocalStorageService implements StorageService {
     this.setData(STORAGE_KEYS.NOTIFICATIONS, notifications);
   }
 
-  async loginUser(credentials: { email: string; password: string }): Promise<LoginResult> {
+  async loginUser(credentials: { email: string; password: string }, userType?: string): Promise<LoginResult> {
     try {
       const users = this.getData<StoredUsers>(STORAGE_KEYS.USERS, {});
       
@@ -257,6 +257,14 @@ export class LocalStorageService implements StorageService {
 
       const [, userData] = userEntry;
       const user = userData as UserWithPassword;
+
+      // Check if user role matches the requested userType (if specified)
+      if (userType && user.role !== userType) {
+        return {
+          success: false,
+          message: 'Invalid credentials',
+        };
+      }
 
       // Verify password
       const validPassword = await bcrypt.compare(credentials.password, user.password);
