@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Organizer Registration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0f172a;
+            color: white;
+        }
+        .section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #059669;
+        }
+        .output {
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Organizer Registration Test Tool</h1>
+    
+    <div class="section">
+        <h2>1. Check Current localStorage Data</h2>
+        <button onclick="checkLocalStorage()">Check localStorage</button>
+        <div id="localStorageOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+        <h2>2. Add Test Organizer</h2>
+        <input type="text" id="orgName" placeholder="Name" value="Test Organizer">
+        <input type="email" id="orgEmail" placeholder="Email" value="test.organizer@example.com">
+        <input type="tel" id="orgPhone" placeholder="Phone" value="1234567890">
+        <input type="text" id="orgDept" placeholder="Department/Club" value="Tech Club">
+        <button onclick="addTestOrganizer()">Add Test Organizer (Pending Approval)</button>
+        <button onclick="addApprovedOrganizer()">Add Test Organizer (Pre-Approved)</button>
+        <div id="addOutput" class="output"></div>
+    </div>
+
+    <div class="section">
+        <h2>3. Clear All Data</h2>
+        <button onclick="clearAllData()" style="background: #ef4444;">Clear All localStorage</button>
+        <div id="clearOutput" class="output"></div>
+    </div>
+
+    <script>
+        function checkLocalStorage() {
+            const output = document.getElementById('localStorageOutput');
+            const usersData = localStorage.getItem('nexus_demo_users');
+            
+            if (!usersData) {
+                output.textContent = '❌ No data found in localStorage key: nexus_demo_users';
+                return;
+            }
+
+            try {
+                const users = JSON.parse(usersData);
+                const organizers = Object.entries(users).filter(([, user]) => user.role === 'organizer');
+                
+                output.textContent = `✅ Found ${Object.keys(users).length} total users\n`;
+                output.textContent += `📋 Found ${organizers.length} organizers\n\n`;
+                
+                if (organizers.length > 0) {
+                    output.textContent += '=== ORGANIZERS ===\n';
+                    organizers.forEach(([id, org]) => {
+                        output.textContent += `\nID: ${id}\n`;
+                        output.textContent += `Name: ${org.name}\n`;
+                        output.textContent += `Email: ${org.email}\n`;
+                        output.textContent += `Phone: ${org.phone || 'N/A'}\n`;
+                        output.textContent += `Department: ${org.department || 'N/A'}\n`;
+                        output.textContent += `isApproved: ${org.isApproved}\n`;
+                        output.textContent += `Role: ${org.role}\n`;
+                        output.textContent += `Created: ${org.createdAt || 'N/A'}\n`;
+                        output.textContent += '---\n';
+                    });
+                } else {
+                    output.textContent += '\n⚠️ No organizers found in localStorage\n';
+                    output.textContent += '\nAll users:\n' + JSON.stringify(users, null, 2);
+                }
+            } catch (error) {
+                output.textContent = '❌ Error parsing localStorage data:\n' + error.message;
+            }
+        }
+
+        function addTestOrganizer() {
+            const output = document.getElementById('addOutput');
+            const name = document.getElementById('orgName').value;
+            const email = document.getElementById('orgEmail').value;
+            const phone = document.getElementById('orgPhone').value;
+            const dept = document.getElementById('orgDept').value;
+
+            if (!name || !email) {
+                output.textContent = '❌ Please fill in name and email';
+                return;
+            }
+
+            try {
+                const usersData = localStorage.getItem('nexus_demo_users');
+                const users = usersData ? JSON.parse(usersData) : {};
+                
+                // Check if email exists
+                const emailExists = Object.values(users).some(u => u.email === email);
+                if (emailExists) {
+                    output.textContent = '❌ Email already exists. Use a different email.';
+                    return;
+                }
+
+                const userId = Date.now().toString();
+                users[userId] = {
+                    id: userId,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    department: dept,
+                    designation: 'Event Organizer',
+                    role: 'organizer',
+                    isApproved: false, // Pending approval
+                    createdAt: new Date().toISOString()
+                };
+
+                localStorage.setItem('nexus_demo_users', JSON.stringify(users));
+                output.textContent = '✅ Test organizer added successfully (Pending Approval)!\n\n';
+                output.textContent += 'User ID: ' + userId + '\n';
+                output.textContent += 'Name: ' + name + '\n';
+                output.textContent += 'Email: ' + email + '\n';
+                output.textContent += 'isApproved: false\n\n';
+                output.textContent += '👉 Now go to Admin Portal > Organizers to see this request';
+            } catch (error) {
+                output.textContent = '❌ Error adding organizer:\n' + error.message;
+            }
+        }
+
+        function addApprovedOrganizer() {
+            const output = document.getElementById('addOutput');
+            const name = document.getElementById('orgName').value;
+            const email = document.getElementById('orgEmail').value;
+            const phone = document.getElementById('orgPhone').value;
+            const dept = document.getElementById('orgDept').value;
+
+            if (!name || !email) {
+                output.textContent = '❌ Please fill in name and email';
+                return;
+            }
+
+            try {
+                const usersData = localStorage.getItem('nexus_demo_users');
+                const users = usersData ? JSON.parse(usersData) : {};
+                
+                // Check if email exists
+                const emailExists = Object.values(users).some(u => u.email === email);
+                if (emailExists) {
+                    output.textContent = '❌ Email already exists. Use a different email.';
+                    return;
+                }
+
+                const userId = Date.now().toString();
+                users[userId] = {
+                    id: userId,
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    department: dept,
+                    designation: 'Event Organizer',
+                    role: 'organizer',
+                    isApproved: true, // Pre-approved
+                    createdAt: new Date().toISOString()
+                };
+
+                localStorage.setItem('nexus_demo_users', JSON.stringify(users));
+                output.textContent = '✅ Test organizer added successfully (Pre-Approved)!\n\n';
+                output.textContent += 'User ID: ' + userId + '\n';
+                output.textContent += 'Name: ' + name + '\n';
+                output.textContent += 'Email: ' + email + '\n';
+                output.textContent += 'isApproved: true\n\n';
+                output.textContent += '👉 Now go to Admin Portal > Organizers to see this organizer';
+            } catch (error) {
+                output.textContent = '❌ Error adding organizer:\n' + error.message;
+            }
+        }
+
+        function clearAllData() {
+            if (!confirm('Are you sure you want to clear ALL localStorage data?')) {
+                return;
+            }
+            
+            const output = document.getElementById('clearOutput');
+            localStorage.clear();
+            output.textContent = '✅ All localStorage data cleared!';
+        }
+
+        // Auto-check on load
+        window.onload = function() {
+            checkLocalStorage();
+        };
+    </script>
+</body>
+</html>
