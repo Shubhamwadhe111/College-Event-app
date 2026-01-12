@@ -58,110 +58,52 @@ const EnhancedOrganizersPage: React.FC = () => {
     designation: 'Event Organizer'
   });
 
-  // Load organizers from backend API with timeout
+  // Load organizers using storage abstraction
   const loadOrganizers = async () => {
     setIsLoading(true);
     try {
-      console.log('=== LOADING ORGANIZERS FROM BACKEND ===');
+      console.log('=== LOADING ORGANIZERS ===');
       
-      // Try to fetch from backend first with timeout
-      const API_URL = process.env.REACT_APP_API_URL || 'https://nexus-event-backend.onrender.com/api';
+      // Use storage service abstraction (works with both backend and localStorage)
+      const { getStorageService } = await import('../../services/storageAbstraction');
+      const storageService = getStorageService();
       
-      // Create abort controller for timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      // Get all users and filter for organizers
+      const allUsers = await storageService.getUsers();
+      console.log('All users:', allUsers);
       
-      const response = await fetch(`${API_URL}/admin/pending-organizers`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (response.ok) {
-        const backendOrganizers = await response.json();
-        console.log('Fetched organizers from backend:', backendOrganizers);
-        
-        // Transform backend data to match our interface
-        const organizersList: Organizer[] = backendOrganizers.map((org: any) => ({
-          id: org.organizer_id?.toString() || org.id?.toString(),
-          name: org.full_name || org.name,
-          email: org.email,
-          phone: org.phone || 'Not provided',
-          department: org.department || 'Not specified',
-          designation: org.designation || 'Event Organizer',
-          status: org.account_status === 'approved' ? 'active' : org.account_status === 'rejected' ? 'inactive' : 'pending',
-          eventsCreated: org.events_created || 0,
-          totalParticipants: 0,
-          joinedDate: org.created_at ? new Date(org.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
-          lastActive: org.created_at ? new Date(org.created_at).toLocaleDateString() : new Date().toLocaleDateString(),
-          approvalStatus: org.account_status || 'pending',
-          rating: 0,
-          isApproved: org.account_status === 'approved'
-        }));
-        
-        console.log('Transformed organizers:', organizersList);
-        setOrganizers(organizersList);
-      } else {
-        console.log('Backend not available, falling back to localStorage');
-        // Fallback to localStorage if backend is not available
-        loadOrganizersFromLocalStorage();
-      }
-    } catch (error) {
-      console.error('Error loading organizers from backend:', error);
-      console.log('Falling back to localStorage');
-      // Fallback to localStorage on error
-      loadOrganizersFromLocalStorage();
-    }
-    setIsLoading(false);
-  };
-
-  // Fallback: Load organizers from localStorage
-  const loadOrganizersFromLocalStorage = () => {
-    try {
-      console.log('Loading from localStorage...');
-      const usersData = localStorage.getItem(STORAGE_KEY);
-      
-      if (usersData) {
-        const users = JSON.parse(usersData);
-        const organizersList: Organizer[] = [];
-        
-        Object.entries(users).forEach(([key, user]: [string, any]) => {
-          if (user.role === 'organizer') {
-            const isApproved = user.isApproved === true;
-            
-            organizersList.push({
-              id: user.id || key,
-              name: user.name,
-              email: user.email,
-              phone: user.phone || 'Not provided',
-              department: user.department || user.college || 'Not specified',
-              designation: user.designation || 'Event Organizer',
-              status: isApproved ? 'active' : 'pending',
-              eventsCreated: 0,
-              totalParticipants: 0,
-              joinedDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
-              lastActive: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
-              approvalStatus: isApproved ? 'approved' : 'pending',
-              rating: 0,
-              isApproved: isApproved
-            });
-          }
+      const organizersList: Organizer[] = allUsers
+        .filter((user: any) => user.role === 'organizer')
+        .map((user: any) => {
+          const isApproved = user.isApproved === true;
+          
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone || 'Not provided',
+            department: user.department || user.college || 'Not specified',
+            designation: user.designation || 'Event Organizer',
+            status: isApproved ? 'active' : 'pending',
+            eventsCreated: 0,
+            totalParticipants: 0,
+            joinedDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
+            lastActive: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : new Date().toLocaleDateString(),
+            approvalStatus: isApproved ? 'approved' : 'pending',
+            rating: 0,
+            isApproved: isApproved,
+            createdAt: user.createdAt
+          };
         });
-        
-        console.log('Found organizers in localStorage:', organizersList.length);
-        setOrganizers(organizersList);
-      } else {
-        console.log('No localStorage data found');
-        setOrganizers([]);
-      }
+      
+      console.log('Found organizers:', organizersList.length);
+      console.log('Organizers list:', organizersList);
+      setOrganizers(organizersList);
     } catch (error) {
-      console.error('Error loading from localStorage:', error);
+      console.error('Error loading organizers:', error);
       setOrganizers([]);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
