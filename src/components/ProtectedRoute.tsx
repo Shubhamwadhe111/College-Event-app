@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
@@ -9,6 +9,12 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
   const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  // Determine which portal we're in based on the current path
+  const isAdminPortal = location.pathname.startsWith('/nexusadmin');
+  const isMasterPortal = location.pathname.startsWith('/nexussuper');
+  const isMainPortal = !isAdminPortal && !isMasterPortal;
 
   if (isLoading) {
     return (
@@ -18,17 +24,32 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole 
     );
   }
 
+  // If user is not logged in, redirect to the appropriate login page for the portal
   if (!user) {
-    return <Navigate to="/login" replace />;
+    if (isAdminPortal) {
+      return <Navigate to="/nexusadmin/login" replace />;
+    } else if (isMasterPortal) {
+      return <Navigate to="/nexussuper/login" replace />;
+    } else {
+      return <Navigate to="/login" replace />;
+    }
   }
 
+  // Check if user has the required role
   if (requiredRole) {
     const roleHierarchy = { student: 0, organizer: 1, admin: 2, master: 3 };
     const userRoleLevel = roleHierarchy[user.role];
     const requiredRoleLevel = roleHierarchy[requiredRole];
 
     if (userRoleLevel < requiredRoleLevel) {
-      return <Navigate to="/" replace />;
+      // Redirect to the appropriate portal home based on user's role
+      if (user.role === 'master') {
+        return <Navigate to="/nexussuper/dashboard" replace />;
+      } else if (user.role === 'admin') {
+        return <Navigate to="/nexusadmin/dashboard" replace />;
+      } else {
+        return <Navigate to="/" replace />;
+      }
     }
   }
 
